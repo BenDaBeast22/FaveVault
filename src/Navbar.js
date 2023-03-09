@@ -12,12 +12,14 @@ import {
   Avatar,
   Tooltip,
   Stack,
+  Link,
+  Container,
 } from "@mui/material";
+import { NavLink } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
-
 import { logout } from "./firebase";
 
 const pages = ["Bookmarks", "Rankings", "Backlog"];
@@ -27,7 +29,7 @@ const settings = [
   { name: "Logout", icon: <LogoutIcon />, onClick: logout },
 ];
 
-const Navbar = () => {
+const Navbar = (props) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const handleOpenNav = (event) => {
@@ -84,27 +86,56 @@ const Navbar = () => {
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
           onClose={handleCloseNav}
+          MenuListProps={{ sx: { py: 0 } }}
           sx={{ display: { xs: "block", md: "none" } }}
           anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
           transformOrigin={{ vertical: "top", horizontal: "left" }}
           keepMounted
         >
           {pages.map((page) => (
-            <MenuItem key={page} onClick={handleCloseNav}>
-              <Typography>{page}</Typography>
+            <MenuItem key={page} onClick={handleCloseNav} sx={{ p: 0 }}>
+              <Link
+                component={NavLink}
+                to={page.toLowerCase()}
+                sx={{
+                  width: "100%",
+                  p: 2,
+                  textDecoration: "none",
+                  color: "inherit",
+                  "&.active": {
+                    backgroundColor: "#9e38d1",
+                  },
+                }}
+              >
+                {page}
+              </Link>
             </MenuItem>
           ))}
         </Menu>
-        <Box sx={{ display: { xs: "none", md: "flex" }, flexGrow: 1 }}>
+        <Box sx={{ height: "100%", display: { xs: "none", md: "flex" }, flexGrow: 1 }}>
           {pages.map((page) => (
-            <Button sx={{ mr: 3, color: "white", display: "block" }} key={page}>
+            <Link
+              component={NavLink}
+              to={page.toLowerCase()}
+              sx={{
+                py: 2.5,
+                px: 2,
+                color: "white",
+                display: "block",
+                textDecoration: "none",
+                "&.active": {
+                  backgroundColor: "#9e38d1",
+                },
+              }}
+              key={page}
+            >
               {page}
-            </Button>
+            </Link>
           ))}
         </Box>
-        <Box sx={{ px: 6 }}>
+        <Box>
           <Tooltip title="Open settings">
-            <IconButton aria-label="settings" onClick={handleOpenUserMenu} sx={{ p: 0.5 }}>
+            <IconButton aria-label="settings" onClick={handleOpenUserMenu} sx={{ p: 0 }}>
               <Avatar alt="profile-pic" src="/images/drake.jpeg" sx={{ width: 45, height: 45 }} />
             </IconButton>
           </Tooltip>
@@ -113,8 +144,9 @@ const Navbar = () => {
             anchorEl={anchorElUser}
             open={Boolean(anchorElUser)}
             onClose={handleCloseUserMenu}
-            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-            transformOrigin={{ vertical: "top", horizontal: "center" }}
+            MenuListProps={{ sx: { py: 0 } }}
+            anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+            transformOrigin={{ vertical: "top", horizontal: "left" }}
             keepMounted
           >
             {settings.map((setting) => (
