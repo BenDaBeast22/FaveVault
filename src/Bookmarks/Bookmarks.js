@@ -7,57 +7,58 @@ import {
   Typography,
   Button,
   Box,
-  Dialog,
   Select,
   MenuItem,
   FormControl,
   InputLabel,
+  IconButton,
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import { Stack } from "@mui/system";
-import FormDialog from "./FormDialog";
 import React, { useEffect, useState } from "react";
-import { collection, query, doc, getDocs, orderBy } from "firebase/firestore";
+import { collection, query, doc, orderBy, setDoc, addDoc, onSnapshot, updateDoc, deleteDoc } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { db, auth } from "./firebase";
+import { db, auth } from "../firebase";
+import NewCollection from "./Actions/AddNewCollection";
+import EditCollection from "./Actions/EditCollection";
+import DeleteIcon from "@mui/icons-material/Delete";
 
-const bookmarks = [
-  { id: 1, img: "drake.jpeg" },
-  { id: 2, img: "melt.png" },
-  { id: 3, img: "drake.jpeg" },
-  { id: 4, img: "melt.png" },
-  { id: 5, img: "drake.jpeg" },
-  { id: 6, img: "drake.jpeg" },
-  { id: 7, img: "melt.png" },
-];
 const Bookmarks = () => {
   const [user] = useAuthState(auth);
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("asc");
-  const submitCollection = (newCollection) => {
-    setCollections([...collections, newCollection]);
+  const uid = user.uid;
+  const submitCollection = async (newCollection) => {
+    await addDoc(collection(db, "data", uid, "collections"), newCollection);
+  };
+  const editCollection = async (editedCollection, id) => {
+    await updateDoc(doc(db, "data", uid, "collections", id), editedCollection);
+  };
+  const handleDelete = async (id) => {
+    await deleteDoc(doc(db, "data", uid, "collections", id));
   };
   const handleSortBy = (event) => {
     setSortBy(event.target.value);
   };
   useEffect(() => {
-    const getData = async () => {
-      const uid = user.uid;
-      const collectionsRef = collection(db, "data", uid, "collections");
-      const q = query(collectionsRef, orderBy("name", sortBy));
-      const querySnapshot = await getDocs(q);
-      const docs = querySnapshot.docs.map((doc) => doc.data());
-      setCollections(docs);
+    const uid = user.uid;
+    const collectionsRef = collection(db, "data", uid, "collections");
+    const q = query(collectionsRef, orderBy("name", sortBy));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const collectionsArr = [];
+      querySnapshot.forEach((doc) => {
+        collectionsArr.push({ ...doc.data(), id: doc.id });
+      });
+      console.log(collectionsArr);
+      setCollections(collectionsArr);
       setLoading(false);
-    };
-    getData();
+    });
+    return () => unsubscribe();
   }, [sortBy]);
   return (
     <div className="Bookmarks">
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Container maxWidth="xs" sx={{ pb: 4, display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-          <FormDialog submitCollection={submitCollection} />
+          <NewCollection submitCollection={submitCollection} />
           <FormControl>
             <InputLabel>Sort By</InputLabel>
             <Select
@@ -76,8 +77,8 @@ const Bookmarks = () => {
         </Container>
         {!loading && (
           <Grid container spacing={2}>
-            {collections.map((collection, index) => (
-              <Grid item xs={4} sm={3} md={2} key={index}>
+            {collections.map((collection) => (
+              <Grid item xs={4} sm={3} md={2} key={collection.id}>
                 <Card sx={{ height: "150px", display: "flex" }}>
                   <CardMedia component="img" image={collection.img} alt={collection.img} />
                 </Card>
@@ -92,6 +93,12 @@ const Bookmarks = () => {
                   }}
                 >
                   <Typography align="center">{collection.name}</Typography>
+                  <Box sx={{ my: 1, display: "flex", justifyContent: "space-evenly" }}>
+                    <EditCollection collection={collection} editCollection={editCollection} />
+                    <IconButton color="error" onClick={() => handleDelete(collection.id)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
                 </CardContent>
               </Grid>
             ))}

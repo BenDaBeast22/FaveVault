@@ -3,7 +3,7 @@ import PrivateRoutes from "./PrivateRoutes";
 import Home from "./Home";
 import Login from "./Login";
 import CreateAccount from "./CreateAccount";
-import Bookmarks from "./Bookmarks";
+import Bookmarks from "./Bookmarks/Bookmarks";
 import Rankings from "./Rankings";
 import Backlog from "./Backlog";
 import "./App.css";
