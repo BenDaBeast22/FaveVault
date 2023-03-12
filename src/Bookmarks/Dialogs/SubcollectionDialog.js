@@ -31,7 +31,7 @@ const SubcollectionDialog = ({ title, collection, user, open, submit, close }) =
     }
     const newCollection = {
       name: subcollectionName,
-      bookmark: {
+      bookmarks: {
         name: bookmarkName,
         link: bookmarkLink,
         img: imageUrl,
