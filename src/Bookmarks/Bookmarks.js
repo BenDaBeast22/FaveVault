@@ -12,14 +12,16 @@ import {
   FormControl,
   InputLabel,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { collection, query, doc, orderBy, setDoc, addDoc, onSnapshot, updateDoc, deleteDoc } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { db, auth } from "../firebase";
-import NewCollection from "./Actions/AddNewCollection";
+import AddNewCollection from "./Actions/AddNewCollection";
 import EditCollection from "./Actions/EditCollection";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { Link } from "react-router-dom";
 
 const Bookmarks = () => {
   const [user] = useAuthState(auth);
@@ -40,7 +42,6 @@ const Bookmarks = () => {
     setSortBy(event.target.value);
   };
   useEffect(() => {
-    const uid = user.uid;
     const collectionsRef = collection(db, "data", uid, "collections");
     const q = query(collectionsRef, orderBy("name", sortBy));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -58,7 +59,7 @@ const Bookmarks = () => {
     <div className="Bookmarks">
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Container maxWidth="xs" sx={{ pb: 4, display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-          <NewCollection submitCollection={submitCollection} />
+          <AddNewCollection submitCollection={submitCollection} />
           <FormControl>
             <InputLabel>Sort By</InputLabel>
             <Select
@@ -80,7 +81,9 @@ const Bookmarks = () => {
             {collections.map((collection) => (
               <Grid item xs={4} sm={3} md={2} key={collection.id}>
                 <Card sx={{ height: "150px", display: "flex" }}>
-                  <CardMedia component="img" image={collection.img} alt={collection.img} />
+                  <Link to={`${collection.id}/${collection.name}`}>
+                    <CardMedia component="img" image={collection.img} alt={collection.img} />
+                  </Link>
                 </Card>
                 <CardContent
                   sx={{
@@ -95,9 +98,11 @@ const Bookmarks = () => {
                   <Typography align="center">{collection.name}</Typography>
                   <Box sx={{ my: 1, display: "flex", justifyContent: "space-evenly" }}>
                     <EditCollection collection={collection} editCollection={editCollection} />
-                    <IconButton color="error" onClick={() => handleDelete(collection.id)}>
-                      <DeleteIcon />
-                    </IconButton>
+                    <Tooltip title="Delete">
+                      <IconButton color="error" onClick={() => handleDelete(collection.id)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
                   </Box>
                 </CardContent>
               </Grid>

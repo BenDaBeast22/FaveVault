@@ -29,7 +29,7 @@ const settings = [
   { name: "Logout", icon: <LogoutIcon />, onClick: logout },
 ];
 
-const Navbar = (props) => {
+const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const handleOpenNav = (event) => {

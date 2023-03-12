@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { auth } from "../../firebase";
-import { Box, Button, IconButton } from "@mui/material";
+import { Box, Button, IconButton, Tooltip } from "@mui/material";
 import { useAuthState } from "react-firebase-hooks/auth";
 import FormDialog from "../Dialogs/FormDialog";
 import EditIcon from "@mui/icons-material/Edit";
@@ -17,9 +17,11 @@ const EditCollection = ({ collection, editCollection }) => {
   return (
     <div>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <IconButton color="info" onClick={handleOpen}>
-          <EditIcon />
-        </IconButton>
+        <Tooltip title="Edit">
+          <IconButton color="info" onClick={handleOpen}>
+            <EditIcon />
+          </IconButton>
+        </Tooltip>
         <FormDialog
           title="Edit Collection"
           collection={collection}

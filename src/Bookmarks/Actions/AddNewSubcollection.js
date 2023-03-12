@@ -3,9 +3,9 @@ import { auth } from "../../firebase";
 import { Box, Button } from "@mui/material";
 import FileUploadRoundedIcon from "@mui/icons-material/FileUploadRounded";
 import { useAuthState } from "react-firebase-hooks/auth";
-import FormDialog from "../Dialogs/FormDialog";
+import SubcollectionDialog from "../Dialogs/SubcollectionDialog";
 
-const AddNewCollection = ({ collection, submitCollection }) => {
+const AddNewSubcollection = ({ collection, submitSubcollection }) => {
   const [user] = useAuthState(auth);
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
@@ -18,19 +18,19 @@ const AddNewCollection = ({ collection, submitCollection }) => {
     <div>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         <Button startIcon={<FileUploadRoundedIcon />} variant="contained" onClick={handleOpen}>
-          Upload new Collection
+          Add bookmark to new Subcollection
         </Button>
-        <FormDialog
-          title="Add new Collection"
-          collection={{ name: "", img: "" }}
+        <SubcollectionDialog
+          title="Add Bookmark to new Subcollection"
+          collection={{ name: "", bookmarkName: "", bookmarkLink: "", img: "" }}
           user={user}
           open={open}
           close={handleClose}
-          submit={submitCollection}
+          submit={submitSubcollection}
         />
       </Box>
     </div>
   );
 };
 
-export default AddNewCollection;
+export default AddNewSubcollection;
