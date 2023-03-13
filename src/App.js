@@ -7,7 +7,7 @@ import Bookmarks from "./Bookmarks/Bookmarks";
 import Rankings from "./Rankings";
 import Backlog from "./Backlog";
 import "./App.css";
-import Collections from "./Bookmarks/Collections/Collections";
+import Collections from "./Bookmarks/Collections";
 
 function App() {
   return (

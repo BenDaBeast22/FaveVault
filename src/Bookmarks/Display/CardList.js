@@ -1,22 +1,28 @@
-import { Grid, Card, CardMedia, CardContent, Box, Typography, Tooltip, IconButton } from "@mui/material";
-import EditCollection from "../Actions/EditCollection";
+import { Grid, Card, CardMedia, CardContent, Box, Typography, Tooltip, IconButton, Link } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Link } from "react-router-dom";
+import { Link as ReactRouterLink } from "react-router-dom";
+import EditCard from "../Actions/EditCard";
 
-function CardList(props) {
+function CardList({ list, editCard, handleDelete, type }) {
   return (
     <Grid container spacing={2}>
-      {props.collections.map((collection) => (
-        <Grid item xs={4} sm={3} md={2} key={collection.id}>
+      {list.map((card) => (
+        <Grid item xs={4} sm={3} md={2} key={card.id}>
           <Card
             sx={{
               height: "150px",
               display: "flex",
             }}
           >
-            <Link to={`${collection.id}/${collection.name}`}>
-              <CardMedia component="img" image={collection.img} alt={collection.img} />
-            </Link>
+            {type === "collection" ? (
+              <ReactRouterLink to={`${card.id}/${card.name}`}>
+                <CardMedia height="100%" component="img" image={card.img} alt={card.img} />
+              </ReactRouterLink>
+            ) : (
+              <Link href={card.link} target="_blank">
+                <CardMedia height="100%" component="img" image={card.img} alt={card.img} />
+              </Link>
+            )}
           </Card>
           <CardContent
             sx={{
@@ -28,7 +34,7 @@ function CardList(props) {
               backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.09))",
             }}
           >
-            <Typography align="center">{collection.name}</Typography>
+            <Typography align="center">{card.name}</Typography>
             <Box
               sx={{
                 my: 1,
@@ -36,11 +42,17 @@ function CardList(props) {
                 justifyContent: "space-evenly",
               }}
             >
-              <EditCollection collection={collection} editCollection={props.editCollection} />
+              <EditCard card={card} editCard={editCard} type={type}></EditCard>
               <Tooltip title="Delete">
-                <IconButton color="error" onClick={() => props.handleDelete(collection.id)}>
-                  <DeleteIcon />
-                </IconButton>
+                {type === "bookmark" ? (
+                  <IconButton color="error" onClick={() => handleDelete(card.scId, card.id)}>
+                    <DeleteIcon />
+                  </IconButton>
+                ) : (
+                  <IconButton color="error" onClick={() => handleDelete(card.id)}>
+                    <DeleteIcon />
+                  </IconButton>
+                )}
               </Tooltip>
             </Box>
           </CardContent>

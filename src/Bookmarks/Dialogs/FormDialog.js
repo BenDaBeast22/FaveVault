@@ -22,7 +22,7 @@ const FormDialog = ({ title, collection, user, open, submit, close }) => {
       setError("Collection name not set");
       return;
     } else if (!imageUrl) {
-      setError("Collection image name not set");
+      setError("Image name not set");
       return;
     }
     const newCollection = {
@@ -30,8 +30,6 @@ const FormDialog = ({ title, collection, user, open, submit, close }) => {
       img: imageUrl,
     };
     await submit(newCollection, collection.id);
-    setName("");
-    setImageUrl("");
     handleClose();
   };
   const handleClose = () => {
@@ -97,7 +95,6 @@ const FormDialog = ({ title, collection, user, open, submit, close }) => {
           <DialogContentText align="center" sx={{ mb: 1 }}>
             Or
           </DialogContentText>
-
           <Button variant="outlined" component="div" sx={{ display: "flex", justifyContent: "space-evenly" }}>
             <input
               disabled={imageUrl}

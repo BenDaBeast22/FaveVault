@@ -7,11 +7,10 @@ import { storage } from "../../firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import CircularProgressLabel from "../Components/CircularProgressLabel";
 
-const SubcollectionDialog = ({ title, subcollection, user, open, submit, close }) => {
-  const [subcollectionName, setSubcollectionName] = useState(subcollection.name);
-  const [bookmarkName, setBookmarkName] = useState(subcollection.bookmarkName);
-  const [bookmarkLink, setBookmarkLink] = useState(subcollection.bookmarkLink);
-  const [imageUrl, setImageUrl] = useState(subcollection.img);
+const EditBookmarkDialog = ({ title, bookmark, user, open, submit, close }) => {
+  const [bookmarkName, setBookmarkName] = useState(bookmark.name);
+  const [bookmarkLink, setBookmarkLink] = useState(bookmark.link);
+  const [imageUrl, setImageUrl] = useState(bookmark.img);
   const [imageUpload, setImageUpload] = useState(null);
   const [imageUploadSuccess, setImageUploadSuccess] = useState(false);
   const [imageUploadFail, setImageUploadFail] = useState(false);
@@ -20,28 +19,18 @@ const SubcollectionDialog = ({ title, subcollection, user, open, submit, close }
   const uid = user.uid;
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!subcollectionName) {
-      setError("Subcollection name not set");
-      return;
-    } else if (!bookmarkName) {
+    if (!bookmarkName) {
       setError("Bookmark name not set");
     } else if (!imageUrl) {
       setError("Subcollection image name not set");
       return;
     }
-    const newCollection = {
-      name: subcollectionName,
-      bookmarks: {
-        name: bookmarkName,
-        link: bookmarkLink,
-        img: imageUrl,
-      },
+    const newBookmark = {
+      name: bookmarkName,
+      link: bookmarkLink,
+      img: imageUrl,
     };
-    await submit(newCollection, subcollection.id);
-    setSubcollectionName("");
-    setBookmarkName("");
-    setBookmarkLink("");
-    setImageUrl("");
+    await submit(newBookmark, bookmark.scId, bookmark.id);
     handleClose();
   };
   const handleClose = () => {
@@ -89,13 +78,6 @@ const SubcollectionDialog = ({ title, subcollection, user, open, submit, close }
       <Box component="form" onSubmit={handleSubmit}>
         <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
           <DialogContentText align="center">{title}</DialogContentText>
-          <TextField
-            label="Subcollection Name"
-            value={subcollectionName}
-            sx={{ mt: 2 }}
-            onChange={(e) => setSubcollectionName(e.target.value)}
-            autoFocus
-          />
           <TextField
             label="Bookmark Name"
             value={bookmarkName}
@@ -153,4 +135,4 @@ const SubcollectionDialog = ({ title, subcollection, user, open, submit, close }
   );
 };
 
-export default SubcollectionDialog;
+export default EditBookmarkDialog;
