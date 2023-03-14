@@ -18,8 +18,27 @@ const SubcollectionDialog = ({ title, subcollection, user, open, submit, close }
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(false);
   const uid = user.uid;
+  let AddbookmarkToCollection = false;
+  if (title === "Add Bookmark") {
+    AddbookmarkToCollection = true;
+  }
   const handleSubmit = async (event) => {
     event.preventDefault();
+    // If adding bookmark to existing subcollection
+    if (AddbookmarkToCollection) {
+      if (!bookmarkName) {
+        setError("Bookmark name not set");
+        return;
+      } else if (!bookmarkName) {
+        setError("Bookmark image not set");
+        return;
+      }
+      console.log("subcollection = ", subcollection);
+      const bookmarks = { name: bookmarkName, link: bookmarkLink, img: imageUrl, scId: subcollection.id };
+      await submit(bookmarks, subcollection.id);
+      handleClose();
+      return;
+    }
     if (!subcollectionName) {
       setError("Subcollection name not set");
       return;
@@ -29,6 +48,7 @@ const SubcollectionDialog = ({ title, subcollection, user, open, submit, close }
       setError("Subcollection image name not set");
       return;
     }
+    // If adding bookmark to new subcollection
     const newCollection = {
       name: subcollectionName,
       bookmarks: {
@@ -38,10 +58,6 @@ const SubcollectionDialog = ({ title, subcollection, user, open, submit, close }
       },
     };
     await submit(newCollection, subcollection.id);
-    setSubcollectionName("");
-    setBookmarkName("");
-    setBookmarkLink("");
-    setImageUrl("");
     handleClose();
   };
   const handleClose = () => {
@@ -89,13 +105,15 @@ const SubcollectionDialog = ({ title, subcollection, user, open, submit, close }
       <Box component="form" onSubmit={handleSubmit}>
         <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
           <DialogContentText align="center">{title}</DialogContentText>
-          <TextField
-            label="Subcollection Name"
-            value={subcollectionName}
-            sx={{ mt: 2 }}
-            onChange={(e) => setSubcollectionName(e.target.value)}
-            autoFocus
-          />
+          {!AddbookmarkToCollection && (
+            <TextField
+              label="Subcollection Name"
+              value={subcollectionName}
+              sx={{ mt: 2 }}
+              onChange={(e) => setSubcollectionName(e.target.value)}
+              autoFocus
+            />
+          )}
           <TextField
             label="Bookmark Name"
             value={bookmarkName}

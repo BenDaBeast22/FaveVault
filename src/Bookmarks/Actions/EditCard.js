@@ -4,10 +4,10 @@ import { Box, IconButton, Tooltip } from "@mui/material";
 import { useAuthState } from "react-firebase-hooks/auth";
 import FormDialog from "../Dialogs/FormDialog";
 import EditIcon from "@mui/icons-material/Edit";
-import SubcollectionDialog from "../Dialogs/SubcollectionDialog";
+import EditSubcollectionDialog from "../Dialogs/EditSubcollectionDialog";
 import EditBookmarkDialog from "../Dialogs/EditBookmarkDialog";
 
-const EditCard = ({ card, editCard, type }) => {
+const EditCard = ({ card, editCard, type, tooltipName }) => {
   const [user] = useAuthState(auth);
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
@@ -19,7 +19,7 @@ const EditCard = ({ card, editCard, type }) => {
   return (
     <div>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <Tooltip title="Edit">
+        <Tooltip title={tooltipName}>
           <IconButton color="info" onClick={handleOpen}>
             <EditIcon />
           </IconButton>
@@ -34,7 +34,7 @@ const EditCard = ({ card, editCard, type }) => {
             submit={editCard}
           />
         ) : type === "subcollection" ? (
-          <SubcollectionDialog
+          <EditSubcollectionDialog
             title="Edit Subcollection"
             subcollection={card}
             user={user}
@@ -58,5 +58,7 @@ const EditCard = ({ card, editCard, type }) => {
     </div>
   );
 };
+
+EditCard.defaultProps = { tooltipName: "Edit" };
 
 export default EditCard;

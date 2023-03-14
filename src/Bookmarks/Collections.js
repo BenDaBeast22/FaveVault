@@ -6,6 +6,7 @@ import { addDoc, doc, updateDoc, deleteDoc, collection, query, orderBy, onSnapsh
 import { Container, Typography, Box, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import AddNewCard from "./Actions/AddNewCard";
 import CardList from "./Display/CardList";
+import EditCard from "./Actions/EditCard";
 
 const Collections = () => {
   const { id, name } = useParams();
@@ -14,8 +15,6 @@ const Collections = () => {
   const [bookmarks, setBookmarks] = useState({});
   const [_collection, _setCollection] = useState(false);
   const [sortBy, setSortBy] = useState("asc");
-  const [unsubArr, setUnsubArr] = useState([]);
-  const [error, setError] = useState(false);
   const uid = user.uid;
   const subcollectionsRef = collection(db, "data", uid, "collections", id, "subcollections");
   const submitSubcollection = async (newSubcollection) => {
@@ -23,13 +22,19 @@ const Collections = () => {
       name: newSubcollection.name,
     });
     const bookmarks = { ...newSubcollection.bookmarks, scId: docRef.id };
-    // setUnsubArr((prevUnsubArr) => prevUnsubArr.push(unsubBookmark));
     await addDoc(collection(docRef, "bookmarks"), bookmarks);
   };
+  const addBookmarkToSubcollection = async (bookmarks, id) => {
+    console.log("addBookmarktosubcoll");
+    console.log("bookmarks = ", bookmarks);
+    console.log("id = ", id);
+    await addDoc(collection(subcollectionsRef, id, "bookmarks"), bookmarks);
+  };
   const editBookmark = async (editedBookmark, scId, id) => {
-    console.log("edited Bookmark = ", editedBookmark);
-    console.log("scid = " + scId + " id = " + id);
     await updateDoc(doc(subcollectionsRef, scId, "bookmarks", id), editedBookmark);
+  };
+  const editSubcollection = async (newSubcollectionName, id) => {
+    await updateDoc(doc(subcollectionsRef, id), { name: newSubcollectionName });
   };
   const handleDelete = async (scId, id) => {
     let deleteSubcollection = false;
@@ -80,7 +85,7 @@ const Collections = () => {
           {name}
         </Typography>
         <Container maxWidth="sm" sx={{ pb: 4, display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-          <AddNewCard submitCollection={submitSubcollection} type="subcollection" />
+          <AddNewCard submitCard={submitSubcollection} type="subcollection" />
           <FormControl>
             <InputLabel>Sort By</InputLabel>
             <Select
@@ -97,11 +102,22 @@ const Collections = () => {
             </Select>
           </FormControl>
         </Container>
+
+        {/* Subcollections */}
         {subcollections.map((subcollection) => (
           <Box key={subcollection.id}>
-            <Typography variant="h4" sx={{ mt: 3 }} gutterBottom>
-              {subcollection.name}
-            </Typography>
+            <Box sx={{ mt: 3, display: "flex", mb: 3 }}>
+              <Typography variant="h4" sx={{ mr: 1 }}>
+                {subcollection.name}
+              </Typography>
+              <AddNewCard type="bookmark" submitCard={addBookmarkToSubcollection} id={subcollection.id} />
+              <EditCard
+                type="subcollection"
+                card={subcollection}
+                editCard={editSubcollection}
+                tooltipName="Edit Subcollection"
+              />
+            </Box>
             {bookmarks[subcollection.id] && (
               <CardList
                 list={bookmarks[subcollection.id]}
