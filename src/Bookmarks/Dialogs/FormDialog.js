@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button, Dialog, DialogContent, DialogContentText, TextField, Alert } from "@mui/material";
 import PublishRoundedIcon from "@mui/icons-material/PublishRounded";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -30,6 +30,8 @@ const FormDialog = ({ title, collection, user, open, submit, close }) => {
       img: imageUrl,
     };
     await submit(newCollection, collection.id);
+    setName("");
+    setImageUrl("");
     handleClose();
   };
   const handleClose = () => {

@@ -7,7 +7,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import EditSubcollectionDialog from "../Dialogs/EditSubcollectionDialog";
 import EditBookmarkDialog from "../Dialogs/EditBookmarkDialog";
 
-const EditCard = ({ card, editCard, type, tooltipName }) => {
+const EditCardIcon = ({ card, editCard, type, tooltipName }) => {
   const [user] = useAuthState(auth);
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
@@ -59,6 +59,6 @@ const EditCard = ({ card, editCard, type, tooltipName }) => {
   );
 };
 
-EditCard.defaultProps = { tooltipName: "Edit" };
+EditCardIcon.defaultProps = { tooltipName: "Edit" };
 
-export default EditCard;
+export default EditCardIcon;

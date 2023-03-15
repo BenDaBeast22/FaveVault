@@ -58,6 +58,10 @@ const SubcollectionDialog = ({ title, subcollection, user, open, submit, close }
       },
     };
     await submit(newCollection, subcollection.id);
+    setSubcollectionName("");
+    setBookmarkName("");
+    setBookmarkLink("");
+    setImageUrl("");
     handleClose();
   };
   const handleClose = () => {

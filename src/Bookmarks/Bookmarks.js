@@ -1,18 +1,21 @@
-import { Container, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+import { Container, Select, MenuItem, FormControl, InputLabel, Button } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { collection, query, doc, orderBy, addDoc, onSnapshot, updateDoc, deleteDoc } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { db, auth } from "../firebase";
-import AddNewCard from "./Actions/AddNewCard";
 import CardList from "./Display/CardList";
+import FormDialog from "./Dialogs/FormDialog";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 const Bookmarks = () => {
   const [user] = useAuthState(auth);
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("asc");
+  const [addDialog, setAddDialog] = useState(false);
+  const [editDialog, setEditDialog] = useState(false);
   const uid = user.uid;
-  const submitCollection = async (newCollection) => {
+  const addCollection = async (newCollection) => {
     await addDoc(collection(db, "data", uid, "collections"), newCollection);
   };
   const editCollection = async (editedCollection, id) => {
@@ -23,6 +26,12 @@ const Bookmarks = () => {
   };
   const handleSortBy = (event) => {
     setSortBy(event.target.value);
+  };
+  const handleOpenAddDialog = () => {
+    setAddDialog(true);
+  };
+  const handleCloseAddDialog = () => {
+    setAddDialog(false);
   };
   useEffect(() => {
     const collectionsRef = collection(db, "data", uid, "collections");
@@ -42,7 +51,23 @@ const Bookmarks = () => {
     <div className="Bookmarks">
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Container maxWidth="xs" sx={{ pb: 4, display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-          <AddNewCard submitCard={submitCollection} type="collection" />
+          <Button
+            startIcon={<AddCircleOutlineIcon />}
+            variant="contained"
+            color="secondary"
+            onClick={handleOpenAddDialog}
+          >
+            Add New Collection
+          </Button>
+          <FormDialog
+            title="Add New Collection"
+            collection={{ name: "", img: "" }}
+            user={user}
+            open={addDialog}
+            close={handleCloseAddDialog}
+            submit={addCollection}
+          />
+          {/* <AddNewCard submitCard={submitCollection} type="collection" /> */}
           <FormControl>
             <InputLabel>Sort By</InputLabel>
             <Select

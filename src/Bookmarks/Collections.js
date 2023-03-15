@@ -3,10 +3,12 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebase";
 import { useParams } from "react-router-dom";
 import { addDoc, doc, updateDoc, deleteDoc, collection, query, orderBy, onSnapshot } from "firebase/firestore";
-import { Container, Typography, Box, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
-import AddNewCard from "./Actions/AddNewCard";
+import { Container, Typography, Box, Select, MenuItem, FormControl, InputLabel, Button } from "@mui/material";
+import AddCardIcon from "./Actions/AddCardIcon";
 import CardList from "./Display/CardList";
-import EditCard from "./Actions/EditCard";
+import EditCardIcon from "./Actions/EditCardIcon";
+import SubcollectionDialog from "./Dialogs/SubcollectionDialog";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 const Collections = () => {
   const { id, name } = useParams();
@@ -14,6 +16,7 @@ const Collections = () => {
   const [subcollections, setSubcollections] = useState([]);
   const [bookmarks, setBookmarks] = useState({});
   const [_collection, _setCollection] = useState(false);
+  const [addDialog, setAddDialog] = useState(false);
   const [sortBy, setSortBy] = useState("asc");
   const uid = user.uid;
   const subcollectionsRef = collection(db, "data", uid, "collections", id, "subcollections");
@@ -25,9 +28,6 @@ const Collections = () => {
     await addDoc(collection(docRef, "bookmarks"), bookmarks);
   };
   const addBookmarkToSubcollection = async (bookmarks, id) => {
-    console.log("addBookmarktosubcoll");
-    console.log("bookmarks = ", bookmarks);
-    console.log("id = ", id);
     await addDoc(collection(subcollectionsRef, id, "bookmarks"), bookmarks);
   };
   const editBookmark = async (editedBookmark, scId, id) => {
@@ -48,6 +48,12 @@ const Collections = () => {
   };
   const handleSortBy = (event) => {
     setSortBy(event.target.value);
+  };
+  const handleOpenAddDialog = () => {
+    setAddDialog(true);
+  };
+  const handleCloseAddDialog = () => {
+    setAddDialog(false);
   };
   // Event listeners for subcollections
   useEffect(() => {
@@ -84,8 +90,23 @@ const Collections = () => {
         <Typography variant="h3" align="center" gutterBottom>
           {name}
         </Typography>
-        <Container maxWidth="sm" sx={{ pb: 4, display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-          <AddNewCard submitCard={submitSubcollection} type="subcollection" />
+        <Container maxWidth="sm" sx={{ mt: 3, display: "flex", justifyContent: "space-around", alignItems: "center" }}>
+          <Button
+            startIcon={<AddCircleOutlineIcon />}
+            variant="contained"
+            color="secondary"
+            onClick={handleOpenAddDialog}
+          >
+            Add Bookmark to New Subcollection
+          </Button>
+          <SubcollectionDialog
+            title="Add Bookmark to new Subcollection"
+            subcollection={{ name: "", bookmarkName: "", bookmarkLink: "", img: "" }}
+            user={user}
+            open={addDialog}
+            close={handleCloseAddDialog}
+            submit={submitSubcollection}
+          />
           <FormControl>
             <InputLabel>Sort By</InputLabel>
             <Select
@@ -106,12 +127,12 @@ const Collections = () => {
         {/* Subcollections */}
         {subcollections.map((subcollection) => (
           <Box key={subcollection.id}>
-            <Box sx={{ mt: 3, display: "flex", mb: 3 }}>
+            <Box sx={{ mt: 2, display: "flex", mb: 3 }}>
               <Typography variant="h4" sx={{ mr: 1 }}>
                 {subcollection.name}
               </Typography>
-              <AddNewCard type="bookmark" submitCard={addBookmarkToSubcollection} id={subcollection.id} />
-              <EditCard
+              <AddCardIcon submitCard={addBookmarkToSubcollection} id={subcollection.id} />
+              <EditCardIcon
                 type="subcollection"
                 card={subcollection}
                 editCard={editSubcollection}
