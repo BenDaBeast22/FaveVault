@@ -12,11 +12,10 @@ import SubcollectionsList from "./SubcollectionsList";
 import BookmarksList from "./BookmarksList";
 
 const Collections = () => {
-  const { id, name } = useParams();
+  const { id, name, subcollectionsEnabled } = useParams();
   const [user] = useAuthState(auth);
-  const [allBookmarks, setAllBookmarks] = useState([]);
-  const [displaySubcollections, setDisplaySubcollections] = useState(true);
-  const [_collection, _setCollection] = useState(false);
+  const [displaySubcollections, setDisplaySubcollections] = useState(subcollectionsEnabled === "true");
+  console.log(displaySubcollections);
   const [addDialog, setAddDialog] = useState(false);
   const [sortBy, setSortBy] = useState("asc");
   const uid = user.uid;
@@ -47,7 +46,6 @@ const Collections = () => {
   const toggleDisplaySubcollections = () => {
     setDisplaySubcollections((prevState) => !prevState);
   };
-
   return (
     <div className="Collection">
       <Container maxWidth="xl" sx={{ py: 3 }}>
@@ -94,7 +92,6 @@ const Collections = () => {
               />
             </>
           )}
-
           <FormControl>
             <InputLabel>Sort By</InputLabel>
             <Select
@@ -123,7 +120,7 @@ const Collections = () => {
             }}
           >
             <InputLabel sx={{ pl: 1, color: "inherit" }}>Subcollections</InputLabel>
-            <Switch color="secondary" defaultChecked onClick={toggleDisplaySubcollections} />
+            <Switch color="secondary" checked={displaySubcollections} onChange={toggleDisplaySubcollections} />
           </Box>
         </Container>
         {/* Subcollections */}

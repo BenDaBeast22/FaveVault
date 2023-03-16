@@ -1,5 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { Box, Button, Dialog, DialogContent, DialogContentText, TextField, Alert } from "@mui/material";
+import React, { useState } from "react";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  TextField,
+  Alert,
+  InputLabel,
+  Switch,
+} from "@mui/material";
 import PublishRoundedIcon from "@mui/icons-material/PublishRounded";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { v4 as uuid } from "uuid";
@@ -11,11 +21,15 @@ const AddCollectionDialog = ({ title, collection, user, open, submit, close }) =
   const [name, setName] = useState(collection.name);
   const [imageUrl, setImageUrl] = useState(collection.img);
   const [imageUpload, setImageUpload] = useState(null);
+  const [subcollectionsEnabled, setSubcollectionsEnabled] = useState(false);
   const [imageUploadSuccess, setImageUploadSuccess] = useState(false);
   const [imageUploadFail, setImageUploadFail] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(false);
   const uid = user.uid;
+  const toggleEnableSubcollections = () => {
+    setSubcollectionsEnabled((prevState) => !prevState);
+  };
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!name) {
@@ -28,10 +42,12 @@ const AddCollectionDialog = ({ title, collection, user, open, submit, close }) =
     const newCollection = {
       name: name,
       img: imageUrl,
+      scEnabled: subcollectionsEnabled,
     };
     await submit(newCollection, collection.id);
     setName("");
     setImageUrl("");
+    setSubcollectionsEnabled(false);
     handleClose();
   };
   const handleClose = () => {
@@ -94,6 +110,20 @@ const AddCollectionDialog = ({ title, collection, user, open, submit, close }) =
             onChange={(e) => setImageUrl(e.target.value)}
             autoFocus
           />
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              borderRadius: "5px",
+              pt: 2,
+              "&:hover": {
+                borderColor: "inherit",
+              },
+            }}
+          >
+            <InputLabel sx={{ color: "inherit" }}>Subcollections</InputLabel>
+            <Switch checked={subcollectionsEnabled} onChange={toggleEnableSubcollections} />
+          </Box>
           <DialogContentText align="center" sx={{ mb: 1 }}>
             Or
           </DialogContentText>

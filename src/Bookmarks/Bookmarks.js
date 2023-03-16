@@ -16,7 +16,7 @@ const Bookmarks = () => {
   const uid = user.uid;
   const collectionsRef = collection(db, "data", uid, "collections");
   const addCollection = async (newCollection) => {
-    await addDoc(collection(collectionsRef), newCollection);
+    await addDoc(collection(db, "data", uid, "collections"), newCollection);
   };
   const editCollection = async (editedCollection, id) => {
     await updateDoc(doc(db, "data", uid, "collections", id), editedCollection);

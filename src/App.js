@@ -17,7 +17,7 @@ function App() {
           <Route index element={<Navigate to="bookmarks" />} />
           <Route path="bookmarks">
             <Route index element={<Bookmarks />} />
-            <Route path=":id/:name" element={<Collections />} />
+            <Route path=":id/:name/:subcollectionsEnabled" element={<Collections />} />
           </Route>
           <Route path="rankings" element={<Rankings />} />
           <Route path="backlog" element={<Backlog />} />

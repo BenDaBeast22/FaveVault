@@ -1,5 +1,5 @@
 import { Grid, Card, CardMedia, CardContent, Box, Typography, Tooltip, IconButton, Link } from "@mui/material";
-import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
+import { Link as ReactRouterLink } from "react-router-dom";
 import EditCardIcon from "../Actions/EditCardIcon";
 import DeleteCardIcon from "../Actions/DeleteCardIcon";
 
@@ -17,7 +17,7 @@ function CardList({ list, editCard, handleDelete, type }) {
                 justifyContent: "center",
               }}
             >
-              <ReactRouterLink to={`${card.id}/${card.name}`}>
+              <ReactRouterLink to={`${card.id}/${card.name}/${card.scEnabled}`}>
                 <CardMedia height="100%" component="img" image={card.img} alt={card.img} />
               </ReactRouterLink>
             </Card>
