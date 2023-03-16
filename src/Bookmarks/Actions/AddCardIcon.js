@@ -3,7 +3,7 @@ import { auth } from "../../firebase";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { useAuthState } from "react-firebase-hooks/auth";
-import SubcollectionDialog from "../Dialogs/SubcollectionDialog";
+import AddBookmarkToSubCollectionDialog from "../Dialogs/AddBookmarkToSubcollectionDialog";
 
 const AddCardIcon = ({ submitCard, id }) => {
   const [user] = useAuthState(auth);
@@ -22,9 +22,9 @@ const AddCardIcon = ({ submitCard, id }) => {
             <AddCircleOutlineIcon />
           </IconButton>
         </Tooltip>
-        <SubcollectionDialog
-          title="Add Bookmark"
-          subcollection={{ name: "", bookmarkName: "", bookmarkLink: "", img: "", id: id }}
+        <AddBookmarkToSubCollectionDialog
+          title="Add new Bookmark"
+          subcollection={{ bookmarkName: "", bookmarkLink: "", img: "", id: id }}
           user={user}
           open={open}
           close={handleClose}

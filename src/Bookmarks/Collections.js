@@ -3,18 +3,21 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebase";
 import { useParams } from "react-router-dom";
 import { addDoc, doc, updateDoc, deleteDoc, collection, query, orderBy, onSnapshot } from "firebase/firestore";
-import { Container, Typography, Box, Select, MenuItem, FormControl, InputLabel, Button } from "@mui/material";
+import { Container, Typography, Box, Select, MenuItem, FormControl, InputLabel, Button, Switch } from "@mui/material";
 import AddCardIcon from "./Actions/AddCardIcon";
 import CardList from "./Display/CardList";
 import EditCardIcon from "./Actions/EditCardIcon";
-import SubcollectionDialog from "./Dialogs/SubcollectionDialog";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import AddBookmarkDialog from "./Dialogs/AddBookmarkDialog";
+import AddBookmarkToSubCollectionDialog from "./Dialogs/AddBookmarkToSubcollectionDialog";
+import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 
 const Collections = () => {
   const { id, name } = useParams();
   const [user] = useAuthState(auth);
   const [subcollections, setSubcollections] = useState([]);
   const [bookmarks, setBookmarks] = useState({});
+  const [allBookmarks, setAllBookmarks] = useState([]);
+  const [displaySubcollections, setDisplaySubcollections] = useState(true);
   const [_collection, _setCollection] = useState(false);
   const [addDialog, setAddDialog] = useState(false);
   const [sortBy, setSortBy] = useState("asc");
@@ -49,6 +52,9 @@ const Collections = () => {
   const handleSortBy = (event) => {
     setSortBy(event.target.value);
   };
+  const toggleDisplaySubcollections = () => {
+    setDisplaySubcollections((prevState) => !prevState);
+  };
   const handleOpenAddDialog = () => {
     setAddDialog(true);
   };
@@ -66,7 +72,7 @@ const Collections = () => {
       setSubcollections(subcollectionsArr);
     });
     return () => unsubSubcollections();
-  }, []);
+  }, [sortBy]);
   // Event listeners for bookmarks
   useEffect(() => {
     const unsubAllBookmarks = [];
@@ -78,6 +84,7 @@ const Collections = () => {
           bookmarksArr.push({ ...doc.data(), id: doc.id });
         });
         setBookmarks((prevBookmarks) => ({ ...prevBookmarks, [subcollection.id]: bookmarksArr }));
+        setAllBookmarks((prevAllBookmarks) => [...prevAllBookmarks, ...bookmarksArr]);
       });
       unsubAllBookmarks.push(unsubBookmarks);
     });
@@ -90,23 +97,47 @@ const Collections = () => {
         <Typography variant="h3" align="center" gutterBottom>
           {name}
         </Typography>
-        <Container maxWidth="sm" sx={{ mt: 3, display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-          <Button
-            startIcon={<AddCircleOutlineIcon />}
-            variant="contained"
-            color="secondary"
-            onClick={handleOpenAddDialog}
-          >
-            Add Bookmark to New Subcollection
-          </Button>
-          <SubcollectionDialog
-            title="Add Bookmark to new Subcollection"
-            subcollection={{ name: "", bookmarkName: "", bookmarkLink: "", img: "" }}
-            user={user}
-            open={addDialog}
-            close={handleCloseAddDialog}
-            submit={submitSubcollection}
-          />
+        <Container maxWidth="sm" sx={{ mb: 4, display: "flex", justifyContent: "space-around", alignItems: "center" }}>
+          {displaySubcollections ? (
+            <>
+              <Button
+                startIcon={<CreateNewFolderIcon />}
+                variant="contained"
+                color="secondary"
+                onClick={handleOpenAddDialog}
+              >
+                New Subcollection
+              </Button>
+              <AddBookmarkToSubCollectionDialog
+                title="Add Bookmark to new Subcollection"
+                subcollection={{ name: "", bookmarkName: "", bookmarkLink: "", img: "" }}
+                user={user}
+                open={addDialog}
+                close={handleCloseAddDialog}
+                submit={submitSubcollection}
+              />
+            </>
+          ) : (
+            <>
+              <Button
+                startIcon={<CreateNewFolderIcon />}
+                variant="contained"
+                color="secondary"
+                onClick={handleOpenAddDialog}
+              >
+                New Bookmark
+              </Button>
+              <AddBookmarkDialog
+                title="Add new Bookmark"
+                subcollection={{ bookmarkName: "", bookmarkLink: "", img: "" }}
+                user={user}
+                open={addDialog}
+                close={handleCloseAddDialog}
+                submit={addBookmarkToSubcollection}
+              />
+            </>
+          )}
+
           <FormControl>
             <InputLabel>Sort By</InputLabel>
             <Select
@@ -122,33 +153,51 @@ const Collections = () => {
               <MenuItem value="desc">Descending</MenuItem>
             </Select>
           </FormControl>
-        </Container>
-
-        {/* Subcollections */}
-        {subcollections.map((subcollection) => (
-          <Box key={subcollection.id}>
-            <Box sx={{ mt: 2, display: "flex", mb: 3 }}>
-              <Typography variant="h4" sx={{ mr: 1 }}>
-                {subcollection.name}
-              </Typography>
-              <AddCardIcon submitCard={addBookmarkToSubcollection} id={subcollection.id} />
-              <EditCardIcon
-                type="subcollection"
-                card={subcollection}
-                editCard={editSubcollection}
-                tooltipName="Edit Subcollection"
-              />
-            </Box>
-            {bookmarks[subcollection.id] && (
-              <CardList
-                list={bookmarks[subcollection.id]}
-                type="bookmark"
-                editCard={editBookmark}
-                handleDelete={handleDelete}
-              />
-            )}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              border: "1px solid",
+              borderColor: "secondary.main",
+              borderRadius: "5px",
+              "&:hover": {
+                borderColor: "inherit",
+              },
+            }}
+          >
+            <InputLabel sx={{ pl: 1, color: "inherit" }}>Subcollections</InputLabel>
+            <Switch color="secondary" defaultChecked onClick={toggleDisplaySubcollections} />
           </Box>
-        ))}
+        </Container>
+        {/* Subcollections */}
+        {displaySubcollections &&
+          subcollections.map((subcollection) => (
+            <Box key={subcollection.id}>
+              <Box sx={{ mt: 2, display: "flex", mb: 3 }}>
+                <Typography variant="h4" sx={{ mr: 1 }}>
+                  {subcollection.name}
+                </Typography>
+                <AddCardIcon submitCard={addBookmarkToSubcollection} id={subcollection.id} />
+                <EditCardIcon
+                  type="subcollection"
+                  card={subcollection}
+                  editCard={editSubcollection}
+                  tooltipName="Edit Subcollection"
+                />
+              </Box>
+              {bookmarks[subcollection.id] && (
+                <CardList
+                  list={bookmarks[subcollection.id]}
+                  type="bookmark"
+                  editCard={editBookmark}
+                  handleDelete={handleDelete}
+                />
+              )}
+            </Box>
+          ))}
+        {!displaySubcollections && (
+          <CardList list={allBookmarks} type="bookmark" editCard={editBookmark} handleDelete={handleDelete} />
+        )}
       </Container>
     </div>
   );

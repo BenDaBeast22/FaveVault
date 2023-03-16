@@ -1,7 +1,6 @@
 import { useState } from "react";
 import {
   AppBar,
-  Button,
   Toolbar,
   IconButton,
   Typography,
@@ -13,14 +12,14 @@ import {
   Tooltip,
   Stack,
   Link,
-  Container,
 } from "@mui/material";
-import { NavLink } from "react-router-dom";
+import { Navigate, NavLink, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { logout } from "./firebase";
+import { Link as RouterLink } from "react-router-dom";
 
 const pages = ["Bookmarks", "Rankings", "Backlog"];
 const settings = [
@@ -32,6 +31,7 @@ const settings = [
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
+  const navigate = useNavigate();
   const handleOpenNav = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -58,29 +58,26 @@ const Navbar = () => {
         >
           <MenuIcon />
         </IconButton>
-        <Typography
+        <Link
           variant="h5"
-          component="a"
-          href="/"
+          component={RouterLink}
+          to="/bookmarks"
           sx={{ display: { xs: "none", md: "flex" }, mr: 5, textDecoration: "none", color: "inherit" }}
         >
           FaveVault
-        </Typography>
-        <Typography
-          variant="h4"
-          component="a"
-          href="/"
-          textDecoration="none"
+        </Link>
+        <Box
           sx={{
+            display: { xs: "flex", md: "none" },
             flexGrow: 1,
             justifyContent: "center",
-            display: { xs: "flex", md: "none" },
-            textDecoration: "none",
-            color: "inherit",
           }}
         >
-          FaveVault
-        </Typography>
+          <Link component={RouterLink} variant="h4" to="/bookmarks" underline="none" color="inherit">
+            FaveVault
+          </Link>
+        </Box>
+
         <Menu
           id="nav-menu"
           anchorEl={anchorEl}

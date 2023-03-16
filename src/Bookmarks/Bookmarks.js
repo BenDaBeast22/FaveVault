@@ -4,8 +4,8 @@ import { collection, query, doc, orderBy, addDoc, onSnapshot, updateDoc, deleteD
 import { useAuthState } from "react-firebase-hooks/auth";
 import { db, auth } from "../firebase";
 import CardList from "./Display/CardList";
-import FormDialog from "./Dialogs/FormDialog";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import AddCollectionDialog from "./Dialogs/AddCollectionDialog";
+import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 
 const Bookmarks = () => {
   const [user] = useAuthState(auth);
@@ -13,7 +13,6 @@ const Bookmarks = () => {
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("asc");
   const [addDialog, setAddDialog] = useState(false);
-  const [editDialog, setEditDialog] = useState(false);
   const uid = user.uid;
   const addCollection = async (newCollection) => {
     await addDoc(collection(db, "data", uid, "collections"), newCollection);
@@ -50,16 +49,16 @@ const Bookmarks = () => {
   return (
     <div className="Bookmarks">
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Container maxWidth="xs" sx={{ pb: 4, display: "flex", justifyContent: "space-around", alignItems: "center" }}>
+        <Container maxWidth="xs" sx={{ mb: 4, display: "flex", justifyContent: "space-around", alignItems: "center" }}>
           <Button
-            startIcon={<AddCircleOutlineIcon />}
+            startIcon={<CreateNewFolderIcon />}
             variant="contained"
             color="secondary"
             onClick={handleOpenAddDialog}
           >
-            Add New Collection
+            New Collection
           </Button>
-          <FormDialog
+          <AddCollectionDialog
             title="Add New Collection"
             collection={{ name: "", img: "" }}
             user={user}
@@ -67,7 +66,6 @@ const Bookmarks = () => {
             close={handleCloseAddDialog}
             submit={addCollection}
           />
-          {/* <AddNewCard submitCard={submitCollection} type="collection" /> */}
           <FormControl>
             <InputLabel>Sort By</InputLabel>
             <Select

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button, Dialog, DialogContent, DialogContentText, TextField, Alert } from "@mui/material";
 import PublishRoundedIcon from "@mui/icons-material/PublishRounded";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -7,60 +7,30 @@ import { storage } from "../../firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import CircularProgressLabel from "../Components/CircularProgressLabel";
 
-const SubcollectionDialog = ({ title, subcollection, user, open, submit, close }) => {
-  const [subcollectionName, setSubcollectionName] = useState(subcollection.name);
-  const [bookmarkName, setBookmarkName] = useState(subcollection.bookmarkName);
-  const [bookmarkLink, setBookmarkLink] = useState(subcollection.bookmarkLink);
-  const [imageUrl, setImageUrl] = useState(subcollection.img);
+const AddCollectionDialog = ({ title, collection, user, open, submit, close }) => {
+  const [name, setName] = useState(collection.name);
+  const [imageUrl, setImageUrl] = useState(collection.img);
   const [imageUpload, setImageUpload] = useState(null);
   const [imageUploadSuccess, setImageUploadSuccess] = useState(false);
   const [imageUploadFail, setImageUploadFail] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(false);
   const uid = user.uid;
-  let AddbookmarkToCollection = false;
-  if (title === "Add Bookmark") {
-    AddbookmarkToCollection = true;
-  }
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // If adding bookmark to existing subcollection
-    if (AddbookmarkToCollection) {
-      if (!bookmarkName) {
-        setError("Bookmark name not set");
-        return;
-      } else if (!bookmarkName) {
-        setError("Bookmark image not set");
-        return;
-      }
-      console.log("subcollection = ", subcollection);
-      const bookmarks = { name: bookmarkName, link: bookmarkLink, img: imageUrl, scId: subcollection.id };
-      await submit(bookmarks, subcollection.id);
-      handleClose();
+    if (!name) {
+      setError("Collection name not set");
       return;
-    }
-    if (!subcollectionName) {
-      setError("Subcollection name not set");
-      return;
-    } else if (!bookmarkName) {
-      setError("Bookmark name not set");
     } else if (!imageUrl) {
-      setError("Subcollection image name not set");
+      setError("Image name not set");
       return;
     }
-    // If adding bookmark to new subcollection
     const newCollection = {
-      name: subcollectionName,
-      bookmarks: {
-        name: bookmarkName,
-        link: bookmarkLink,
-        img: imageUrl,
-      },
+      name: name,
+      img: imageUrl,
     };
-    await submit(newCollection, subcollection.id);
-    setSubcollectionName("");
-    setBookmarkName("");
-    setBookmarkLink("");
+    await submit(newCollection, collection.id);
+    setName("");
     setImageUrl("");
     handleClose();
   };
@@ -109,27 +79,11 @@ const SubcollectionDialog = ({ title, subcollection, user, open, submit, close }
       <Box component="form" onSubmit={handleSubmit}>
         <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
           <DialogContentText align="center">{title}</DialogContentText>
-          {!AddbookmarkToCollection && (
-            <TextField
-              label="Subcollection Name"
-              value={subcollectionName}
-              sx={{ mt: 2 }}
-              onChange={(e) => setSubcollectionName(e.target.value)}
-              autoFocus
-            />
-          )}
           <TextField
-            label="Bookmark Name"
-            value={bookmarkName}
+            label="Collection Name"
+            value={name}
             sx={{ mt: 2 }}
-            onChange={(e) => setBookmarkName(e.target.value)}
-            autoFocus
-          />
-          <TextField
-            label="Bookmark Link"
-            value={bookmarkLink}
-            sx={{ mt: 2 }}
-            onChange={(e) => setBookmarkLink(e.target.value)}
+            onChange={(e) => setName(e.target.value)}
             autoFocus
           />
           <TextField
@@ -175,4 +129,4 @@ const SubcollectionDialog = ({ title, subcollection, user, open, submit, close }
   );
 };
 
-export default SubcollectionDialog;
+export default AddCollectionDialog;

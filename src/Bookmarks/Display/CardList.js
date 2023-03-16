@@ -1,6 +1,6 @@
 import { Grid, Card, CardMedia, CardContent, Box, Typography, Tooltip, IconButton, Link } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Link as ReactRouterLink } from "react-router-dom";
+import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
 import EditCardIcon from "../Actions/EditCardIcon";
 
 function CardList({ list, editCard, handleDelete, type }) {
@@ -8,22 +8,34 @@ function CardList({ list, editCard, handleDelete, type }) {
     <Grid container spacing={2}>
       {list.map((card) => (
         <Grid item xs={4} sm={3} md={2} key={card.id}>
-          <Card
-            sx={{
-              height: "150px",
-              display: "flex",
-            }}
-          >
-            {type === "collection" ? (
+          {type === "collection" ? (
+            <Card
+              sx={{
+                height: "150px",
+                display: "flex",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
               <ReactRouterLink to={`${card.id}/${card.name}`}>
                 <CardMedia height="100%" component="img" image={card.img} alt={card.img} />
               </ReactRouterLink>
-            ) : (
+            </Card>
+          ) : (
+            <Card
+              sx={{
+                height: "150px",
+                display: "flex",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
               <Link href={card.link} target="_blank">
                 <CardMedia height="100%" component="img" image={card.img} alt={card.img} />
               </Link>
-            )}
-          </Card>
+            </Card>
+          )}
+          {/* </Link> */}
           <CardContent
             sx={{
               py: 1,

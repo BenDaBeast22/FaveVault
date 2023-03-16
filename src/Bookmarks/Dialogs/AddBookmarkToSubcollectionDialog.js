@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Box, Button, Dialog, DialogContent, DialogContentText, TextField, Alert } from "@mui/material";
 import PublishRoundedIcon from "@mui/icons-material/PublishRounded";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -7,9 +7,11 @@ import { storage } from "../../firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import CircularProgressLabel from "../Components/CircularProgressLabel";
 
-const FormDialog = ({ title, collection, user, open, submit, close }) => {
-  const [name, setName] = useState(collection.name);
-  const [imageUrl, setImageUrl] = useState(collection.img);
+const AddBookmarkToSubCollectionDialog = ({ title, subcollection, user, open, submit, close }) => {
+  const [subcollectionName, setSubcollectionName] = useState(subcollection.name);
+  const [bookmarkName, setBookmarkName] = useState(subcollection.bookmarkName);
+  const [bookmarkLink, setBookmarkLink] = useState(subcollection.bookmarkLink);
+  const [imageUrl, setImageUrl] = useState(subcollection.img);
   const [imageUpload, setImageUpload] = useState(null);
   const [imageUploadSuccess, setImageUploadSuccess] = useState(false);
   const [imageUploadFail, setImageUploadFail] = useState(false);
@@ -18,19 +20,27 @@ const FormDialog = ({ title, collection, user, open, submit, close }) => {
   const uid = user.uid;
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!name) {
-      setError("Collection name not set");
+    if (!subcollectionName) {
+      setError("Subcollection name not set");
       return;
+    } else if (!bookmarkName) {
+      setError("Bookmark name not set");
     } else if (!imageUrl) {
-      setError("Image name not set");
+      setError("Subcollection image name not set");
       return;
     }
     const newCollection = {
-      name: name,
-      img: imageUrl,
+      name: subcollectionName,
+      bookmarks: {
+        name: bookmarkName,
+        link: bookmarkLink,
+        img: imageUrl,
+      },
     };
-    await submit(newCollection, collection.id);
-    setName("");
+    await submit(newCollection, subcollection.id);
+    setSubcollectionName("");
+    setBookmarkName("");
+    setBookmarkLink("");
     setImageUrl("");
     handleClose();
   };
@@ -80,10 +90,24 @@ const FormDialog = ({ title, collection, user, open, submit, close }) => {
         <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
           <DialogContentText align="center">{title}</DialogContentText>
           <TextField
-            label="Collection Name"
-            value={name}
+            label="Subcollection Name"
+            value={subcollectionName}
             sx={{ mt: 2 }}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => setSubcollectionName(e.target.value)}
+            autoFocus
+          />
+          <TextField
+            label="Bookmark Name"
+            value={bookmarkName}
+            sx={{ mt: 2 }}
+            onChange={(e) => setBookmarkName(e.target.value)}
+            autoFocus
+          />
+          <TextField
+            label="Bookmark Link"
+            value={bookmarkLink}
+            sx={{ mt: 2 }}
+            onChange={(e) => setBookmarkLink(e.target.value)}
             autoFocus
           />
           <TextField
@@ -129,4 +153,4 @@ const FormDialog = ({ title, collection, user, open, submit, close }) => {
   );
 };
 
-export default FormDialog;
+export default AddBookmarkToSubCollectionDialog;

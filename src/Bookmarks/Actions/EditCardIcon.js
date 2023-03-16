@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { auth } from "../../firebase";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { useAuthState } from "react-firebase-hooks/auth";
-import FormDialog from "../Dialogs/FormDialog";
+import FormDialog from "../Dialogs/AddCollectionDialog";
 import EditIcon from "@mui/icons-material/Edit";
 import EditSubcollectionDialog from "../Dialogs/EditSubcollectionDialog";
 import EditBookmarkDialog from "../Dialogs/EditBookmarkDialog";
