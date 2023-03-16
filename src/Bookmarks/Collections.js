@@ -1,59 +1,42 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebase";
 import { useParams } from "react-router-dom";
-import { addDoc, doc, updateDoc, deleteDoc, collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import { addDoc, doc, setDoc, collection } from "firebase/firestore";
 import { Container, Typography, Box, Select, MenuItem, FormControl, InputLabel, Button, Switch } from "@mui/material";
-import AddCardIcon from "./Actions/AddCardIcon";
-import CardList from "./Display/CardList";
-import EditCardIcon from "./Actions/EditCardIcon";
+
 import AddBookmarkDialog from "./Dialogs/AddBookmarkDialog";
 import AddBookmarkToSubCollectionDialog from "./Dialogs/AddBookmarkToSubcollectionDialog";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
+import SubcollectionsList from "./SubcollectionsList";
+import BookmarksList from "./BookmarksList";
 
 const Collections = () => {
   const { id, name } = useParams();
   const [user] = useAuthState(auth);
-  const [subcollections, setSubcollections] = useState([]);
-  const [bookmarks, setBookmarks] = useState({});
   const [allBookmarks, setAllBookmarks] = useState([]);
   const [displaySubcollections, setDisplaySubcollections] = useState(true);
   const [_collection, _setCollection] = useState(false);
   const [addDialog, setAddDialog] = useState(false);
   const [sortBy, setSortBy] = useState("asc");
   const uid = user.uid;
+  const collectionsRef = collection(db, "data", uid, "collections");
   const subcollectionsRef = collection(db, "data", uid, "collections", id, "subcollections");
   const submitSubcollection = async (newSubcollection) => {
     const docRef = await addDoc(subcollectionsRef, {
       name: newSubcollection.name,
     });
     const bookmarks = { ...newSubcollection.bookmarks, scId: docRef.id };
-    await addDoc(collection(docRef, "bookmarks"), bookmarks);
+    const bookmarkRef = await addDoc(collection(docRef, "bookmarks"), bookmarks);
+    await setDoc(doc(collectionsRef, id, "bookmarks", bookmarkRef.id), bookmarks);
   };
-  const addBookmarkToSubcollection = async (bookmarks, id) => {
-    await addDoc(collection(subcollectionsRef, id, "bookmarks"), bookmarks);
-  };
-  const editBookmark = async (editedBookmark, scId, id) => {
-    await updateDoc(doc(subcollectionsRef, scId, "bookmarks", id), editedBookmark);
-  };
-  const editSubcollection = async (newSubcollectionName, id) => {
-    await updateDoc(doc(subcollectionsRef, id), { name: newSubcollectionName });
-  };
-  const handleDelete = async (scId, id) => {
-    let deleteSubcollection = false;
-    if (bookmarks[scId].length === 1) {
-      deleteSubcollection = true;
-    }
-    await deleteDoc(doc(subcollectionsRef, scId, "bookmarks", id));
-    if (deleteSubcollection) {
-      await deleteDoc(doc(subcollectionsRef, scId));
-    }
+  const addBookmarkToSubcollection = async (bookmarks, subcollectionId) => {
+    await setDoc(doc(subcollectionsRef, subcollectionId), { name: "Main" });
+    const bookmarkRef = await addDoc(collection(subcollectionsRef, subcollectionId, "bookmarks"), bookmarks);
+    await setDoc(doc(collectionsRef, id, "bookmarks", bookmarkRef.id), bookmarks);
   };
   const handleSortBy = (event) => {
     setSortBy(event.target.value);
-  };
-  const toggleDisplaySubcollections = () => {
-    setDisplaySubcollections((prevState) => !prevState);
   };
   const handleOpenAddDialog = () => {
     setAddDialog(true);
@@ -61,35 +44,9 @@ const Collections = () => {
   const handleCloseAddDialog = () => {
     setAddDialog(false);
   };
-  // Event listeners for subcollections
-  useEffect(() => {
-    const sq = query(subcollectionsRef, orderBy("name", sortBy));
-    const unsubSubcollections = onSnapshot(sq, (snapshot) => {
-      const subcollectionsArr = [];
-      snapshot.forEach((doc) => {
-        subcollectionsArr.push({ ...doc.data(), id: doc.id });
-      });
-      setSubcollections(subcollectionsArr);
-    });
-    return () => unsubSubcollections();
-  }, [sortBy]);
-  // Event listeners for bookmarks
-  useEffect(() => {
-    const unsubAllBookmarks = [];
-    subcollections.forEach((subcollection) => {
-      const bq = query(collection(subcollectionsRef, subcollection.id, "bookmarks"), orderBy("name"));
-      const unsubBookmarks = onSnapshot(bq, (snapshot) => {
-        const bookmarksArr = [];
-        snapshot.forEach((doc) => {
-          bookmarksArr.push({ ...doc.data(), id: doc.id });
-        });
-        setBookmarks((prevBookmarks) => ({ ...prevBookmarks, [subcollection.id]: bookmarksArr }));
-        setAllBookmarks((prevAllBookmarks) => [...prevAllBookmarks, ...bookmarksArr]);
-      });
-      unsubAllBookmarks.push(unsubBookmarks);
-    });
-    return () => unsubAllBookmarks.forEach((unsubBookmarks) => unsubBookmarks());
-  }, [subcollections]);
+  const toggleDisplaySubcollections = () => {
+    setDisplaySubcollections((prevState) => !prevState);
+  };
 
   return (
     <div className="Collection">
@@ -170,33 +127,10 @@ const Collections = () => {
           </Box>
         </Container>
         {/* Subcollections */}
-        {displaySubcollections &&
-          subcollections.map((subcollection) => (
-            <Box key={subcollection.id}>
-              <Box sx={{ mt: 2, display: "flex", mb: 3 }}>
-                <Typography variant="h4" sx={{ mr: 1 }}>
-                  {subcollection.name}
-                </Typography>
-                <AddCardIcon submitCard={addBookmarkToSubcollection} id={subcollection.id} />
-                <EditCardIcon
-                  type="subcollection"
-                  card={subcollection}
-                  editCard={editSubcollection}
-                  tooltipName="Edit Subcollection"
-                />
-              </Box>
-              {bookmarks[subcollection.id] && (
-                <CardList
-                  list={bookmarks[subcollection.id]}
-                  type="bookmark"
-                  editCard={editBookmark}
-                  handleDelete={handleDelete}
-                />
-              )}
-            </Box>
-          ))}
-        {!displaySubcollections && (
-          <CardList list={allBookmarks} type="bookmark" editCard={editBookmark} handleDelete={handleDelete} />
+        {displaySubcollections ? (
+          <SubcollectionsList user={user} sortBy={sortBy} collectionId={id} />
+        ) : (
+          <BookmarksList user={user} sortBy={sortBy} collectionId={id} />
         )}
       </Container>
     </div>

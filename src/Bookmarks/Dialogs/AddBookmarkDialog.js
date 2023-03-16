@@ -26,6 +26,10 @@ const AddBookmarkDialog = ({ title, subcollection, user, open, submit, close }) 
       setError("Bookmark image not set");
       return;
     }
+    // if adding bookmark to bookmarklist add to a default subcollection with id 0
+    if (!subcollection.id) {
+      subcollection.id = "default";
+    }
     const bookmarks = { name: bookmarkName, link: bookmarkLink, img: imageUrl, scId: subcollection.id };
     await submit(bookmarks, subcollection.id);
     handleClose();
