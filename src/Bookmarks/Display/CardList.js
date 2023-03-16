@@ -1,7 +1,7 @@
 import { Grid, Card, CardMedia, CardContent, Box, Typography, Tooltip, IconButton, Link } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
 import EditCardIcon from "../Actions/EditCardIcon";
+import DeleteCardIcon from "../Actions/DeleteCardIcon";
 
 function CardList({ list, editCard, handleDelete, type }) {
   return (
@@ -55,17 +55,7 @@ function CardList({ list, editCard, handleDelete, type }) {
               }}
             >
               <EditCardIcon card={card} editCard={editCard} type={type} />
-              <Tooltip title="Delete">
-                {type === "bookmark" ? (
-                  <IconButton color="error" onClick={() => handleDelete(card.scId, card.id)}>
-                    <DeleteIcon />
-                  </IconButton>
-                ) : (
-                  <IconButton color="error" onClick={() => handleDelete(card.id)}>
-                    <DeleteIcon />
-                  </IconButton>
-                )}
-              </Tooltip>
+              <DeleteCardIcon handleDelete={handleDelete} type={type} card={card} />
             </Box>
           </CardContent>
         </Grid>

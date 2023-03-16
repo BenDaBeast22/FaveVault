@@ -1,6 +1,6 @@
 import { Container, Select, MenuItem, FormControl, InputLabel, Button } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { collection, query, doc, orderBy, addDoc, onSnapshot, updateDoc, deleteDoc } from "firebase/firestore";
+import { collection, query, doc, orderBy, addDoc, onSnapshot, updateDoc, deleteDoc, getDocs } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { db, auth } from "../firebase";
 import CardList from "./Display/CardList";
@@ -14,14 +14,42 @@ const Bookmarks = () => {
   const [sortBy, setSortBy] = useState("asc");
   const [addDialog, setAddDialog] = useState(false);
   const uid = user.uid;
+  const collectionsRef = collection(db, "data", uid, "collections");
   const addCollection = async (newCollection) => {
-    await addDoc(collection(db, "data", uid, "collections"), newCollection);
+    await addDoc(collection(collectionsRef), newCollection);
   };
   const editCollection = async (editedCollection, id) => {
     await updateDoc(doc(db, "data", uid, "collections", id), editedCollection);
   };
-  const handleDelete = async (id) => {
-    await deleteDoc(doc(db, "data", uid, "collections", id));
+  const handleDelete = async (collectionId) => {
+    const snapshot = await getDocs(collection(collectionsRef, collectionId, "subcollections"));
+    if (!snapshot.empty) {
+      snapshot.forEach((doc) => {
+        const subcollection = { ...doc.data, id: doc.id };
+        deleteSubcollection(collectionId, subcollection.id);
+      });
+    }
+    await deleteDoc(doc(db, "data", uid, "collections", collectionId));
+  };
+  const deleteSubcollection = async (collectionId, subcollectionId) => {
+    const subcollectionsRef = collection(collectionsRef, collectionId, "subcollections");
+    const snapshot = await getDocs(collection(subcollectionsRef, subcollectionId, "bookmarks"));
+    if (!snapshot.empty) {
+      snapshot.forEach((doc) => {
+        const bookmark = { ...doc.data, id: doc.id };
+        deleteBookmark(collectionId, subcollectionId, bookmark.id);
+      });
+    }
+  };
+  const deleteBookmark = async (collectionId, subcollectionId, bookmarkId) => {
+    const subcollectionsRef = collection(collectionsRef, collectionId, "subcollections");
+    await deleteDoc(doc(subcollectionsRef, subcollectionId, "bookmarks", bookmarkId));
+    await deleteDoc(doc(collectionsRef, collectionId, "bookmarks", bookmarkId));
+    // delete subcollection if there are no bookmarks within it
+    const snapshot = await getDocs(collection(subcollectionsRef, subcollectionId, "bookmarks"));
+    if (snapshot.empty) {
+      await deleteDoc(doc(subcollectionsRef, subcollectionId));
+    }
   };
   const handleSortBy = (event) => {
     setSortBy(event.target.value);

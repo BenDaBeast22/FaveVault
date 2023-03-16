@@ -16,6 +16,7 @@ import {
   getDocs,
 } from "firebase/firestore";
 import AddCardIcon from "./Actions/AddCardIcon";
+import DeleteCardIcon from "./Actions/DeleteCardIcon";
 
 const SubcollectionsList = ({ user, sortBy, collectionId }) => {
   const [subcollections, setSubcollections] = useState([]);
@@ -34,13 +35,22 @@ const SubcollectionsList = ({ user, sortBy, collectionId }) => {
   const editSubcollection = async (newSubcollectionName, id) => {
     await updateDoc(doc(subcollectionsRef, id), { name: newSubcollectionName });
   };
-  const handleDelete = async (scId, id) => {
-    await deleteDoc(doc(subcollectionsRef, scId, "bookmarks", id));
-    await deleteDoc(doc(collectionsRef, collectionId, "bookmarks", id));
+  const deleteSubcollection = async (subcollectionId) => {
+    const snapshot = await getDocs(collection(subcollectionsRef, subcollectionId, "bookmarks"));
+    if (!snapshot.empty) {
+      snapshot.forEach((doc) => {
+        const bookmark = { ...doc.data, id: doc.id };
+        deleteBookmark(subcollectionId, bookmark.id);
+      });
+    }
+  };
+  const deleteBookmark = async (subcollectionId, bookmarkId) => {
+    await deleteDoc(doc(subcollectionsRef, subcollectionId, "bookmarks", bookmarkId));
+    await deleteDoc(doc(collectionsRef, collectionId, "bookmarks", bookmarkId));
     // delete subcollection if there are no bookmarks within it
-    const snapshot = await getDocs(collection(subcollectionsRef, scId, "bookmarks"));
+    const snapshot = await getDocs(collection(subcollectionsRef, subcollectionId, "bookmarks"));
     if (snapshot.empty) {
-      await deleteDoc(doc(subcollectionsRef, scId));
+      await deleteDoc(doc(subcollectionsRef, subcollectionId));
     }
   };
   // Event listeners for subcollections
@@ -86,13 +96,14 @@ const SubcollectionsList = ({ user, sortBy, collectionId }) => {
               editCard={editSubcollection}
               tooltipName="Edit Subcollection"
             />
+            <DeleteCardIcon handleDelete={deleteSubcollection} type="subcollection" card={subcollection} />
           </Box>
           {bookmarks[subcollection.id] && (
             <CardList
               list={bookmarks[subcollection.id]}
               type="bookmark"
               editCard={editBookmark}
-              handleDelete={handleDelete}
+              handleDelete={deleteBookmark}
             />
           )}
         </Box>
