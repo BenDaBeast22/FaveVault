@@ -6,6 +6,7 @@ import CreateAccount from "./CreateAccount";
 import Bookmarks from "./Bookmarks/Bookmarks";
 import Rankings from "./Rankings";
 import Backlog from "./Backlog";
+import Profile from "./Profile/Profile";
 import "./App.css";
 import Collections from "./Bookmarks/Collections";
 
@@ -19,6 +20,7 @@ function App() {
             <Route index element={<Bookmarks />} />
             <Route path=":id/:name/:subcollectionsEnabled" element={<Collections />} />
           </Route>
+          <Route path="profile" element={<Profile />} />
           <Route path="rankings" element={<Rankings />} />
           <Route path="backlog" element={<Backlog />} />
           <Route />

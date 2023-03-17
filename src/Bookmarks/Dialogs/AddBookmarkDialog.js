@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { Box, Button, Dialog, DialogContent, DialogContentText, TextField, Alert } from "@mui/material";
 import PublishRoundedIcon from "@mui/icons-material/PublishRounded";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { v4 as uuid } from "uuid";
 import { storage } from "../../firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
-import CircularProgressLabel from "../Components/CircularProgressLabel";
+import ImageUpload from "../../Components/ImageUpload";
 
 const AddBookmarkDialog = ({ title, subcollection, user, open, submit, close }) => {
   const [bookmarkName, setBookmarkName] = useState(subcollection.bookmarkName);
@@ -105,24 +104,14 @@ const AddBookmarkDialog = ({ title, subcollection, user, open, submit, close }) 
           <DialogContentText align="center" sx={{ mb: 1 }}>
             Or
           </DialogContentText>
-          <Button variant="outlined" component="div" sx={{ display: "flex", justifyContent: "space-evenly" }}>
-            <input
-              disabled={imageUrl}
-              type="file"
-              name="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              style={{ padding: "5px" }}
-            />
-            <Button variant="contained" onClick={handleUploadImage} color="info" startIcon={<CloudUploadIcon />}>
-              upload
-            </Button>
-            <CircularProgressLabel
-              progress={progress}
-              imageUploadSuccess={imageUploadSuccess}
-              imageUploadFail={imageUploadFail}
-            />
-          </Button>
+          <ImageUpload
+            disabled={imageUrl}
+            handleUploadImage={handleUploadImage}
+            handleImageChange={handleImageChange}
+            progress={progress}
+            imageUploadSuccess={imageUploadSuccess}
+            imageUploadFail={imageUploadFail}
+          ></ImageUpload>
           {error && (
             <Alert variant="outlined" severity="error" sx={{ mt: 2 }}>
               {error}

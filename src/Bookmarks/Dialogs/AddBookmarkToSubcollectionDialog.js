@@ -5,7 +5,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { v4 as uuid } from "uuid";
 import { storage } from "../../firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
-import CircularProgressLabel from "../Components/CircularProgressLabel";
+import CircularProgressLabel from "../../Components/CircularProgressLabel";
 
 const AddBookmarkToSubCollectionDialog = ({ title, subcollection, user, open, submit, close }) => {
   const [subcollectionName, setSubcollectionName] = useState(subcollection.name);

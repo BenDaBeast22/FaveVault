@@ -30,7 +30,7 @@ const Collections = () => {
     await setDoc(doc(collectionsRef, id, "bookmarks", bookmarkRef.id), bookmarks);
   };
   const addBookmarkToSubcollection = async (bookmarks, subcollectionId) => {
-    await setDoc(doc(subcollectionsRef, subcollectionId), { name: "Main" });
+    await setDoc(doc(subcollectionsRef, subcollectionId), { name: "Bookmarks" });
     const bookmarkRef = await addDoc(collection(subcollectionsRef, subcollectionId, "bookmarks"), bookmarks);
     await setDoc(doc(collectionsRef, id, "bookmarks", bookmarkRef.id), bookmarks);
   };

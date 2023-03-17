@@ -148,10 +148,17 @@ const Navbar = () => {
           >
             {settings.map((setting) => (
               <MenuItem key={setting.name} onClick={handleCloseUserMenu}>
-                <Stack direction="row" spacing={1} onClick={setting.onClick}>
-                  {setting.icon}
-                  <Typography>{setting.name}</Typography>
-                </Stack>
+                <Link
+                  component={RouterLink}
+                  to={setting.name !== "Logout" ? `${setting.name}` : undefined}
+                  color="inherit"
+                  underline="none"
+                >
+                  <Stack direction="row" spacing={1} onClick={setting.onClick}>
+                    {setting.icon}
+                    <Typography>{setting.name}</Typography>
+                  </Stack>
+                </Link>
               </MenuItem>
             ))}
           </Menu>
