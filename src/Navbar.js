@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -13,15 +13,18 @@ import {
   Stack,
   Link,
 } from "@mui/material";
-import { Navigate, NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { logout } from "./firebase";
 import { Link as RouterLink } from "react-router-dom";
+import { db, auth } from "./firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { doc, onSnapshot } from "firebase/firestore";
 
-const pages = ["Bookmarks", "Rankings", "Backlog"];
+const pages = ["Bookmarks", "Gallery", "Rankings", "Backlog"];
 const settings = [
   { name: "Profile", icon: <AccountCircleIcon /> },
   { name: "User Settings", icon: <SettingsIcon /> },
@@ -29,9 +32,11 @@ const settings = [
 ];
 
 const Navbar = () => {
+  const [user] = useAuthState(auth);
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
-  const navigate = useNavigate();
+  const [profilePic, setProfilePic] = useState(null);
+  const uid = user.uid;
   const handleOpenNav = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -44,6 +49,14 @@ const Navbar = () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+  useEffect(() => {
+    const userRef = doc(db, "users", uid);
+    const unsub = onSnapshot(userRef, (snapshot) => {
+      const user = snapshot.data();
+      setProfilePic(user.profilePic);
+    });
+    return () => unsub();
+  }, []);
   return (
     <AppBar position="static">
       <CssBaseline />
@@ -133,7 +146,7 @@ const Navbar = () => {
         <Box>
           <Tooltip title="Open settings">
             <IconButton aria-label="settings" onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-              <Avatar alt="profile-pic" src="/images/drake.jpeg" sx={{ width: 45, height: 45 }} />
+              <Avatar alt="profile-pic" src={profilePic} sx={{ width: 45, height: 45 }} />
             </IconButton>
           </Tooltip>
           <Menu

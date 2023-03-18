@@ -4,6 +4,7 @@ import Home from "./Home";
 import Login from "./Login";
 import CreateAccount from "./CreateAccount";
 import Bookmarks from "./Bookmarks/Bookmarks";
+import Gallery from "./Gallery/Gallery";
 import Rankings from "./Rankings";
 import Backlog from "./Backlog";
 import Profile from "./Profile/Profile";
@@ -19,6 +20,9 @@ function App() {
           <Route path="bookmarks">
             <Route index element={<Bookmarks />} />
             <Route path=":id/:name/:subcollectionsEnabled" element={<Collections />} />
+          </Route>
+          <Route path="Gallery">
+            <Route index element={<Gallery />} />
           </Route>
           <Route path="profile" element={<Profile />} />
           <Route path="rankings" element={<Rankings />} />

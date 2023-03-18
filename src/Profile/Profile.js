@@ -1,23 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { Avatar, Container, Box, Typography, TextField, InputLabel, Tooltip } from "@mui/material";
+import { Avatar, Container, Box, Typography, TextField, InputLabel } from "@mui/material";
 import ImageUpload from "../Components/ImageUpload";
 import { auth, db, storage } from "../firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { uuidv4 as uuid } from "@firebase/util";
-import { doc, onSnapshot } from "firebase/firestore";
-import { SettingsSuggestRounded } from "@mui/icons-material";
+import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 
 const Profile = () => {
   const [user] = useAuthState(auth);
-  const [userProfile, setUserProfile] = useState({});
-  const [imageUrl, setImageUrl] = useState("");
+  const [profileName, setProfileName] = useState("");
+  const [profilePic, setProfilePic] = useState(null);
   const [imageUpload, setImageUpload] = useState(null);
   const [imageUploadSuccess, setImageUploadSuccess] = useState(false);
   const [imageUploadFail, setImageUploadFail] = useState(false);
   const [error, setError] = useState(false);
   const [progress, setProgress] = useState(0);
   const uid = user.uid;
+  const userRef = doc(db, "users", uid);
   // Upload image to cloud storage
   const handleImageChange = (e) => {
     setProgress(0);
@@ -44,21 +44,23 @@ const Profile = () => {
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             setImageUploadSuccess(true);
-            setImageUrl(downloadURL);
             console.log("File available at", downloadURL);
+            updateProfilePicture(downloadURL);
           });
         }
       );
     }
   };
+  const updateProfilePicture = (downloadURL) => {
+    updateDoc(userRef, { profilePic: downloadURL });
+  };
   useEffect(() => {
-    const userRef = doc(db, "users", uid);
-    console.log();
     const unsub = onSnapshot(userRef, (snapshot) => {
       console.log(snapshot.data());
       const user = { ...snapshot.data(), id: snapshot.id };
       console.log(user);
-      setUserProfile(user);
+      setProfileName(user.name);
+      setProfilePic(user.profilePic);
     });
     return () => unsub();
   }, []);
@@ -77,23 +79,22 @@ const Profile = () => {
         }}
       >
         <Typography variant="h4" component="h1" sx={{ display: { md: "none", xs: "block" } }}>
-          Profile Page
+          Welcome {profileName}!
         </Typography>
         <Box>
           <Avatar
-            src="images/drake.jpeg"
+            src={profilePic}
             alt="profile pic"
-            sx={{ width: { md: "300px", xs: "150px" }, height: { md: "300px", xs: "150px" } }}
+            sx={{ width: { md: "250px", xs: "150px" }, height: { md: "250px", xs: "150px" } }}
           />
         </Box>
         <Box>
           <Typography variant="h4" component="h1" sx={{ display: { md: "block", xs: "none" } }}>
-            Profile Page
+            Welcome {profileName}!
           </Typography>
-          <TextField label="Email" margin="normal" fullWidth />
-          <TextField label="Password" margin="normal" sx={{ pb: 1 }} fullWidth />
-          <InputLabel sx={{ pb: 1 }}>Profile Picture:</InputLabel>
-
+          {/* <TextField label="Email" margin="normal" fullWidth />
+          <TextField label="Password" margin="normal" sx={{ pb: 1 }} fullWidth /> */}
+          <InputLabel sx={{ pb: 1 }}>Set Profile Picture:</InputLabel>
           <ImageUpload
             handleImageChange={handleImageChange}
             handleUploadImage={handleUploadImage}
