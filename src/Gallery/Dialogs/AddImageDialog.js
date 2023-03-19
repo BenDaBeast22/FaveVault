@@ -1,16 +1,13 @@
 import React, { useState } from "react";
 import { Box, Button, Dialog, DialogContent, DialogContentText, TextField, Alert } from "@mui/material";
 import PublishRoundedIcon from "@mui/icons-material/PublishRounded";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { v4 as uuid } from "uuid";
 import { storage } from "../../firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
-import CircularProgressLabel from "../../Components/CircularProgressLabel";
+import ImageUpload from "../../Components/ImageUpload";
 
-const AddBookmarkToSubCollectionDialog = ({ title, user, open, submit, close }) => {
-  const [subcollectionName, setSubcollectionName] = useState("");
-  const [bookmarkName, setBookmarkName] = useState("");
-  const [bookmarkLink, setBookmarkLink] = useState("");
+const AddImageDialog = ({ title, user, open, submit, close }) => {
+  const [imageName, setImageName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [imageUpload, setImageUpload] = useState(null);
   const [imageUploadSuccess, setImageUploadSuccess] = useState(false);
@@ -20,29 +17,14 @@ const AddBookmarkToSubCollectionDialog = ({ title, user, open, submit, close }) 
   const uid = user.uid;
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!subcollectionName) {
-      setError("Subcollection name not set");
-      return;
-    } else if (!bookmarkName) {
-      setError("Bookmark name not set");
-    } else if (!imageUrl) {
-      setError("Subcollection image name not set");
+    if (!imageName) {
+      setError("Image name not set");
       return;
     }
-    const newCollection = {
-      name: subcollectionName,
-      bookmarks: {
-        name: bookmarkName,
-        link: bookmarkLink,
-        img: imageUrl,
-      },
-    };
-    await submit(newCollection);
-    setSubcollectionName("");
-    setBookmarkName("");
-    setBookmarkLink("");
-    setImageUrl("");
+    const images = { name: imageName, img: imageUrl, scId: "default" };
+    await submit(images, "default");
     handleClose();
+    return;
   };
   const handleClose = () => {
     setImageUploadSuccess(false);
@@ -90,24 +72,10 @@ const AddBookmarkToSubCollectionDialog = ({ title, user, open, submit, close }) 
         <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
           <DialogContentText align="center">{title}</DialogContentText>
           <TextField
-            label="Subcollection Name"
-            value={subcollectionName}
+            label="Image Name"
+            value={imageName}
             sx={{ mt: 2 }}
-            onChange={(e) => setSubcollectionName(e.target.value)}
-            autoFocus
-          />
-          <TextField
-            label="Bookmark Name"
-            value={bookmarkName}
-            sx={{ mt: 2 }}
-            onChange={(e) => setBookmarkName(e.target.value)}
-            autoFocus
-          />
-          <TextField
-            label="Bookmark Link"
-            value={bookmarkLink}
-            sx={{ mt: 2 }}
-            onChange={(e) => setBookmarkLink(e.target.value)}
+            onChange={(e) => setImageName(e.target.value)}
             autoFocus
           />
           <TextField
@@ -121,24 +89,14 @@ const AddBookmarkToSubCollectionDialog = ({ title, user, open, submit, close }) 
           <DialogContentText align="center" sx={{ mb: 1 }}>
             Or
           </DialogContentText>
-          <Button variant="outlined" component="div" sx={{ display: "flex", justifyContent: "space-evenly" }}>
-            <input
-              disabled={imageUrl}
-              type="file"
-              name="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              style={{ padding: "5px" }}
-            />
-            <Button variant="contained" onClick={handleUploadImage} color="info" startIcon={<CloudUploadIcon />}>
-              upload
-            </Button>
-            <CircularProgressLabel
-              progress={progress}
-              imageUploadSuccess={imageUploadSuccess}
-              imageUploadFail={imageUploadFail}
-            />
-          </Button>
+          <ImageUpload
+            disabled={imageUrl}
+            handleUploadImage={handleUploadImage}
+            handleImageChange={handleImageChange}
+            progress={progress}
+            imageUploadSuccess={imageUploadSuccess}
+            imageUploadFail={imageUploadFail}
+          ></ImageUpload>
           {error && (
             <Alert variant="outlined" severity="error" sx={{ mt: 2 }}>
               {error}
@@ -153,4 +111,4 @@ const AddBookmarkToSubCollectionDialog = ({ title, user, open, submit, close }) 
   );
 };
 
-export default AddBookmarkToSubCollectionDialog;
+export default AddImageDialog;

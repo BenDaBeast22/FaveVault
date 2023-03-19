@@ -7,10 +7,9 @@ import { storage } from "../../firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import CircularProgressLabel from "../../Components/CircularProgressLabel";
 
-const AddBookmarkToSubCollectionDialog = ({ title, user, open, submit, close }) => {
+const AddImageToSubcollectionDialog = ({ title, user, open, submit, close }) => {
   const [subcollectionName, setSubcollectionName] = useState("");
-  const [bookmarkName, setBookmarkName] = useState("");
-  const [bookmarkLink, setBookmarkLink] = useState("");
+  const [imageName, setImageName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [imageUpload, setImageUpload] = useState(null);
   const [imageUploadSuccess, setImageUploadSuccess] = useState(false);
@@ -23,24 +22,22 @@ const AddBookmarkToSubCollectionDialog = ({ title, user, open, submit, close }) 
     if (!subcollectionName) {
       setError("Subcollection name not set");
       return;
-    } else if (!bookmarkName) {
-      setError("Bookmark name not set");
+    } else if (!imageName) {
+      setError("Image name not set");
     } else if (!imageUrl) {
       setError("Subcollection image name not set");
       return;
     }
-    const newCollection = {
+    const newSubcollection = {
       name: subcollectionName,
-      bookmarks: {
-        name: bookmarkName,
-        link: bookmarkLink,
+      images: {
+        name: imageName,
         img: imageUrl,
       },
     };
-    await submit(newCollection);
+    await submit(newSubcollection);
     setSubcollectionName("");
-    setBookmarkName("");
-    setBookmarkLink("");
+    setImageName("");
     setImageUrl("");
     handleClose();
   };
@@ -97,17 +94,10 @@ const AddBookmarkToSubCollectionDialog = ({ title, user, open, submit, close }) 
             autoFocus
           />
           <TextField
-            label="Bookmark Name"
-            value={bookmarkName}
+            label="Image Name"
+            value={imageName}
             sx={{ mt: 2 }}
-            onChange={(e) => setBookmarkName(e.target.value)}
-            autoFocus
-          />
-          <TextField
-            label="Bookmark Link"
-            value={bookmarkLink}
-            sx={{ mt: 2 }}
-            onChange={(e) => setBookmarkLink(e.target.value)}
+            onChange={(e) => setImageName(e.target.value)}
             autoFocus
           />
           <TextField
@@ -153,4 +143,4 @@ const AddBookmarkToSubCollectionDialog = ({ title, user, open, submit, close }) 
   );
 };
 
-export default AddBookmarkToSubCollectionDialog;
+export default AddImageToSubcollectionDialog;

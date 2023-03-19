@@ -89,7 +89,7 @@ const Profile = () => {
           />
         </Box>
         <Box>
-          <Typography variant="h4" component="h1" sx={{ display: { md: "block", xs: "none" } }}>
+          <Typography variant="h4" component="h1" sx={{ display: { md: "block", xs: "none" }, pb: 5 }}>
             Welcome {profileName}!
           </Typography>
           {/* <TextField label="Email" margin="normal" fullWidth />

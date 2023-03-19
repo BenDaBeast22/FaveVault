@@ -5,7 +5,7 @@ import DeleteCardIcon from "../Actions/DeleteCardIcon";
 
 function CardList({ list, editCard, handleDelete, type }) {
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} sx={{ pb: 2, pr: 2 }}>
       {list.map((card) => (
         <Grid item xs={4} sm={3} md={2} key={card.id}>
           {type === "collection" ? (

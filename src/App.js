@@ -8,8 +8,9 @@ import Gallery from "./Gallery/Gallery";
 import Rankings from "./Rankings";
 import Backlog from "./Backlog";
 import Profile from "./Profile/Profile";
+import BookmarksCollection from "./Bookmarks/BookmarksCollection";
+import GalleryCollection from "./Gallery/GalleryCollection";
 import "./App.css";
-import Collections from "./Bookmarks/Collections";
 
 function App() {
   return (
@@ -19,10 +20,11 @@ function App() {
           <Route index element={<Navigate to="bookmarks" />} />
           <Route path="bookmarks">
             <Route index element={<Bookmarks />} />
-            <Route path=":id/:name/:subcollectionsEnabled" element={<Collections />} />
+            <Route path=":id/:name/:subcollectionsEnabled" element={<BookmarksCollection />} />
           </Route>
           <Route path="Gallery">
             <Route index element={<Gallery />} />
+            <Route path=":id/:name/:subcollectionsEnabled" element={<GalleryCollection />} />
           </Route>
           <Route path="profile" element={<Profile />} />
           <Route path="rankings" element={<Rankings />} />

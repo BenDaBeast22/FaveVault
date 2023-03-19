@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import { Box, Button, Dialog, DialogContent, DialogContentText, DialogActions, DialogTitle } from "@mui/material";
+import { capitalize } from "../../helpers";
 
 const DeleteDialog = ({ type, scId, id, handleDelete, close, open }) => {
-  const capitalize = (string) => {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  };
   return (
     <Dialog open={open} onClose={close}>
       <DialogTitle align="center">Delete {capitalize(type)}</DialogTitle>

@@ -1,38 +1,37 @@
 import React, { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth, db } from "../firebase";
+import { auth, db } from "./firebase";
 import { useParams } from "react-router-dom";
 import { addDoc, doc, setDoc, collection } from "firebase/firestore";
 import { Container, Typography, Box, Select, MenuItem, FormControl, InputLabel, Button, Switch } from "@mui/material";
-
-import AddBookmarkDialog from "./Dialogs/AddBookmarkDialog";
-import AddBookmarkToSubCollectionDialog from "./Dialogs/AddBookmarkToSubcollectionDialog";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
-import SubcollectionsList from "./SubcollectionsList";
-import BookmarksList from "./BookmarksList";
+import SubcollectionsList from "./Bookmarks/SubcollectionsList";
+import ItemsList from "./ItemsList";
+import { capitalize, singularize } from "./helpers";
 
-const Collections = () => {
+const DisplayCollection = ({ groupingName, groupingType, AddItemDialog, AddItemToSubcollectionDialog }) => {
   const { id, name, subcollectionsEnabled } = useParams();
   const [user] = useAuthState(auth);
   const [displaySubcollections, setDisplaySubcollections] = useState(subcollectionsEnabled === "true");
-  console.log(displaySubcollections);
   const [addDialog, setAddDialog] = useState(false);
   const [sortBy, setSortBy] = useState("asc");
   const uid = user.uid;
-  const collectionsRef = collection(db, "data", uid, "collections");
-  const subcollectionsRef = collection(db, "data", uid, "collections", id, "subcollections");
-  const submitSubcollection = async (newSubcollection) => {
+  const collectionsRef = collection(db, "data", uid, groupingName);
+  const subcollectionsRef = collection(collectionsRef, id, "subcollections");
+  const addItemToSubcollection = async (newSubcollection) => {
     const docRef = await addDoc(subcollectionsRef, {
       name: newSubcollection.name,
     });
-    const bookmarks = { ...newSubcollection.bookmarks, scId: docRef.id };
-    const bookmarkRef = await addDoc(collection(docRef, "bookmarks"), bookmarks);
-    await setDoc(doc(collectionsRef, id, "bookmarks", bookmarkRef.id), bookmarks);
+    const items = { ...newSubcollection[groupingType], scId: docRef.id };
+    const ItemsRef = await addDoc(collection(docRef, groupingType), items);
+    await setDoc(doc(collectionsRef, id, groupingType, ItemsRef.id), items);
   };
-  const addBookmarkToSubcollection = async (bookmarks, subcollectionId) => {
-    await setDoc(doc(subcollectionsRef, subcollectionId), { name: "Bookmarks" });
-    const bookmarkRef = await addDoc(collection(subcollectionsRef, subcollectionId, "bookmarks"), bookmarks);
-    await setDoc(doc(collectionsRef, id, "bookmarks", bookmarkRef.id), bookmarks);
+  const addItem = async (items, subcollectionId) => {
+    console.log("items = ", items);
+    console.log("groupingType = ", groupingType);
+    await setDoc(doc(subcollectionsRef, subcollectionId), { name: capitalize(items.name) });
+    const itemsRef = await addDoc(collection(subcollectionsRef, subcollectionId, groupingType), items);
+    await setDoc(doc(collectionsRef, id, groupingType, itemsRef.id), items);
   };
   const handleSortBy = (event) => {
     setSortBy(event.target.value);
@@ -63,13 +62,12 @@ const Collections = () => {
               >
                 New Subcollection
               </Button>
-              <AddBookmarkToSubCollectionDialog
-                title="Add Bookmark to new Subcollection"
-                subcollection={{ name: "", bookmarkName: "", bookmarkLink: "", img: "" }}
+              <AddItemToSubcollectionDialog
+                title={`Add ${capitalize(singularize(groupingType))} to new Subcollection`}
                 user={user}
                 open={addDialog}
                 close={handleCloseAddDialog}
-                submit={submitSubcollection}
+                submit={addItemToSubcollection}
               />
             </>
           ) : (
@@ -82,13 +80,12 @@ const Collections = () => {
               >
                 New Bookmark
               </Button>
-              <AddBookmarkDialog
-                title="Add new Bookmark"
-                subcollection={{ bookmarkName: "", bookmarkLink: "", img: "" }}
+              <AddItemDialog
+                title={`Add New ${capitalize(singularize(groupingType))}`}
                 user={user}
                 open={addDialog}
                 close={handleCloseAddDialog}
-                submit={addBookmarkToSubcollection}
+                submit={addItem}
               />
             </>
           )}
@@ -123,15 +120,31 @@ const Collections = () => {
             <Switch color="secondary" checked={displaySubcollections} onChange={toggleDisplaySubcollections} />
           </Box>
         </Container>
-        {/* Subcollections */}
         {displaySubcollections ? (
-          <SubcollectionsList user={user} sortBy={sortBy} collectionId={id} />
+          <SubcollectionsList
+            groupingName="Bookmarks"
+            groupingType="bookmarks"
+            user={user}
+            sortBy={sortBy}
+            collectionId={id}
+          />
         ) : (
-          <BookmarksList user={user} sortBy={sortBy} collectionId={id} />
+          <ItemsList
+            groupingName={groupingName}
+            groupingType={groupingType}
+            user={user}
+            sortBy={sortBy}
+            collectionId={id}
+          />
         )}
       </Container>
     </div>
   );
 };
 
-export default Collections;
+DisplayCollection.defaultProps = {
+  groupingName: "Bookmarks",
+  groupingType: "bookmarks",
+};
+
+export default DisplayCollection;

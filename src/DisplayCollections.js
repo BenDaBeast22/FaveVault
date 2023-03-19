@@ -7,7 +7,7 @@ import CardList from "./Bookmarks/Display/CardList";
 import AddCollectionDialog from "./Bookmarks/Dialogs/AddCollectionDialog";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 
-const DisplayCollections = ({ groupingName, itemName }) => {
+const DisplayCollections = ({ groupingName, groupingType }) => {
   const [user] = useAuthState(auth);
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,7 +33,7 @@ const DisplayCollections = ({ groupingName, itemName }) => {
   };
   const deleteSubcollection = async (collectionId, subcollectionId) => {
     const subcollectionsRef = collection(collectionsRef, collectionId, "subcollections");
-    const snapshot = await getDocs(collection(subcollectionsRef, subcollectionId, itemName));
+    const snapshot = await getDocs(collection(subcollectionsRef, subcollectionId, groupingType));
     if (!snapshot.empty) {
       snapshot.forEach((doc) => {
         const bookmark = { ...doc.data, id: doc.id };
@@ -43,10 +43,10 @@ const DisplayCollections = ({ groupingName, itemName }) => {
   };
   const deleteBookmark = async (collectionId, subcollectionId, bookmarkId) => {
     const subcollectionsRef = collection(collectionsRef, collectionId, "subcollections");
-    await deleteDoc(doc(subcollectionsRef, subcollectionId, itemName, bookmarkId));
-    await deleteDoc(doc(collectionsRef, collectionId, itemName, bookmarkId));
+    await deleteDoc(doc(subcollectionsRef, subcollectionId, groupingType, bookmarkId));
+    await deleteDoc(doc(collectionsRef, collectionId, groupingType, bookmarkId));
     // delete subcollection if there are no items within it
-    const snapshot = await getDocs(collection(subcollectionsRef, subcollectionId, itemName));
+    const snapshot = await getDocs(collection(subcollectionsRef, subcollectionId, groupingType));
     if (snapshot.empty) {
       await deleteDoc(doc(subcollectionsRef, subcollectionId));
     }
@@ -74,7 +74,7 @@ const DisplayCollections = ({ groupingName, itemName }) => {
     return () => unsubscribe();
   }, [sortBy]);
   return (
-    <div className={itemName}>
+    <div className={groupingType}>
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Container maxWidth="xs" sx={{ mb: 4, display: "flex", justifyContent: "space-around", alignItems: "center" }}>
           <Button
@@ -124,7 +124,7 @@ const DisplayCollections = ({ groupingName, itemName }) => {
 
 DisplayCollections.defaultProps = {
   groupingName: "collections",
-  itemName: "bookmarks",
+  groupingType: "bookmarks",
 };
 
 export default DisplayCollections;

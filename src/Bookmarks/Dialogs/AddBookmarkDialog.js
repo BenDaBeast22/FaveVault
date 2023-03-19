@@ -6,10 +6,10 @@ import { storage } from "../../firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import ImageUpload from "../../Components/ImageUpload";
 
-const AddBookmarkDialog = ({ title, subcollection, user, open, submit, close }) => {
-  const [bookmarkName, setBookmarkName] = useState(subcollection.bookmarkName);
-  const [bookmarkLink, setBookmarkLink] = useState(subcollection.bookmarkLink);
-  const [imageUrl, setImageUrl] = useState(subcollection.img);
+const AddBookmarkDialog = ({ title, user, open, submit, close }) => {
+  const [bookmarkName, setBookmarkName] = useState("");
+  const [bookmarkLink, setBookmarkLink] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const [imageUpload, setImageUpload] = useState(null);
   const [imageUploadSuccess, setImageUploadSuccess] = useState(false);
   const [imageUploadFail, setImageUploadFail] = useState(false);
@@ -25,12 +25,8 @@ const AddBookmarkDialog = ({ title, subcollection, user, open, submit, close }) 
       setError("Bookmark image not set");
       return;
     }
-    // if adding bookmark to bookmarklist add to a default subcollection with id 0
-    if (!subcollection.id) {
-      subcollection.id = "default";
-    }
-    const bookmarks = { name: bookmarkName, link: bookmarkLink, img: imageUrl, scId: subcollection.id };
-    await submit(bookmarks, subcollection.id);
+    const bookmarks = { name: bookmarkName, link: bookmarkLink, img: imageUrl, scId: "default" };
+    await submit(bookmarks, "default");
     handleClose();
     return;
   };
