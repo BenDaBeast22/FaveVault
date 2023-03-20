@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { collection, query, doc, orderBy, addDoc, onSnapshot, updateDoc, deleteDoc, getDocs } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { db, auth } from "./firebase";
-import CardList from "./Display/CardList";
+import CollectionList from "./Display/CollectionList";
 import AddCollectionDialog from "./Dialogs/AddCollectionDialog";
 import EditCollectionDialog from "./Dialogs/EditCollectionDialog";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
@@ -111,13 +111,13 @@ const DisplayCollections = ({ groupingName, groupingType }) => {
           </FormControl>
         </Container>
         {!loading && (
-          <CardList
+          <CollectionList
             list={collections}
             editCard={editCollection}
             EditCardDialog={EditCollectionDialog}
             handleDelete={handleDelete}
             type="collection"
-          ></CardList>
+          ></CollectionList>
         )}
       </Container>
     </div>

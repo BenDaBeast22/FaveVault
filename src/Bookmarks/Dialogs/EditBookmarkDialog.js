@@ -7,10 +7,10 @@ import { storage } from "../../firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import CircularProgressLabel from "../../Components/CircularProgressLabel";
 
-const EditBookmarkDialog = ({ title, bookmark, user, open, submit, close }) => {
-  const [bookmarkName, setBookmarkName] = useState(bookmark.name);
-  const [bookmarkLink, setBookmarkLink] = useState(bookmark.link);
-  const [imageUrl, setImageUrl] = useState(bookmark.img);
+const EditBookmarkDialog = ({ title, card, user, open, submit, close }) => {
+  const [bookmarkName, setBookmarkName] = useState(card.name);
+  const [bookmarkLink, setBookmarkLink] = useState(card.link);
+  const [imageUrl, setImageUrl] = useState(card.img);
   const [imageUpload, setImageUpload] = useState(null);
   const [imageUploadSuccess, setImageUploadSuccess] = useState(false);
   const [imageUploadFail, setImageUploadFail] = useState(false);
@@ -30,7 +30,7 @@ const EditBookmarkDialog = ({ title, bookmark, user, open, submit, close }) => {
       link: bookmarkLink,
       img: imageUrl,
     };
-    await submit(newBookmark, bookmark.scId, bookmark.id);
+    await submit(newBookmark, card.scId, card.id);
     handleClose();
   };
   const handleClose = () => {

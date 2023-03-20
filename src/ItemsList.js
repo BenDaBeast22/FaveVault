@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, getDocs } from "firebase/firestore";
 import { db } from "./firebase";
-import CardList from "./Display/CardList";
 
-const ItemsList = ({ groupingName, groupingType, user, sortBy, collectionId, EditItemDialog }) => {
+const ItemsList = ({ groupingName, groupingType, user, sortBy, collectionId, EditItemDialog, CardList }) => {
   const [items, setItems] = useState([]);
   const uid = user.uid;
   const collectionsRef = collection(db, "data", uid, groupingName);
@@ -12,7 +11,7 @@ const ItemsList = ({ groupingName, groupingType, user, sortBy, collectionId, Edi
     await updateDoc(doc(subcollectionsRef, scId, groupingType, id), editedItem);
     await updateDoc(doc(collectionsRef, collectionId, groupingType, id), editedItem);
   };
-  const handleDelete = async (scId, id) => {
+  const handleDelete = async (id, scId) => {
     await deleteDoc(doc(subcollectionsRef, scId, groupingType, id));
     await deleteDoc(doc(collectionsRef, collectionId, groupingType, id));
     // delete subcollection if there are no items within it

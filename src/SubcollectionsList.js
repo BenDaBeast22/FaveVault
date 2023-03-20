@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography } from "@mui/material";
-import CardList from "./Display/CardList";
 import { db } from "./firebase";
 import {
   addDoc,
@@ -27,6 +26,7 @@ const SubcollectionsList = ({
   collectionId,
   AddItemDialog,
   EditItemDialog,
+  CardList,
 }) => {
   const [subcollections, setSubcollections] = useState([]);
   const [items, setItems] = useState({});

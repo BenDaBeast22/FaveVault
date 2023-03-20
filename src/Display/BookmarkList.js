@@ -1,40 +1,23 @@
 import { Grid, Card, CardMedia, CardContent, Box, Typography, Link } from "@mui/material";
-import { Link as ReactRouterLink } from "react-router-dom";
 import EditCardIcon from "../Icons/EditCardIcon";
 import DeleteCardIcon from "../Icons/DeleteCardIcon";
 
-function CardList({ list, editCard, EditCardDialog, handleDelete, type }) {
+function BookmarkList({ list, editCard, EditCardDialog, handleDelete, type }) {
   return (
     <Grid container spacing={2} sx={{ pb: 2, pr: 2 }}>
       {list.map((card) => (
         <Grid item xs={4} sm={3} md={2} key={card.id}>
-          {type === "collection" ? (
-            <Card
-              sx={{
-                height: "150px",
-                display: "flex",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              <ReactRouterLink to={`${card.id}/${card.name}/${card.scEnabled}`}>
-                <CardMedia height="100%" component="img" image={card.img} alt={card.img} />
-              </ReactRouterLink>
-            </Card>
-          ) : (
-            <Card
-              sx={{
-                height: "150px",
-                display: "flex",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              <Link href={card.link} target="_blank">
-                <CardMedia height="100%" component="img" image={card.img} alt={card.img} />
-              </Link>
-            </Card>
-          )}
+          <Card
+            sx={{
+              height: "150px",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <Link href={card.link} target="_blank">
+              <CardMedia height="100%" component="img" image={card.img} alt={card.img} />
+            </Link>
+          </Card>
           <CardContent
             sx={{
               py: 1,
@@ -63,4 +46,4 @@ function CardList({ list, editCard, EditCardDialog, handleDelete, type }) {
   );
 }
 
-export default CardList;
+export default BookmarkList;

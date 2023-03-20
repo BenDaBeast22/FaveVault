@@ -15,7 +15,7 @@ const DisplayCollection = ({
   AddItemDialog,
   AddItemToSubcollectionDialog,
   EditItemDialog,
-  EditSubcollectionDialog,
+  CardList,
 }) => {
   const { id, name, subcollectionsEnabled } = useParams();
   const [user] = useAuthState(auth);
@@ -134,6 +134,7 @@ const DisplayCollection = ({
             collectionId={id}
             AddItemDialog={AddItemDialog}
             EditItemDialog={EditItemDialog}
+            CardList={CardList}
           />
         ) : (
           <ItemsList
@@ -143,6 +144,7 @@ const DisplayCollection = ({
             sortBy={sortBy}
             collectionId={id}
             EditItemDialog={EditItemDialog}
+            CardList={CardList}
           />
         )}
       </Container>

@@ -2,7 +2,7 @@ import DisplayCollection from "../DisplayCollection";
 import AddImageDialog from "./Dialogs/AddImageDialog";
 import AddImageToSubcollectionDialog from "./Dialogs/AddImageToSubcollectionDialog";
 import EditImageDialog from "./Dialogs/EditImageDialog";
-import EditSubcollectionDialog from "../Dialogs/EditSubcollectionDialog";
+import ImageList from "../Display/ImageList";
 
 const GalleryCollection = () => {
   return (
@@ -12,7 +12,7 @@ const GalleryCollection = () => {
       AddItemDialog={AddImageDialog}
       AddItemToSubcollectionDialog={AddImageToSubcollectionDialog}
       EditItemDialog={EditImageDialog}
-      EditSubcollectionDialog={EditSubcollectionDialog}
+      CardList={ImageList}
     />
   );
 };
