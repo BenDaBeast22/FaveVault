@@ -1,7 +1,7 @@
 import DisplayCollections from "../DisplayCollections";
 
 const Bookmarks = () => {
-  return <DisplayCollections groupingName="Bookmarks" itemName="bookmarks" />;
+  return <DisplayCollections groupingName="Bookmarks" groupingType="bookmarks" />;
 };
 
 export default Bookmarks;

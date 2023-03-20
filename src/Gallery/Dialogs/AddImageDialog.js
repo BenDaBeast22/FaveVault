@@ -23,6 +23,8 @@ const AddImageDialog = ({ title, user, open, submit, close }) => {
     }
     const images = { name: imageName, img: imageUrl, scId: "default" };
     await submit(images, "default");
+    setImageName("");
+    setImageUrl("");
     handleClose();
     return;
   };

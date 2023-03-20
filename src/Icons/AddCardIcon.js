@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { auth } from "../../firebase";
+import { auth } from "../firebase";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { useAuthState } from "react-firebase-hooks/auth";
-import AddBookmarkDialog from "../Dialogs/AddBookmarkDialog";
+import { capitalize, singularize } from "../helpers";
 
-const AddCardIcon = ({ submitCard, id }) => {
+const AddCardIcon = ({ groupingType, submitCard, subcollectionId, AddItemDialog }) => {
   const [user] = useAuthState(auth);
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
@@ -17,14 +17,14 @@ const AddCardIcon = ({ submitCard, id }) => {
   return (
     <div>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <Tooltip title="Add Bookmark">
+        <Tooltip title={`Add ${capitalize(singularize(groupingType))}`}>
           <IconButton color="secondary" variant="outlined" onClick={handleOpen}>
             <AddCircleOutlineIcon />
           </IconButton>
         </Tooltip>
-        <AddBookmarkDialog
-          title="Add New Bookmark"
-          subcollection={{ bookmarkName: "", bookmarkLink: "", img: "", id: id }}
+        <AddItemDialog
+          title={`Add New ${capitalize(singularize(groupingType))}`}
+          subcollectionId={subcollectionId}
           user={user}
           open={open}
           close={handleClose}

@@ -18,24 +18,14 @@ function DeleteCardIcon({ type, card, handleDelete }) {
           <DeleteIcon />
         </IconButton>
       </Tooltip>
-      {type === "bookmark" ? (
-        <DeleteDialog
-          scId={card.scId}
-          id={card.id}
-          handleDelete={() => handleDelete(card.scId, card.id)}
-          open={open}
-          close={handleClose}
-          type={type}
-        />
-      ) : (
-        <DeleteDialog
-          id={card.id}
-          handleDelete={() => handleDelete(card.id)}
-          open={open}
-          close={handleClose}
-          type={type}
-        />
-      )}
+      <DeleteDialog
+        scId={card.scId}
+        id={card.id}
+        handleDelete={() => handleDelete(card.id, card.scId)}
+        open={open}
+        close={handleClose}
+        type={type}
+      />
     </>
   );
 }

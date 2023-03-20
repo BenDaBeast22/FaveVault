@@ -1,37 +1,51 @@
 import React, { useState } from "react";
-import { Box, Button, Dialog, DialogContent, DialogContentText, TextField, Alert } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  TextField,
+  Alert,
+  InputLabel,
+  Switch,
+} from "@mui/material";
 import PublishRoundedIcon from "@mui/icons-material/PublishRounded";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { v4 as uuid } from "uuid";
-import { storage } from "../../firebase";
+import { storage } from "../firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
-import ImageUpload from "../../Components/ImageUpload";
+import CircularProgressLabel from "../Components/CircularProgressLabel";
 
-const AddBookmarkDialog = ({ title, user, open, submit, close }) => {
-  const [bookmarkName, setBookmarkName] = useState("");
-  const [bookmarkLink, setBookmarkLink] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+const EditCollectionDialog = ({ title, card, user, open, submit, close }) => {
+  const [name, setName] = useState(card.name);
+  const [imageUrl, setImageUrl] = useState(card.img);
   const [imageUpload, setImageUpload] = useState(null);
+  const [subcollectionsEnabled, setSubcollectionsEnabled] = useState(false);
   const [imageUploadSuccess, setImageUploadSuccess] = useState(false);
   const [imageUploadFail, setImageUploadFail] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(false);
   const uid = user.uid;
+  const toggleEnableSubcollections = () => {
+    setSubcollectionsEnabled((prevState) => !prevState);
+  };
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!bookmarkName) {
-      setError("Bookmark name not set");
+    if (!name) {
+      setError("Collection name not set");
       return;
-    } else if (!bookmarkLink) {
-      setError("Bookmark image not set");
+    } else if (!imageUrl) {
+      setError("Image name not set");
       return;
     }
-    const bookmarks = { name: bookmarkName, link: bookmarkLink, img: imageUrl, scId: "default" };
-    await submit(bookmarks, "default");
-    setBookmarkName("");
-    setBookmarkLink("");
-    setImageUrl("");
+    const editedCollection = {
+      name: name,
+      img: imageUrl,
+      scEnabled: subcollectionsEnabled,
+    };
+    await submit(editedCollection, card.id);
     handleClose();
-    return;
   };
   const handleClose = () => {
     setImageUploadSuccess(false);
@@ -79,17 +93,10 @@ const AddBookmarkDialog = ({ title, user, open, submit, close }) => {
         <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
           <DialogContentText align="center">{title}</DialogContentText>
           <TextField
-            label="Bookmark Name"
-            value={bookmarkName}
+            label="Collection Name"
+            value={name}
             sx={{ mt: 2 }}
-            onChange={(e) => setBookmarkName(e.target.value)}
-            autoFocus
-          />
-          <TextField
-            label="Bookmark Link"
-            value={bookmarkLink}
-            sx={{ mt: 2 }}
-            onChange={(e) => setBookmarkLink(e.target.value)}
+            onChange={(e) => setName(e.target.value)}
             autoFocus
           />
           <TextField
@@ -100,17 +107,41 @@ const AddBookmarkDialog = ({ title, user, open, submit, close }) => {
             onChange={(e) => setImageUrl(e.target.value)}
             autoFocus
           />
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              borderRadius: "5px",
+              pt: 2,
+              "&:hover": {
+                borderColor: "inherit",
+              },
+            }}
+          >
+            <InputLabel sx={{ color: "inherit" }}>Subcollections</InputLabel>
+            <Switch checked={subcollectionsEnabled} onChange={toggleEnableSubcollections} />
+          </Box>
           <DialogContentText align="center" sx={{ mb: 1 }}>
             Or
           </DialogContentText>
-          <ImageUpload
-            disabled={imageUrl}
-            handleUploadImage={handleUploadImage}
-            handleImageChange={handleImageChange}
-            progress={progress}
-            imageUploadSuccess={imageUploadSuccess}
-            imageUploadFail={imageUploadFail}
-          ></ImageUpload>
+          <Button variant="outlined" component="div" sx={{ display: "flex", justifyContent: "space-evenly" }}>
+            <input
+              disabled={imageUrl}
+              type="file"
+              name="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              style={{ padding: "5px" }}
+            />
+            <Button variant="contained" onClick={handleUploadImage} color="info" startIcon={<CloudUploadIcon />}>
+              upload
+            </Button>
+            <CircularProgressLabel
+              progress={progress}
+              imageUploadSuccess={imageUploadSuccess}
+              imageUploadFail={imageUploadFail}
+            />
+          </Button>
           {error && (
             <Alert variant="outlined" severity="error" sx={{ mt: 2 }}>
               {error}
@@ -125,4 +156,4 @@ const AddBookmarkDialog = ({ title, user, open, submit, close }) => {
   );
 };
 
-export default AddBookmarkDialog;
+export default EditCollectionDialog;

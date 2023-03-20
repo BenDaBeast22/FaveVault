@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import { auth } from "../../firebase";
+import { auth } from "../firebase";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { useAuthState } from "react-firebase-hooks/auth";
 import FormDialog from "../Dialogs/AddCollectionDialog";
 import EditIcon from "@mui/icons-material/Edit";
 import EditSubcollectionDialog from "../Dialogs/EditSubcollectionDialog";
-import EditBookmarkDialog from "../Dialogs/EditBookmarkDialog";
+import EditBookmarkDialog from "../Bookmarks/Dialogs/EditBookmarkDialog";
+import { capitalize } from "../helpers";
 
-const EditCardIcon = ({ card, editCard, type, tooltipName }) => {
+const EditCardIcon = ({ card, editCard, type, EditCardDialog, tooltipName }) => {
   const [user] = useAuthState(auth);
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
@@ -24,7 +25,15 @@ const EditCardIcon = ({ card, editCard, type, tooltipName }) => {
             <EditIcon />
           </IconButton>
         </Tooltip>
-        {type === "collection" ? (
+        <EditCardDialog
+          title={`Edit ${capitalize(type)}`}
+          user={user}
+          card={card}
+          open={open}
+          close={handleClose}
+          submit={editCard}
+        />
+        {/* {type === "collection" ? (
           <FormDialog
             title="Edit Collection"
             collection={card}
@@ -53,7 +62,7 @@ const EditCardIcon = ({ card, editCard, type, tooltipName }) => {
           />
         ) : (
           <></>
-        )}
+        )} */}
       </Box>
     </div>
   );

@@ -1,15 +1,5 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogContent,
-  DialogContentText,
-  TextField,
-  Alert,
-  InputLabel,
-  Switch,
-} from "@mui/material";
+import { Box, Button, Dialog, DialogContent, DialogContentText, TextField, Alert } from "@mui/material";
 import PublishRoundedIcon from "@mui/icons-material/PublishRounded";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { v4 as uuid } from "uuid";
@@ -17,37 +7,28 @@ import { storage } from "../../firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import CircularProgressLabel from "../../Components/CircularProgressLabel";
 
-const AddCollectionDialog = ({ title, collection, user, open, submit, close }) => {
-  const [name, setName] = useState(collection.name);
-  const [imageUrl, setImageUrl] = useState(collection.img);
+const EditImageDialog = ({ title, card, user, open, submit, close }) => {
+  const [imageName, setImageName] = useState(card.name);
+  const [imageUrl, setImageUrl] = useState(card.img);
   const [imageUpload, setImageUpload] = useState(null);
-  const [subcollectionsEnabled, setSubcollectionsEnabled] = useState(false);
   const [imageUploadSuccess, setImageUploadSuccess] = useState(false);
   const [imageUploadFail, setImageUploadFail] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(false);
   const uid = user.uid;
-  const toggleEnableSubcollections = () => {
-    setSubcollectionsEnabled((prevState) => !prevState);
-  };
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!name) {
-      setError("Collection name not set");
-      return;
-    } else if (!imageUrl) {
+    if (!imageName) {
       setError("Image name not set");
+    } else if (!imageUrl) {
+      setError("Subcollection image name not set");
       return;
     }
-    const newCollection = {
-      name: name,
+    const newImage = {
+      name: imageName,
       img: imageUrl,
-      scEnabled: subcollectionsEnabled,
     };
-    await submit(newCollection, collection.id);
-    setName("");
-    setImageUrl("");
-    setSubcollectionsEnabled(false);
+    await submit(newImage, card.scId, card.id);
     handleClose();
   };
   const handleClose = () => {
@@ -96,10 +77,10 @@ const AddCollectionDialog = ({ title, collection, user, open, submit, close }) =
         <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
           <DialogContentText align="center">{title}</DialogContentText>
           <TextField
-            label="Collection Name"
-            value={name}
+            label="Image Name"
+            value={imageName}
             sx={{ mt: 2 }}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => setImageName(e.target.value)}
             autoFocus
           />
           <TextField
@@ -110,20 +91,6 @@ const AddCollectionDialog = ({ title, collection, user, open, submit, close }) =
             onChange={(e) => setImageUrl(e.target.value)}
             autoFocus
           />
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              borderRadius: "5px",
-              pt: 2,
-              "&:hover": {
-                borderColor: "inherit",
-              },
-            }}
-          >
-            <InputLabel sx={{ color: "inherit" }}>Subcollections</InputLabel>
-            <Switch checked={subcollectionsEnabled} onChange={toggleEnableSubcollections} />
-          </Box>
           <DialogContentText align="center" sx={{ mb: 1 }}>
             Or
           </DialogContentText>
@@ -159,4 +126,4 @@ const AddCollectionDialog = ({ title, collection, user, open, submit, close }) =
   );
 };
 
-export default AddCollectionDialog;
+export default EditImageDialog;

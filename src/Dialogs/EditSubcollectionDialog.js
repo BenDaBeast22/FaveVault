@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Box, Button, Dialog, DialogContent, DialogContentText, TextField, Alert } from "@mui/material";
 import PublishRoundedIcon from "@mui/icons-material/PublishRounded";
 
-const EditSubcollectionDialog = ({ title, subcollection, user, open, submit, close }) => {
-  const [subcollectionName, setSubcollectionName] = useState(subcollection.name);
+const EditSubcollectionDialog = ({ title, card, open, submit, close }) => {
+  const [subcollectionName, setSubcollectionName] = useState(card.name);
   const [error, setError] = useState(false);
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -11,7 +11,7 @@ const EditSubcollectionDialog = ({ title, subcollection, user, open, submit, clo
       setError("Subcollection name not set");
       return;
     }
-    await submit(subcollectionName, subcollection.id);
+    await submit(subcollectionName, card.id);
     handleClose();
   };
   const handleClose = () => {

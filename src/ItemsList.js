@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, getDocs } from "firebase/firestore";
 import { db } from "./firebase";
-import CardList from "./Bookmarks/Display/CardList";
+import CardList from "./Display/CardList";
 
-const ItemsList = ({ groupingName, groupingType, user, sortBy, collectionId }) => {
+const ItemsList = ({ groupingName, groupingType, user, sortBy, collectionId, EditItemDialog }) => {
   const [items, setItems] = useState([]);
   const uid = user.uid;
   const collectionsRef = collection(db, "data", uid, groupingName);
@@ -33,7 +33,16 @@ const ItemsList = ({ groupingName, groupingType, user, sortBy, collectionId }) =
     });
     return () => unsub();
   }, [sortBy]);
-  return <CardList list={items} type="bookmark" editCard={editItem} handleDelete={handleDelete} />;
+  return (
+    <CardList
+      user={user}
+      list={items}
+      type="bookmark"
+      editCard={editItem}
+      EditCardDialog={EditItemDialog}
+      handleDelete={handleDelete}
+    />
+  );
 };
 
 export default ItemsList;

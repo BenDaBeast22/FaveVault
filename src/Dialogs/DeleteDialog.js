@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Box, Button, Dialog, DialogContent, DialogContentText, DialogActions, DialogTitle } from "@mui/material";
-import { capitalize } from "../../helpers";
+import React from "react";
+import { Button, Dialog, DialogContent, DialogContentText, DialogActions, DialogTitle } from "@mui/material";
+import { capitalize } from "../helpers";
 
 const DeleteDialog = ({ type, scId, id, handleDelete, close, open }) => {
   return (
@@ -10,7 +10,7 @@ const DeleteDialog = ({ type, scId, id, handleDelete, close, open }) => {
         <DialogContentText>Are you sure you want to delete this {type}?</DialogContentText>
       </DialogContent>
       <DialogActions sx={{ display: "flex", justifyContent: "center" }}>
-        <Button color="error" variant="contained" onClick={() => handleDelete(scId, id)} sx={{ mr: 1 }}>
+        <Button color="error" variant="contained" onClick={handleDelete} sx={{ mr: 1 }}>
           Yes
         </Button>
         <Button variant="contained" onClick={close} sx={{ ml: 1 }}>

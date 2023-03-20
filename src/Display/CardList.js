@@ -1,9 +1,9 @@
-import { Grid, Card, CardMedia, CardContent, Box, Typography, Tooltip, IconButton, Link } from "@mui/material";
+import { Grid, Card, CardMedia, CardContent, Box, Typography, Link } from "@mui/material";
 import { Link as ReactRouterLink } from "react-router-dom";
-import EditCardIcon from "../Actions/EditCardIcon";
-import DeleteCardIcon from "../Actions/DeleteCardIcon";
+import EditCardIcon from "../Icons/EditCardIcon";
+import DeleteCardIcon from "../Icons/DeleteCardIcon";
 
-function CardList({ list, editCard, handleDelete, type }) {
+function CardList({ list, editCard, EditCardDialog, handleDelete, type }) {
   return (
     <Grid container spacing={2} sx={{ pb: 2, pr: 2 }}>
       {list.map((card) => (
@@ -35,7 +35,6 @@ function CardList({ list, editCard, handleDelete, type }) {
               </Link>
             </Card>
           )}
-          {/* </Link> */}
           <CardContent
             sx={{
               py: 1,
@@ -54,7 +53,7 @@ function CardList({ list, editCard, handleDelete, type }) {
                 justifyContent: "space-evenly",
               }}
             >
-              <EditCardIcon card={card} editCard={editCard} type={type} />
+              <EditCardIcon card={card} editCard={editCard} EditCardDialog={EditCardDialog} type={type} />
               <DeleteCardIcon handleDelete={handleDelete} type={type} card={card} />
             </Box>
           </CardContent>

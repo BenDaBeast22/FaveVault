@@ -3,8 +3,9 @@ import React, { useEffect, useState } from "react";
 import { collection, query, doc, orderBy, addDoc, onSnapshot, updateDoc, deleteDoc, getDocs } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { db, auth } from "./firebase";
-import CardList from "./Bookmarks/Display/CardList";
-import AddCollectionDialog from "./Bookmarks/Dialogs/AddCollectionDialog";
+import CardList from "./Display/CardList";
+import AddCollectionDialog from "./Dialogs/AddCollectionDialog";
+import EditCollectionDialog from "./Dialogs/EditCollectionDialog";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 
 const DisplayCollections = ({ groupingName, groupingType }) => {
@@ -36,15 +37,15 @@ const DisplayCollections = ({ groupingName, groupingType }) => {
     const snapshot = await getDocs(collection(subcollectionsRef, subcollectionId, groupingType));
     if (!snapshot.empty) {
       snapshot.forEach((doc) => {
-        const bookmark = { ...doc.data, id: doc.id };
-        deleteBookmark(collectionId, subcollectionId, bookmark.id);
+        const item = { ...doc.data, id: doc.id };
+        deleteItem(collectionId, subcollectionId, item.id);
       });
     }
   };
-  const deleteBookmark = async (collectionId, subcollectionId, bookmarkId) => {
+  const deleteItem = async (collectionId, subcollectionId, itemId) => {
     const subcollectionsRef = collection(collectionsRef, collectionId, "subcollections");
-    await deleteDoc(doc(subcollectionsRef, subcollectionId, groupingType, bookmarkId));
-    await deleteDoc(doc(collectionsRef, collectionId, groupingType, bookmarkId));
+    await deleteDoc(doc(subcollectionsRef, subcollectionId, groupingType, itemId));
+    await deleteDoc(doc(collectionsRef, collectionId, groupingType, itemId));
     // delete subcollection if there are no items within it
     const snapshot = await getDocs(collection(subcollectionsRef, subcollectionId, groupingType));
     if (snapshot.empty) {
@@ -113,6 +114,7 @@ const DisplayCollections = ({ groupingName, groupingType }) => {
           <CardList
             list={collections}
             editCard={editCollection}
+            EditCardDialog={EditCollectionDialog}
             handleDelete={handleDelete}
             type="collection"
           ></CardList>
