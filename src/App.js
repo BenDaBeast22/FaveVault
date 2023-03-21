@@ -1,11 +1,11 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import PrivateRoutes from "./PrivateRoutes";
-import Home from "./Home";
-import Login from "./Login";
-import CreateAccount from "./CreateAccount";
+import PrivateRoutes from "./Navbar/PrivateRoutes";
+import Home from "./Navbar/Home";
+import Login from "./Account/Login";
+import CreateAccount from "./Account/CreateAccount";
 import Bookmarks from "./Bookmarks/Bookmarks";
 import Gallery from "./Gallery/Gallery";
-import Rankings from "./Rankings";
+import Rankings from "./Rankings/Rankings";
 import Backlog from "./Backlog";
 import Profile from "./Profile/Profile";
 import BookmarksCollection from "./Bookmarks/BookmarksCollection";

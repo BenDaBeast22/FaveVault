@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography } from "@mui/material";
-import { db } from "./firebase";
+import { db } from "../Config/firebase";
 import {
   addDoc,
   doc,
@@ -13,10 +13,10 @@ import {
   onSnapshot,
   getDocs,
 } from "firebase/firestore";
-import AddCardIcon from "./Icons/AddCardIcon";
-import EditCardIcon from "./Icons/EditCardIcon";
-import DeleteCardIcon from "./Icons/DeleteCardIcon";
-import EditSubcollectionDialog from "./Dialogs/EditSubcollectionDialog";
+import AddCardIcon from "../Icons/AddCardIcon";
+import EditCardIcon from "../Icons/EditCardIcon";
+import DeleteCardIcon from "../Icons/DeleteCardIcon";
+import EditSubcollectionDialog from "../Dialogs/EditSubcollectionDialog";
 
 const SubcollectionsList = ({
   groupingName,

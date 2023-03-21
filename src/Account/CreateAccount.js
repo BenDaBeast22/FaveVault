@@ -3,32 +3,34 @@ import { Container, Typography, Button, TextField, Box, Avatar, Link, CssBaselin
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import GoogleIcon from "@mui/icons-material/Google";
 import { Link as ReactRouterLink, useNavigate } from "react-router-dom";
-import { auth, loginWithEmailAndPassword, signInWithGoogle } from "./firebase";
+import { auth, registerWithEmailAndPassword } from "../Config/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 
-function Login() {
+function CreateAccount() {
   const navigate = useNavigate();
-  const [user, loading] = useAuthState(auth);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [user, loading] = useAuthState(auth);
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      await loginWithEmailAndPassword(email, password);
-      navigate("/");
+      await registerWithEmailAndPassword(name, email, password);
+      navigate("/", { replace: true });
     } catch (err) {
-      setError("Failed to login");
+      console.log(err);
+      setError("Failed to create account");
     }
   };
   useEffect(() => {
-    if (loading) {
-      return;
+    if (loading) return;
+    if (user) {
+      navigate("/", { replace: true });
     }
-    if (user) navigate("/");
   }, [user, loading]);
   return (
-    <div className="Login" style={{ height: "100vh", display: "flex", alignItems: "center" }}>
+    <div className="AccountFields" style={{ height: "100vh", display: "flex", alignItems: "center" }}>
       <Container maxWidth="xs">
         <CssBaseline />
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -36,19 +38,27 @@ function Login() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
-            Login
+            CreateAccount
           </Typography>
-          <Button
-            variant="outlined"
-            onClick={signInWithGoogle}
-            startIcon={<GoogleIcon sx={{ color: "secondary.main" }} />}
-          >
-            Sign in with Google
+          <Button variant="outlined" startIcon={<GoogleIcon sx={{ color: "secondary.main" }} />}>
+            Register With Google
           </Button>
           <Typography align="center" sx={{ mt: 1 }}>
             or
           </Typography>
           <Box component="form" onSubmit={handleSubmit}>
+            <TextField
+              variant="outlined"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              label="Name *"
+              id="name"
+              name="name"
+              margin="normal"
+              autoComplete="name"
+              fullWidth
+              autoFocus
+            />
             <TextField
               variant="outlined"
               value={email}
@@ -58,7 +68,6 @@ function Login() {
               name="email"
               margin="normal"
               autoComplete="email"
-              autoFocus
               fullWidth
             />
             <TextField
@@ -73,25 +82,25 @@ function Login() {
               autoComplete="current-password"
               fullWidth
             />
-            <Button disabled={loading} type="submit" variant="contained" fullWidth sx={{ mt: 3, mb: 2 }}>
-              Login
+            <Button type="submit" disabled={loading} variant="contained" fullWidth sx={{ mt: 3, mb: 2 }}>
+              Register
             </Button>
             {error && (
-              <Alert variant="outlined" severity="error" sx={{ mb: 2 }}>
+              <Alert severity="error" fullWidth>
                 {error}
               </Alert>
             )}
+            <Typography align="center">
+              Already have an account?{" "}
+              <Link component={ReactRouterLink} to="/login">
+                Login
+              </Link>
+            </Typography>
           </Box>
-          <Typography align="center">
-            No account?{" "}
-            <Link component={ReactRouterLink} to="/create-account">
-              Register
-            </Link>
-          </Typography>
         </Box>
       </Container>
     </div>
   );
 }
 
-export default Login;
+export default CreateAccount;

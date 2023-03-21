@@ -13,14 +13,14 @@ import {
   Stack,
   Link,
 } from "@mui/material";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { logout } from "./firebase";
+import { logout } from "../Config/firebase";
 import { Link as RouterLink } from "react-router-dom";
-import { db, auth } from "./firebase";
+import { db, auth } from "../Config/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, onSnapshot } from "firebase/firestore";
 

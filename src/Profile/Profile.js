@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Avatar, Container, Box, Typography, TextField, InputLabel } from "@mui/material";
 import ImageUpload from "../Components/ImageUpload";
-import { auth, db, storage } from "../firebase";
+import { auth, db, storage } from "../Config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { uuidv4 as uuid } from "@firebase/util";
@@ -88,12 +88,10 @@ const Profile = () => {
             sx={{ width: { md: "250px", xs: "150px" }, height: { md: "250px", xs: "150px" } }}
           />
         </Box>
-        <Box>
+        <Box sx={{ display: "flex", justifyContent: "center", m: 0 }}>
           <Typography variant="h4" component="h1" sx={{ display: { md: "block", xs: "none" }, pb: 5 }}>
             Welcome {profileName}!
           </Typography>
-          {/* <TextField label="Email" margin="normal" fullWidth />
-          <TextField label="Password" margin="normal" sx={{ pb: 1 }} fullWidth /> */}
           <InputLabel sx={{ pb: 1 }}>Set Profile Picture:</InputLabel>
           <ImageUpload
             handleImageChange={handleImageChange}

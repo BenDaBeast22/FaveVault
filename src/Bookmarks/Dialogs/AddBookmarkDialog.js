@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box, Button, Dialog, DialogContent, DialogContentText, TextField, Alert } from "@mui/material";
 import PublishRoundedIcon from "@mui/icons-material/PublishRounded";
 import { v4 as uuid } from "uuid";
-import { storage } from "../../firebase";
+import { storage } from "../../Config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import ImageUpload from "../../Components/ImageUpload";
 

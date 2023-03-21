@@ -8,6 +8,7 @@ import {
   ImageListItemBar,
   Modal,
   Container,
+  Typography,
 } from "@mui/material";
 import EditCardIcon from "../Icons/EditCardIcon";
 import DeleteCardIcon from "../Icons/DeleteCardIcon";
@@ -24,18 +25,20 @@ function ImageList({ list, editCard, EditCardDialog, handleDelete, type }) {
   const handleCloseDialog = () => {
     setDialogOpen(false);
   };
+  const decrementIndex = (index) => {
+    return index - 1 < 0 ? list.length - 1 : index - 1;
+  };
+  const incrementIndex = (index) => {
+    return index + 1 > list.length - 1 ? 0 : index + 1;
+  };
   const handleKeydown = useCallback(
     (event) => {
       // left key
       if (event.keyCode === 37) {
-        setDialogIndex((index) => {
-          return index - 1 < 0 ? list.length - 1 : index - 1;
-        });
+        setDialogIndex((index) => decrementIndex(index));
         // right key
       } else if (event.keyCode === 39) {
-        setDialogIndex((index) => {
-          return index + 1 > list.length - 1 ? 0 : index + 1;
-        });
+        setDialogIndex((index) => incrementIndex(index));
       }
     },
     [list]
@@ -90,13 +93,12 @@ function ImageList({ list, editCard, EditCardDialog, handleDelete, type }) {
             left: "50%",
             transform: "translate(-50%, -50%)",
             bgcolor: "background.paper",
-            boxShadow: 24,
           }}
         >
           <Carousel
             index={dialogIndex}
-            next={() => setDialogIndex((index) => index + 1)}
-            prev={() => setDialogIndex((index) => index - 1)}
+            next={() => setDialogIndex((index) => incrementIndex(index))}
+            prev={() => setDialogIndex((index) => decrementIndex(index))}
             autoPlay={false}
             duration={250}
             navButtonsAlwaysVisible
@@ -113,12 +115,26 @@ function ImageList({ list, editCard, EditCardDialog, handleDelete, type }) {
                   height: "700px",
                 }}
               >
-                <img
-                  src={card.img}
-                  alt={card.img}
-                  style={{ objectFit: "contain", maxHeight: "650px", maxWidth: "1200px" }}
-                  loading="lazy"
-                />
+                <Box>
+                  <img
+                    src={card.img}
+                    alt={card.img}
+                    style={{
+                      objectFit: "contain",
+                      maxHeight: "650px",
+                      maxWidth: "1200px",
+                      m: 0,
+                      p: 0,
+                    }}
+                    loading="lazy"
+                  />
+                  {/* <Box sx={{ width: "100%", p: 2, background: "rgba(0, 0, 0, 0.5)", position: "absolute", bottom: 0 }}>
+                    <Typography align="center">{card.name}</Typography>
+                  </Box> */}
+                  <Typography variant="h5" align="center">
+                    {card.name}
+                  </Typography>
+                </Box>
               </Container>
             ))}
           </Carousel>

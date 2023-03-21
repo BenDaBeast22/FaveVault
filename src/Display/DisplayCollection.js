@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth, db } from "./firebase";
+import { auth, db } from "../Config/firebase";
 import { useParams } from "react-router-dom";
 import { addDoc, doc, setDoc, collection } from "firebase/firestore";
 import { Container, Typography, Box, Select, MenuItem, FormControl, InputLabel, Button, Switch } from "@mui/material";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import SubcollectionsList from "./SubcollectionsList";
 import ItemsList from "./ItemsList";
-import { capitalize, singularize } from "./helpers";
+import { capitalize, singularize } from "../helpers";
 
 const DisplayCollection = ({
   groupingName,

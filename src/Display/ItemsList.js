@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, getDocs } from "firebase/firestore";
-import { db } from "./firebase";
+import { db } from "../Config/firebase";
 
 const ItemsList = ({ groupingName, groupingType, user, sortBy, collectionId, EditItemDialog, CardList }) => {
   const [items, setItems] = useState([]);

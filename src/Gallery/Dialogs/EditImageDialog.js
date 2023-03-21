@@ -3,7 +3,7 @@ import { Box, Button, Dialog, DialogContent, DialogContentText, TextField, Alert
 import PublishRoundedIcon from "@mui/icons-material/PublishRounded";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { v4 as uuid } from "uuid";
-import { storage } from "../../firebase";
+import { storage } from "../../Config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import CircularProgressLabel from "../../Components/CircularProgressLabel";
 

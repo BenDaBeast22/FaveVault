@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { auth } from "../firebase";
+import { auth } from "../Config/firebase";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { useAuthState } from "react-firebase-hooks/auth";

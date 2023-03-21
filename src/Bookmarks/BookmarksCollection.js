@@ -1,8 +1,8 @@
-import DisplayCollection from "../DisplayCollection";
+import DisplayCollection from "../Display/DisplayCollection";
 import AddBookmarkDialog from "./Dialogs/AddBookmarkDialog";
 import AddBookmarkToSubCollectionDialog from "./Dialogs/AddBookmarkToSubcollectionDialog";
 import EditBookmarkDialog from "./Dialogs/EditBookmarkDialog";
-import BookmarkList from "../Display/BookmarkList";
+import BookmarkList from "../DisplayList/BookmarkList";
 
 const BookmarksCollection = () => {
   return (

@@ -2,10 +2,10 @@ import { Container, Select, MenuItem, FormControl, InputLabel, Button } from "@m
 import React, { useEffect, useState } from "react";
 import { collection, query, doc, orderBy, addDoc, onSnapshot, updateDoc, deleteDoc, getDocs } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { db, auth } from "./firebase";
-import CollectionList from "./Display/CollectionList";
-import AddCollectionDialog from "./Dialogs/AddCollectionDialog";
-import EditCollectionDialog from "./Dialogs/EditCollectionDialog";
+import { db, auth } from "../Config/firebase";
+import CollectionList from "../DisplayList/CollectionList";
+import AddCollectionDialog from "../Dialogs/AddCollectionDialog";
+import EditCollectionDialog from "../Dialogs/EditCollectionDialog";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 
 const DisplayCollections = ({ groupingName, groupingType }) => {
