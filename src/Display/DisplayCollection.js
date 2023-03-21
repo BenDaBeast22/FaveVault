@@ -114,7 +114,8 @@ const DisplayCollection = ({
               display: "flex",
               alignItems: "center",
               border: "1px solid",
-              borderColor: "secondary.main",
+              borderColor: "rgba(255, 255, 255, 0.23)",
+              backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.09))",
               borderRadius: "5px",
               "&:hover": {
                 borderColor: "inherit",

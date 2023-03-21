@@ -10,6 +10,7 @@ import Backlog from "./Backlog";
 import Profile from "./Profile/Profile";
 import BookmarksCollection from "./Bookmarks/BookmarksCollection";
 import GalleryCollection from "./Gallery/GalleryCollection";
+import RankingsCollection from "./Rankings/RankingsCollection";
 import "./App.css";
 
 function App() {
@@ -22,9 +23,13 @@ function App() {
             <Route index element={<Bookmarks />} />
             <Route path=":id/:name/:subcollectionsEnabled" element={<BookmarksCollection />} />
           </Route>
-          <Route path="Gallery">
+          <Route path="gallery">
             <Route index element={<Gallery />} />
             <Route path=":id/:name/:subcollectionsEnabled" element={<GalleryCollection />} />
+          </Route>
+          <Route path="rankings">
+            <Route index element={<Rankings />} />
+            <Route path=":id/:name/:subcollectionsEnabled" element={<RankingsCollection />} />
           </Route>
           <Route path="profile" element={<Profile />} />
           <Route path="rankings" element={<Rankings />} />

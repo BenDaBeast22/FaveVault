@@ -9,15 +9,16 @@ import {
   Modal,
   Container,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import EditCardIcon from "../Icons/EditCardIcon";
 import DeleteCardIcon from "../Icons/DeleteCardIcon";
 import Carousel from "react-material-ui-carousel";
+import { useTheme } from "@emotion/react";
 
 function ImageList({ list, editCard, EditCardDialog, handleDelete, type }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogIndex, setDialogIndex] = useState(0);
-
   const handleOpenDialog = (index) => {
     setDialogIndex(index);
     setDialogOpen(true);
@@ -47,9 +48,17 @@ function ImageList({ list, editCard, EditCardDialog, handleDelete, type }) {
     window.addEventListener("keydown", handleKeydown);
     return () => window.removeEventListener("keydown", handleKeydown);
   });
+  const theme = useTheme();
+  const xs = useMediaQuery(theme.breakpoints.up("xs"));
+  const sm = useMediaQuery(theme.breakpoints.up("sm"));
+  const md = useMediaQuery(theme.breakpoints.up("md"));
+  const lg = useMediaQuery(theme.breakpoints.up("lg"));
+  const xl = useMediaQuery(theme.breakpoints.up("xl"));
+  const cols = xl ? 6 : lg ? 5 : md ? 4 : sm ? 3 : 2;
+
   return (
-    <>
-      <ImgList gap={15} cols={5}>
+    <Box>
+      <ImgList gap={15} cols={cols}>
         {list.map((card, index) => (
           <ImageListItem sx={{ height: "100%" }} key={card.id}>
             <Card
@@ -140,7 +149,7 @@ function ImageList({ list, editCard, EditCardDialog, handleDelete, type }) {
           </Carousel>
         </Box>
       </Modal>
-    </>
+    </Box>
   );
 }
 

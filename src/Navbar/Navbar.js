@@ -113,7 +113,7 @@ const Navbar = () => {
                   textDecoration: "none",
                   color: "inherit",
                   "&.active": {
-                    backgroundColor: "#9e38d1",
+                    backgroundColor: "secondary.main",
                   },
                 }}
               >
@@ -134,7 +134,7 @@ const Navbar = () => {
                 display: "block",
                 textDecoration: "none",
                 "&.active": {
-                  backgroundColor: "#9e38d1",
+                  backgroundColor: "secondary.main",
                 },
               }}
               key={page}

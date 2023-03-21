@@ -56,9 +56,7 @@ const Profile = () => {
   };
   useEffect(() => {
     const unsub = onSnapshot(userRef, (snapshot) => {
-      console.log(snapshot.data());
       const user = { ...snapshot.data(), id: snapshot.id };
-      console.log(user);
       setProfileName(user.name);
       setProfilePic(user.profilePic);
     });
@@ -88,7 +86,7 @@ const Profile = () => {
             sx={{ width: { md: "250px", xs: "150px" }, height: { md: "250px", xs: "150px" } }}
           />
         </Box>
-        <Box sx={{ display: "flex", justifyContent: "center", m: 0 }}>
+        <Box>
           <Typography variant="h4" component="h1" sx={{ display: { md: "block", xs: "none" }, pb: 5 }}>
             Welcome {profileName}!
           </Typography>
