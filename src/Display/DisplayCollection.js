@@ -17,7 +17,7 @@ const DisplayCollection = ({
   EditItemDialog,
   CardList,
 }) => {
-  const { id, name, subcollectionsEnabled } = useParams();
+  const { id, name, scoreType, subcollectionsEnabled } = useParams();
   const [user] = useAuthState(auth);
   const [displaySubcollections, setDisplaySubcollections] = useState(subcollectionsEnabled === "true");
   const [addDialog, setAddDialog] = useState(false);
@@ -34,7 +34,7 @@ const DisplayCollection = ({
     await setDoc(doc(collectionsRef, id, groupingType, ItemsRef.id), items);
   };
   const addItem = async (items, subcollectionId) => {
-    await setDoc(doc(subcollectionsRef, subcollectionId), { name: "default" });
+    await setDoc(doc(subcollectionsRef, subcollectionId), { name: "Default" });
     const itemsRef = await addDoc(collection(subcollectionsRef, subcollectionId, groupingType), items);
     await setDoc(doc(collectionsRef, id, groupingType, itemsRef.id), items);
   };
@@ -88,6 +88,7 @@ const DisplayCollection = ({
               <AddItemDialog
                 title={`Add New ${capitalize(singularize(groupingType))}`}
                 user={user}
+                scoreType={scoreType}
                 open={addDialog}
                 close={handleCloseAddDialog}
                 submit={addItem}
@@ -130,6 +131,7 @@ const DisplayCollection = ({
           <SubcollectionsList
             groupingName={groupingName}
             groupingType={groupingType}
+            scoreType={scoreType}
             user={user}
             sortBy={sortBy}
             collectionId={id}
@@ -141,6 +143,7 @@ const DisplayCollection = ({
           <ItemsList
             groupingName={groupingName}
             groupingType={groupingType}
+            scoreType={scoreType}
             user={user}
             sortBy={sortBy}
             collectionId={id}

@@ -58,7 +58,9 @@ const Profile = () => {
     const unsub = onSnapshot(userRef, (snapshot) => {
       const user = { ...snapshot.data(), id: snapshot.id };
       setProfileName(user.name);
-      setProfilePic(user.profilePic);
+      if (user.profilePic) {
+        setProfilePic(user.profilePic);
+      }
     });
     return () => unsub();
   }, []);

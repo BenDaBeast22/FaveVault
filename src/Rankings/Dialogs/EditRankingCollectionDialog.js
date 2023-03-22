@@ -9,17 +9,21 @@ import {
   Alert,
   InputLabel,
   Switch,
+  FormControl,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import PublishRoundedIcon from "@mui/icons-material/PublishRounded";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { v4 as uuid } from "uuid";
-import { storage } from "../Config/firebase";
+import { storage } from "../../Config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
-import CircularProgressLabel from "../Components/CircularProgressLabel";
+import CircularProgressLabel from "../../Components/CircularProgressLabel";
 
-const AddCollectionDialog = ({ title, card, user, open, submit, close }) => {
-  const [name, setName] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+const EditRankingCollectionDialog = ({ title, card, user, open, submit, close }) => {
+  const [name, setName] = useState(card.name);
+  const [imageUrl, setImageUrl] = useState(card.img);
+  const [scoreType, setScoreType] = useState(card.scoreType);
   const [imageUpload, setImageUpload] = useState(null);
   const [subcollectionsEnabled, setSubcollectionsEnabled] = useState(false);
   const [imageUploadSuccess, setImageUploadSuccess] = useState(false);
@@ -39,15 +43,13 @@ const AddCollectionDialog = ({ title, card, user, open, submit, close }) => {
       setError("Image name not set");
       return;
     }
-    const newCollection = {
+    const editedCollection = {
       name: name,
       img: imageUrl,
+      scoreType: scoreType,
       scEnabled: subcollectionsEnabled,
     };
-    await submit(newCollection);
-    setName("");
-    setImageUrl("");
-    setSubcollectionsEnabled(false);
+    await submit(editedCollection, card.id);
     handleClose();
   };
   const handleClose = () => {
@@ -102,6 +104,18 @@ const AddCollectionDialog = ({ title, card, user, open, submit, close }) => {
             onChange={(e) => setName(e.target.value)}
             autoFocus
           />
+          <Box sx={{ pt: 2 }}>
+            <FormControl fullWidth>
+              <InputLabel>Score Type</InputLabel>
+              <Select label="Score Type" value={scoreType} onChange={(e) => setScoreType(e.target.value)}>
+                <MenuItem value="stars">Stars</MenuItem>
+                <MenuItem value="hearts">Hearts</MenuItem>
+                <MenuItem value="percent">Percent</MenuItem>
+                <MenuItem value="10">Out of 10</MenuItem>
+                <MenuItem value="100">Out of 100</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
           <TextField
             disabled={imageUpload !== null}
             label="Image URL"
@@ -110,6 +124,20 @@ const AddCollectionDialog = ({ title, card, user, open, submit, close }) => {
             onChange={(e) => setImageUrl(e.target.value)}
             autoFocus
           />
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              borderRadius: "5px",
+              pt: 2,
+              "&:hover": {
+                borderColor: "inherit",
+              },
+            }}
+          >
+            <InputLabel sx={{ color: "inherit" }}>Subcollections</InputLabel>
+            <Switch checked={subcollectionsEnabled} onChange={toggleEnableSubcollections} />
+          </Box>
           <DialogContentText align="center" sx={{ mb: 1 }}>
             Or
           </DialogContentText>
@@ -131,21 +159,6 @@ const AddCollectionDialog = ({ title, card, user, open, submit, close }) => {
               imageUploadFail={imageUploadFail}
             />
           </Button>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: "5px",
-              pt: 2,
-              "&:hover": {
-                borderColor: "inherit",
-              },
-            }}
-          >
-            <InputLabel sx={{ color: "inherit" }}>Subcollections</InputLabel>
-            <Switch checked={subcollectionsEnabled} onChange={toggleEnableSubcollections} />
-          </Box>
           {error && (
             <Alert variant="outlined" severity="error" sx={{ mt: 2 }}>
               {error}
@@ -160,4 +173,4 @@ const AddCollectionDialog = ({ title, card, user, open, submit, close }) => {
   );
 };
 
-export default AddCollectionDialog;
+export default EditRankingCollectionDialog;

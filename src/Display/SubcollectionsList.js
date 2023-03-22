@@ -27,6 +27,7 @@ const SubcollectionsList = ({
   AddItemDialog,
   EditItemDialog,
   CardList,
+  scoreType,
 }) => {
   const [subcollections, setSubcollections] = useState([]);
   const [items, setItems] = useState({});
@@ -120,6 +121,7 @@ const SubcollectionsList = ({
               editCard={editItem}
               EditCardDialog={EditItemDialog}
               handleDelete={deleteItem}
+              scoreType={scoreType}
             />
           )}
         </Box>

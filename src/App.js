@@ -29,7 +29,7 @@ function App() {
           </Route>
           <Route path="rankings">
             <Route index element={<Rankings />} />
-            <Route path=":id/:name/:subcollectionsEnabled" element={<RankingsCollection />} />
+            <Route path=":id/:name/:scoreType/:subcollectionsEnabled" element={<RankingsCollection />} />
           </Route>
           <Route path="profile" element={<Profile />} />
           <Route path="rankings" element={<Rankings />} />

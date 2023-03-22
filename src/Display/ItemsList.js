@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, getDocs } from "firebase/firestore";
 import { db } from "../Config/firebase";
 
-const ItemsList = ({ groupingName, groupingType, user, sortBy, collectionId, EditItemDialog, CardList }) => {
+const ItemsList = ({ groupingName, groupingType, scoreType, user, sortBy, collectionId, EditItemDialog, CardList }) => {
   const [items, setItems] = useState([]);
   const uid = user.uid;
   const collectionsRef = collection(db, "data", uid, groupingName);
@@ -40,6 +40,7 @@ const ItemsList = ({ groupingName, groupingType, user, sortBy, collectionId, Edi
       editCard={editItem}
       EditCardDialog={EditItemDialog}
       handleDelete={handleDelete}
+      scoreType={scoreType}
     />
   );
 };

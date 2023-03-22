@@ -8,7 +8,7 @@ import AddCollectionDialog from "../Dialogs/AddCollectionDialog";
 import EditCollectionDialog from "../Dialogs/EditCollectionDialog";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 
-const DisplayCollections = ({ groupingName, groupingType }) => {
+const DisplayCollections = ({ groupingName, groupingType, AddCollectionDialog, EditCollectionDialog }) => {
   const [user] = useAuthState(auth);
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,6 +20,7 @@ const DisplayCollections = ({ groupingName, groupingType }) => {
     await addDoc(collection(db, "data", uid, groupingName), newCollection);
   };
   const editCollection = async (editedCollection, id) => {
+    console.log("edit col = ", editCollection);
     await updateDoc(doc(collectionsRef, id), editedCollection);
   };
   const handleDelete = async (collectionId) => {
@@ -127,6 +128,8 @@ const DisplayCollections = ({ groupingName, groupingType }) => {
 DisplayCollections.defaultProps = {
   groupingName: "collections",
   groupingType: "bookmarks",
+  AddCollectionDialog: AddCollectionDialog,
+  EditCollectionDialog: EditCollectionDialog,
 };
 
 export default DisplayCollections;

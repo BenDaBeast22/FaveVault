@@ -53,7 +53,9 @@ const Navbar = () => {
     const userRef = doc(db, "users", uid);
     const unsub = onSnapshot(userRef, (snapshot) => {
       const user = snapshot.data();
-      setProfilePic(user.profilePic);
+      if (user.profilePic) {
+        setProfilePic(user.profilePic);
+      }
     });
     return () => unsub();
   }, []);

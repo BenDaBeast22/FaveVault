@@ -1,5 +1,15 @@
 import React, { useState } from "react";
-import { Box, Button, Dialog, DialogContent, DialogContentText, TextField, Alert } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  TextField,
+  Alert,
+  Rating,
+  Typography,
+} from "@mui/material";
 import PublishRoundedIcon from "@mui/icons-material/PublishRounded";
 import { v4 as uuid } from "uuid";
 import { storage } from "../../Config/firebase";
@@ -8,6 +18,7 @@ import ImageUpload from "../../Components/ImageUpload";
 
 const AddRankingDialog = ({ title, user, open, submit, close }) => {
   const [rankingName, setRankingName] = useState("");
+  const [score, setScore] = useState(5);
   const [imageUrl, setImageUrl] = useState("");
   const [imageUpload, setImageUpload] = useState(null);
   const [imageUploadSuccess, setImageUploadSuccess] = useState(false);
@@ -21,9 +32,10 @@ const AddRankingDialog = ({ title, user, open, submit, close }) => {
       setError("Ranking name not set");
       return;
     }
-    const ranking = { name: rankingName, img: imageUrl, scId: "default" };
+    const ranking = { name: rankingName, img: imageUrl, score: score, scId: "default" };
     await submit(ranking, "default");
     setRankingName("");
+    setScore(5);
     setImageUrl("");
     handleClose();
     return;
@@ -80,6 +92,29 @@ const AddRankingDialog = ({ title, user, open, submit, close }) => {
             onChange={(e) => setRankingName(e.target.value)}
             autoFocus
           />
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <TextField
+              label="Score"
+              type="Number"
+              InputProps={{ inputProps: { min: 0, max: 10 } }}
+              value={score}
+              onChange={(e) => setScore(Number(e.target.value))}
+              sx={{ mt: 2, width: "50%" }}
+            />
+            <Box
+              sx={{
+                mt: 2,
+                width: "50%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-around",
+                alignItems: "center",
+              }}
+            >
+              <Typography component="legend">Score Preview</Typography>
+              <Rating name="score-preview" precision={0.5} value={score / 2} size="medium" readOnly />
+            </Box>
+          </Box>
           <TextField
             disabled={imageUpload !== null}
             label="Image URL"

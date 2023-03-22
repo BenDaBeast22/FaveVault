@@ -2,7 +2,7 @@ import DisplayCollection from "../Display/DisplayCollection";
 import AddRankingDialog from "./Dialogs/AddRankingDialog";
 import AddRankingToSubcollectionDialog from "./Dialogs/AddRankingToSubcollectionDialog";
 import EditRankingDialog from "./Dialogs/EditRankingDialog";
-import ImageList from "../DisplayList/ImageList";
+import RankingList from "../DisplayList/RankingList";
 
 const RankingsCollection = () => {
   return (
@@ -12,7 +12,7 @@ const RankingsCollection = () => {
       AddItemDialog={AddRankingDialog}
       AddItemToSubcollectionDialog={AddRankingToSubcollectionDialog}
       EditItemDialog={EditRankingDialog}
-      CardList={ImageList}
+      CardList={RankingList}
     />
   );
 };
