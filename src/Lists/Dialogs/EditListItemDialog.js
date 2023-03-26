@@ -1,5 +1,19 @@
 import React, { useState } from "react";
-import { Box, Button, Dialog, DialogContent, DialogContentText, TextField, Alert } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  TextField,
+  Alert,
+  Typography,
+  Rating,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import PublishRoundedIcon from "@mui/icons-material/PublishRounded";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { v4 as uuid } from "uuid";
@@ -7,10 +21,11 @@ import { storage } from "../../Config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import CircularProgressLabel from "../../Components/CircularProgressLabel";
 
-const AddRankingToSubcollectionDialog = ({ title, user, open, submit, close }) => {
-  const [subcollectionName, setSubcollectionName] = useState("");
-  const [rankingName, setRankingName] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+const EditListItemDialog = ({ title, card, user, open, submit, close, scoreType, displayStatus }) => {
+  const [itemName, setItemName] = useState(card.name);
+  const [score, setScore] = useState(card.score);
+  const [status, setStatus] = useState(card.status);
+  const [imageUrl, setImageUrl] = useState(card.img);
   const [imageUpload, setImageUpload] = useState(null);
   const [imageUploadSuccess, setImageUploadSuccess] = useState(false);
   const [imageUploadFail, setImageUploadFail] = useState(false);
@@ -19,26 +34,18 @@ const AddRankingToSubcollectionDialog = ({ title, user, open, submit, close }) =
   const uid = user.uid;
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!subcollectionName) {
-      setError("Subcollection name not set");
-      return;
-    } else if (!rankingName) {
-      setError("Ranking name not set");
+    if (!itemName) {
+      setError("List Item name not set");
     } else if (!imageUrl) {
       setError("Subcollection image name not set");
       return;
     }
-    const newSubcollection = {
-      name: subcollectionName,
-      images: {
-        name: rankingName,
-        img: imageUrl,
-      },
+    const newItem = {
+      name: itemName,
+      img: imageUrl,
+      score: score,
     };
-    await submit(newSubcollection);
-    setSubcollectionName("");
-    setRankingName("");
-    setImageUrl("");
+    await submit(newItem, card.scId, card.id);
     handleClose();
   };
   const handleClose = () => {
@@ -87,17 +94,10 @@ const AddRankingToSubcollectionDialog = ({ title, user, open, submit, close }) =
         <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
           <DialogContentText align="center">{title}</DialogContentText>
           <TextField
-            label="Subcollection Name"
-            value={subcollectionName}
+            label="List Item Name"
+            value={itemName}
             sx={{ mt: 2 }}
-            onChange={(e) => setSubcollectionName(e.target.value)}
-            autoFocus
-          />
-          <TextField
-            label="Ranking Name"
-            value={rankingName}
-            sx={{ mt: 2 }}
-            onChange={(e) => setRankingName(e.target.value)}
+            onChange={(e) => setItemName(e.target.value)}
             autoFocus
           />
           <TextField
@@ -129,6 +129,44 @@ const AddRankingToSubcollectionDialog = ({ title, user, open, submit, close }) =
               imageUploadFail={imageUploadFail}
             />
           </Button>
+          {scoreType !== "none" && (
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <TextField
+                label="Score"
+                type="Number"
+                InputProps={{ inputProps: { min: 0, max: 10 } }}
+                value={score}
+                onChange={(e) => setScore(Number(e.target.value))}
+                sx={{ mt: 2, width: "50%" }}
+              />
+              <Box
+                sx={{
+                  mt: 2,
+                  width: "50%",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-around",
+                  alignItems: "center",
+                }}
+              >
+                <Typography component="legend">Score Preview</Typography>
+                <Rating name="score-preview" precision={0.5} value={Number(score) / 2} size="medium" readOnly />
+              </Box>
+            </Box>
+          )}
+          {displayStatus && (
+            <Box sx={{ pt: 2 }}>
+              <FormControl fullWidth>
+                <InputLabel>List Item Status</InputLabel>
+                <Select label="Progress Status" value={status} onChange={(e) => setStatus(e.target.value)}>
+                  <MenuItem value="planning">Planning</MenuItem>
+                  <MenuItem value="progress">In Progress</MenuItem>
+                  <MenuItem value="finished">Finished</MenuItem>
+                  <MenuItem value="dropped">Dropped</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+          )}
           {error && (
             <Alert variant="outlined" severity="error" sx={{ mt: 2 }}>
               {error}
@@ -143,4 +181,4 @@ const AddRankingToSubcollectionDialog = ({ title, user, open, submit, close }) =
   );
 };
 
-export default AddRankingToSubcollectionDialog;
+export default EditListItemDialog;

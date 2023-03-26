@@ -7,7 +7,7 @@ import { storage } from "../../Config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import CircularProgressLabel from "../../Components/CircularProgressLabel";
 
-const AddBookmarkToSubCollectionDialog = ({ title, user, open, submit, close }) => {
+const AddBookmarkToSubcollectionDialog = ({ title, user, open, submit, close }) => {
   const [subcollectionName, setSubcollectionName] = useState("");
   const [bookmarkName, setBookmarkName] = useState("");
   const [bookmarkLink, setBookmarkLink] = useState("");
@@ -153,4 +153,4 @@ const AddBookmarkToSubCollectionDialog = ({ title, user, open, submit, close }) 
   );
 };
 
-export default AddBookmarkToSubCollectionDialog;
+export default AddBookmarkToSubcollectionDialog;

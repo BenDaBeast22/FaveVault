@@ -55,6 +55,8 @@ const SubcollectionsList = ({
     }
   };
   const deleteItem = async (itemId, subcollectionId) => {
+    console.log("itemid = ", itemId);
+    console.log("scid = ", subcollectionId);
     await deleteDoc(doc(subcollectionsRef, subcollectionId, groupingType, itemId));
     await deleteDoc(doc(collectionsRef, collectionId, groupingType, itemId));
     // delete subcollection if there are no items within it
@@ -122,6 +124,7 @@ const SubcollectionsList = ({
               EditCardDialog={EditItemDialog}
               handleDelete={deleteItem}
               scoreType={scoreType}
+              displayStatus={true}
             />
           )}
         </Box>

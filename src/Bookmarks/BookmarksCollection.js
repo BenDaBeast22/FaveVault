@@ -1,6 +1,6 @@
 import DisplayCollection from "../Display/DisplayCollection";
 import AddBookmarkDialog from "./Dialogs/AddBookmarkDialog";
-import AddBookmarkToSubCollectionDialog from "./Dialogs/AddBookmarkToSubcollectionDialog";
+import AddBookmarkToSubcollectionDialog from "./Dialogs/AddBookmarkToSubcollectionDialog";
 import EditBookmarkDialog from "./Dialogs/EditBookmarkDialog";
 import BookmarkList from "../DisplayList/BookmarkList";
 
@@ -10,7 +10,7 @@ const BookmarksCollection = () => {
       groupingName="Bookmarks"
       groupingType="bookmarks"
       AddItemDialog={AddBookmarkDialog}
-      AddItemToSubcollectionDialog={AddBookmarkToSubCollectionDialog}
+      AddItemToSubcollectionDialog={AddBookmarkToSubcollectionDialog}
       EditItemDialog={EditBookmarkDialog}
       CardList={BookmarkList}
     />

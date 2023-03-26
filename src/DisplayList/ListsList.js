@@ -14,7 +14,7 @@ const StyledRating = styled(Rating)({
   },
 });
 
-function RankingList({ list, scoreType, editCard, EditCardDialog, handleDelete, type }) {
+function ListsList({ list, scoreType, editCard, EditCardDialog, handleDelete, type, displayStatus }) {
   const handleRatingChange = (e, newScore, card) => {
     editCard({ score: newScore * 2 }, card.scId, card.id);
   };
@@ -63,7 +63,14 @@ function RankingList({ list, scoreType, editCard, EditCardDialog, handleDelete, 
                 p: 0,
               }}
             >
-              <EditCardIcon card={card} editCard={editCard} EditCardDialog={EditCardDialog} type={type} />
+              <EditCardIcon
+                card={card}
+                editCard={editCard}
+                EditCardDialog={EditCardDialog}
+                type={type}
+                scoreType={scoreType}
+                displayStatus={displayStatus}
+              />
               <DeleteCardIcon handleDelete={handleDelete} type={type} card={card} />
             </Box>
           </CardContent>
@@ -98,4 +105,4 @@ function RankingList({ list, scoreType, editCard, EditCardDialog, handleDelete, 
   }
 }
 
-export default RankingList;
+export default ListsList;

@@ -5,12 +5,13 @@ import Login from "./Account/Login";
 import CreateAccount from "./Account/CreateAccount";
 import Bookmarks from "./Bookmarks/Bookmarks";
 import Gallery from "./Gallery/Gallery";
-import Rankings from "./Rankings/Rankings";
-import Backlog from "./Backlog";
+import Lists from "./Lists/Lists";
+import Backlog from "./Backlog/Backlog";
 import Profile from "./Profile/Profile";
 import BookmarksCollection from "./Bookmarks/BookmarksCollection";
 import GalleryCollection from "./Gallery/GalleryCollection";
-import RankingsCollection from "./Rankings/RankingsCollection";
+import RankingsCollection from "./Lists/ListsCollection";
+import BacklogCollection from "./Backlog/BacklogCollection";
 import "./App.css";
 
 function App() {
@@ -27,14 +28,15 @@ function App() {
             <Route index element={<Gallery />} />
             <Route path=":id/:name/:subcollectionsEnabled" element={<GalleryCollection />} />
           </Route>
-          <Route path="rankings">
-            <Route index element={<Rankings />} />
-            <Route path=":id/:name/:scoreType/:subcollectionsEnabled" element={<RankingsCollection />} />
+          <Route path="lists">
+            <Route index element={<Lists />} />
+            <Route path=":id/:name/:scoreType/:statusEnabled" element={<RankingsCollection />} />
+          </Route>
+          <Route path="backlog">
+            <Route index element={<Backlog />} />
+            <Route path=":id/:name/:subcollectionsEnabled" element={<BacklogCollection />} />
           </Route>
           <Route path="profile" element={<Profile />} />
-          <Route path="rankings" element={<Rankings />} />
-          <Route path="backlog" element={<Backlog />} />
-          <Route />
         </Route>
       </Route>
       <Route path="/login" element={<Login />} />

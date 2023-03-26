@@ -17,7 +17,7 @@ import { storage } from "../Config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import CircularProgressLabel from "../Components/CircularProgressLabel";
 
-const AddCollectionDialog = ({ title, card, user, open, submit, close }) => {
+const AddCollectionDialog = ({ groupingName, user, open, submit, close }) => {
   const [name, setName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [imageUpload, setImageUpload] = useState(null);
@@ -33,7 +33,7 @@ const AddCollectionDialog = ({ title, card, user, open, submit, close }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!name) {
-      setError("Collection name not set");
+      setError(`${groupingName} name not set`);
       return;
     } else if (!imageUrl) {
       setError("Image name not set");
@@ -94,9 +94,9 @@ const AddCollectionDialog = ({ title, card, user, open, submit, close }) => {
     <Dialog open={open} onClose={handleClose}>
       <Box component="form" onSubmit={handleSubmit}>
         <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
-          <DialogContentText align="center">{title}</DialogContentText>
+          <DialogContentText align="center">{`Add New ${groupingName}`}</DialogContentText>
           <TextField
-            label="Collection Name"
+            label={`${groupingName} Name`}
             value={name}
             sx={{ mt: 2 }}
             onChange={(e) => setName(e.target.value)}

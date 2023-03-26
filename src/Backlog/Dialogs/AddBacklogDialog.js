@@ -1,13 +1,26 @@
 import React, { useState } from "react";
-import { Box, Button, Dialog, DialogContent, DialogContentText, TextField, Alert } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  TextField,
+  Alert,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import PublishRoundedIcon from "@mui/icons-material/PublishRounded";
 import { v4 as uuid } from "uuid";
 import { storage } from "../../Config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import ImageUpload from "../../Components/ImageUpload";
 
-const AddImageDialog = ({ title, user, open, submit, close, subcollectionId }) => {
-  const [imageName, setImageName] = useState("");
+const AddBacklogItemDialog = ({ title, user, open, submit, close }) => {
+  const [itemName, setItemName] = useState("");
+  const [itemStatus, setItemStatus] = useState("planning to start");
   const [imageUrl, setImageUrl] = useState("");
   const [imageUpload, setImageUpload] = useState(null);
   const [imageUploadSuccess, setImageUploadSuccess] = useState(false);
@@ -17,14 +30,14 @@ const AddImageDialog = ({ title, user, open, submit, close, subcollectionId }) =
   const uid = user.uid;
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!imageName) {
-      setError("Image name not set");
+    if (!itemName) {
+      setError("Item name not set");
       return;
     }
-    if (!subcollectionId) subcollectionId = "default";
-    const images = { name: imageName, img: imageUrl, scId: subcollectionId };
-    await submit(images, subcollectionId);
-    setImageName("");
+    const item = { name: itemName, status: itemStatus, img: imageUrl, scId: "default" };
+    await submit(item, "default");
+    setItemName("");
+    setItemStatus("planning to start");
     setImageUrl("");
     handleClose();
     return;
@@ -75,12 +88,21 @@ const AddImageDialog = ({ title, user, open, submit, close, subcollectionId }) =
         <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
           <DialogContentText align="center">{title}</DialogContentText>
           <TextField
-            label="Image Name"
-            value={imageName}
+            label="Item Name"
+            value={itemName}
             sx={{ mt: 2 }}
-            onChange={(e) => setImageName(e.target.value)}
+            onChange={(e) => setItemName(e.target.value)}
             autoFocus
           />
+          <Box sx={{ pt: 2 }}>
+            <FormControl fullWidth>
+              <InputLabel>Item Status</InputLabel>
+              <Select label="Progress Status" value={itemStatus} onChange={(e) => setItemStatus(e.target.value)}>
+                <MenuItem value="planning to start">Planning</MenuItem>
+                <MenuItem value="in progress">In Progress</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
           <TextField
             disabled={imageUpload !== null}
             label="Image URL"
@@ -114,4 +136,4 @@ const AddImageDialog = ({ title, user, open, submit, close, subcollectionId }) =
   );
 };
 
-export default AddImageDialog;
+export default AddBacklogItemDialog;

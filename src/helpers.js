@@ -3,7 +3,8 @@ const capitalize = (string) => {
 };
 
 const singularize = (string) => {
-  return string.slice(0, string.length - 1);
+  if (string.charAt(string.length - 1) === "s") return string.slice(0, string.length - 1);
+  else return string;
 };
 
 export { capitalize, singularize };

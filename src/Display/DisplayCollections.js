@@ -7,6 +7,7 @@ import CollectionList from "../DisplayList/CollectionList";
 import AddCollectionDialog from "../Dialogs/AddCollectionDialog";
 import EditCollectionDialog from "../Dialogs/EditCollectionDialog";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
+import { singularize } from "../helpers";
 
 const DisplayCollections = ({ groupingName, groupingType, AddCollectionDialog, EditCollectionDialog }) => {
   const [user] = useAuthState(auth);
@@ -78,17 +79,20 @@ const DisplayCollections = ({ groupingName, groupingType, AddCollectionDialog, E
   return (
     <div className={groupingType}>
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Container maxWidth="xs" sx={{ mb: 4, display: "flex", justifyContent: "space-around", alignItems: "center" }}>
+        <Container
+          maxWidth="xs"
+          sx={{ "& > *": { mx: 2 }, mb: 4, display: "flex", justifyContent: "center", alignItems: "center" }}
+        >
           <Button
             startIcon={<CreateNewFolderIcon />}
             variant="contained"
             color="secondary"
             onClick={handleOpenAddDialog}
           >
-            New Collection
+            {`New ${singularize(groupingName)}`}
           </Button>
           <AddCollectionDialog
-            title="Add New Collection"
+            groupingName={`${singularize(groupingName)}`}
             collection={{ name: "", img: "" }}
             user={user}
             open={addDialog}

@@ -61,6 +61,7 @@ function ImageList({ list, editCard, EditCardDialog, handleDelete, type }) {
       <ImgList gap={15} cols={cols}>
         {list.map((card, index) => (
           <ImageListItem sx={{ height: "100%" }} key={card.id}>
+            {console.log("card = ", card)}
             <Card
               sx={{
                 height: "200px",

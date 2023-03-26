@@ -17,7 +17,9 @@ function CollectionList({ list, editCard, EditCardDialog, handleDelete, type }) 
             }}
           >
             <ReactRouterLink
-              to={`${card.id}/${card.name}/${card.scoreType ? card.scoreType + "/" : ""}${card.scEnabled}`}
+              to={`${card.id}/${card.name}/${card.scoreType ? card.scoreType + "/" : ""}${
+                card.scEnabled || card.statusEnabled
+              }`}
             >
               <CardMedia height="100%" component="img" image={card.img} alt={card.img} />
             </ReactRouterLink>

@@ -17,9 +17,10 @@ const DisplayCollection = ({
   EditItemDialog,
   CardList,
 }) => {
-  const { id, name, scoreType, subcollectionsEnabled } = useParams();
+  const { id, name, scoreType, subcollectionsEnabled, statusEnabled } = useParams();
   const [user] = useAuthState(auth);
   const [displaySubcollections, setDisplaySubcollections] = useState(subcollectionsEnabled === "true");
+  const [displayStatus] = useState(statusEnabled === "true");
   const [addDialog, setAddDialog] = useState(false);
   const [sortBy, setSortBy] = useState("asc");
   const uid = user.uid;
@@ -56,8 +57,17 @@ const DisplayCollection = ({
         <Typography variant="h3" align="center" gutterBottom>
           {name}
         </Typography>
-        <Container maxWidth="sm" sx={{ mb: 4, display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-          {displaySubcollections ? (
+        <Container
+          maxWidth="md"
+          sx={{
+            "& > *": { mx: "10px ! important" },
+            mb: 4,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {displaySubcollections || displayStatus ? (
             <>
               <Button
                 startIcon={<CreateNewFolderIcon />}
@@ -65,14 +75,19 @@ const DisplayCollection = ({
                 color="secondary"
                 onClick={handleOpenAddDialog}
               >
-                New Subcollection
+                {displayStatus ? `New ${capitalize(singularize(groupingType))}` : "New Subcollection"}
               </Button>
               <AddItemToSubcollectionDialog
-                title={`Add ${capitalize(singularize(groupingType))} to new Subcollection`}
+                title={
+                  displayStatus
+                    ? `Add New ${capitalize(singularize(groupingType))}`
+                    : `Add ${capitalize(singularize(groupingType))} To New Subcollection`
+                }
                 user={user}
                 open={addDialog}
                 close={handleCloseAddDialog}
                 submit={addItemToSubcollection}
+                scoreType={scoreType}
               />
             </>
           ) : (
@@ -92,6 +107,7 @@ const DisplayCollection = ({
                 open={addDialog}
                 close={handleCloseAddDialog}
                 submit={addItem}
+                displayStatus={displayStatus}
               />
             </>
           )}
@@ -110,24 +126,26 @@ const DisplayCollection = ({
               <MenuItem value="desc">Descending</MenuItem>
             </Select>
           </FormControl>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              border: "1px solid",
-              borderColor: "rgba(255, 255, 255, 0.23)",
-              backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.09))",
-              borderRadius: "5px",
-              "&:hover": {
-                borderColor: "inherit",
-              },
-            }}
-          >
-            <InputLabel sx={{ pl: 1, color: "inherit" }}>Subcollections</InputLabel>
-            <Switch color="secondary" checked={displaySubcollections} onChange={toggleDisplaySubcollections} />
-          </Box>
+          {groupingName !== "Lists" && (
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                border: "1px solid",
+                borderColor: "rgba(255, 255, 255, 0.23)",
+                backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.09))",
+                borderRadius: "5px",
+                "&:hover": {
+                  borderColor: "inherit",
+                },
+              }}
+            >
+              <InputLabel sx={{ pl: 1, color: "inherit" }}>Subcollections</InputLabel>
+              <Switch color="secondary" checked={displaySubcollections} onChange={toggleDisplaySubcollections} />
+            </Box>
+          )}
         </Container>
-        {displaySubcollections ? (
+        {displaySubcollections || displayStatus ? (
           <SubcollectionsList
             groupingName={groupingName}
             groupingType={groupingType}

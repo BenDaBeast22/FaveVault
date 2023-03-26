@@ -24,7 +24,7 @@ import { db, auth } from "../Config/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, onSnapshot } from "firebase/firestore";
 
-const pages = ["Bookmarks", "Gallery", "Rankings", "Backlog"];
+const pages = ["Bookmarks", "Gallery", "Lists"];
 const settings = [
   { name: "Profile", icon: <AccountCircleIcon /> },
   { name: "User Settings", icon: <SettingsIcon /> },
@@ -133,11 +133,13 @@ const Navbar = () => {
                 py: 2.5,
                 px: 2,
                 color: "white",
-                display: "block",
+                display: "flex",
+                justifyContent: "center",
                 textDecoration: "none",
                 "&.active": {
                   backgroundColor: "secondary.main",
                 },
+                minWidth: 80,
               }}
               key={page}
             >

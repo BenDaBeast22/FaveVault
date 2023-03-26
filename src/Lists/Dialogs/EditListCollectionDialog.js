@@ -20,19 +20,19 @@ import { storage } from "../../Config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import CircularProgressLabel from "../../Components/CircularProgressLabel";
 
-const AddRankingCollectionDialog = ({ title, card, user, open, submit, close }) => {
-  const [name, setName] = useState("");
-  const [scoreType, setScoreType] = useState("stars");
-  const [imageUrl, setImageUrl] = useState("");
+const EditListCollectionDialog = ({ title, card, user, open, submit, close }) => {
+  const [name, setName] = useState(card.name);
+  const [imageUrl, setImageUrl] = useState(card.img);
   const [imageUpload, setImageUpload] = useState(null);
-  const [subcollectionsEnabled, setSubcollectionsEnabled] = useState(false);
+  const [scoreType, setScoreType] = useState(card.scoreType);
+  const [statusEnabled, setStatusEnabled] = useState(card.statusEnabled);
   const [imageUploadSuccess, setImageUploadSuccess] = useState(false);
   const [imageUploadFail, setImageUploadFail] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(false);
   const uid = user.uid;
-  const toggleEnableSubcollections = () => {
-    setSubcollectionsEnabled((prevState) => !prevState);
+  const toggleStatusEnabled = () => {
+    setStatusEnabled((prevState) => !prevState);
   };
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -43,16 +43,13 @@ const AddRankingCollectionDialog = ({ title, card, user, open, submit, close }) 
       setError("Image name not set");
       return;
     }
-    const newCollection = {
+    const editedCollection = {
       name: name,
       img: imageUrl,
       scoreType: scoreType,
-      scEnabled: subcollectionsEnabled,
+      statusEnabled: statusEnabled,
     };
-    await submit(newCollection);
-    setName("");
-    setImageUrl("");
-    setSubcollectionsEnabled(false);
+    await submit(editedCollection, card.id);
     handleClose();
   };
   const handleClose = () => {
@@ -107,18 +104,6 @@ const AddRankingCollectionDialog = ({ title, card, user, open, submit, close }) 
             onChange={(e) => setName(e.target.value)}
             autoFocus
           />
-          <Box sx={{ pt: 2 }}>
-            <FormControl fullWidth>
-              <InputLabel>Score Type</InputLabel>
-              <Select label="Score Type" value={scoreType} onChange={(e) => setScoreType(e.target.value)}>
-                <MenuItem value="stars">Stars</MenuItem>
-                <MenuItem value="hearts">Hearts</MenuItem>
-                <MenuItem value="percent">Percent</MenuItem>
-                <MenuItem value="10">Out of 10</MenuItem>
-                <MenuItem value="100">Out of 100</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
           <TextField
             disabled={imageUpload !== null}
             label="Image URL"
@@ -127,20 +112,6 @@ const AddRankingCollectionDialog = ({ title, card, user, open, submit, close }) 
             onChange={(e) => setImageUrl(e.target.value)}
             autoFocus
           />
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              borderRadius: "5px",
-              pt: 2,
-              "&:hover": {
-                borderColor: "inherit",
-              },
-            }}
-          >
-            <InputLabel sx={{ color: "inherit" }}>Subcollections</InputLabel>
-            <Switch checked={subcollectionsEnabled} onChange={toggleEnableSubcollections} />
-          </Box>
           <DialogContentText align="center" sx={{ mb: 1 }}>
             Or
           </DialogContentText>
@@ -153,7 +124,13 @@ const AddRankingCollectionDialog = ({ title, card, user, open, submit, close }) 
               onChange={handleImageChange}
               style={{ padding: "5px" }}
             />
-            <Button variant="contained" onClick={handleUploadImage} color="info" startIcon={<CloudUploadIcon />}>
+            <Button
+              variant="contained"
+              onClick={handleUploadImage}
+              color="info"
+              startIcon={<CloudUploadIcon />}
+              disabled={Boolean(imageUrl)}
+            >
               upload
             </Button>
             <CircularProgressLabel
@@ -162,6 +139,33 @@ const AddRankingCollectionDialog = ({ title, card, user, open, submit, close }) 
               imageUploadFail={imageUploadFail}
             />
           </Button>
+          <Box sx={{ pt: 2 }}>
+            <FormControl fullWidth>
+              <InputLabel>Score Type</InputLabel>
+              <Select label="Score Type" value={scoreType} onChange={(e) => setScoreType(e.target.value)}>
+                <MenuItem value="none">None</MenuItem>
+                <MenuItem value="stars">Stars</MenuItem>
+                <MenuItem value="hearts">Hearts</MenuItem>
+                <MenuItem value="percent">Percent</MenuItem>
+                <MenuItem value="10">Out of 10</MenuItem>
+                <MenuItem value="100">Out of 100</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              borderRadius: "5px",
+              pt: 2,
+              "&:hover": {
+                borderColor: "inherit",
+              },
+            }}
+          >
+            <InputLabel sx={{ color: "inherit" }}>Progress Status</InputLabel>
+            <Switch checked={statusEnabled} onChange={toggleStatusEnabled} />
+          </Box>
           {error && (
             <Alert variant="outlined" severity="error" sx={{ mt: 2 }}>
               {error}
@@ -176,4 +180,4 @@ const AddRankingCollectionDialog = ({ title, card, user, open, submit, close }) 
   );
 };
 
-export default AddRankingCollectionDialog;
+export default EditListCollectionDialog;

@@ -6,7 +6,7 @@ import { storage } from "../../Config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import ImageUpload from "../../Components/ImageUpload";
 
-const AddBookmarkDialog = ({ title, user, open, submit, close }) => {
+const AddBookmarkDialog = ({ title, user, open, submit, close, subcollectionId }) => {
   const [bookmarkName, setBookmarkName] = useState("");
   const [bookmarkLink, setBookmarkLink] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -25,8 +25,9 @@ const AddBookmarkDialog = ({ title, user, open, submit, close }) => {
       setError("Bookmark image not set");
       return;
     }
-    const bookmarks = { name: bookmarkName, link: bookmarkLink, img: imageUrl, scId: "default" };
-    await submit(bookmarks, "default");
+    if (!subcollectionId) subcollectionId = "default";
+    const bookmarks = { name: bookmarkName, link: bookmarkLink, img: imageUrl, scId: subcollectionId };
+    await submit(bookmarks, subcollectionId);
     setBookmarkName("");
     setBookmarkLink("");
     setImageUrl("");
