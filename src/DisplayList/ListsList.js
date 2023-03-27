@@ -84,6 +84,7 @@ function ListsList({
               }}
             >
               <EditCardIcon
+                key={card.score}
                 card={card}
                 editCard={groupingName === "Lists" ? editListItem : editCard}
                 EditCardDialog={EditCardDialog}

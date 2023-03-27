@@ -81,7 +81,7 @@ const DisplayCollection = ({
         <Container
           maxWidth="md"
           sx={{
-            "& > *": { mx: "10px ! important" },
+            "& > *": { mx: "10px !important" },
             mb: 4,
             display: "flex",
             justifyContent: "center",

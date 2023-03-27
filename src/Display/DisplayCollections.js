@@ -80,7 +80,13 @@ const DisplayCollections = ({ groupingName, groupingType, AddCollectionDialog, E
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Container
           maxWidth="xs"
-          sx={{ "& > *": { mx: 2 }, mb: 4, display: "flex", justifyContent: "center", alignItems: "center" }}
+          sx={{
+            "& > *": { mx: "10px !important" },
+            mb: 4,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
         >
           <Button
             startIcon={<CreateNewFolderIcon />}

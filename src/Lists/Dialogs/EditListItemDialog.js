@@ -53,7 +53,6 @@ const EditListItemDialog = ({ title, card, user, open, submit, close, scoreType,
       score: score,
       status: status,
     };
-    console.log("new item = ", newItem);
     await submit(newItem, status !== card.status, card.scId, card.id);
     handleClose();
   };
