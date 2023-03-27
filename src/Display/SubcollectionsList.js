@@ -17,6 +17,7 @@ import AddCardIcon from "../Icons/AddCardIcon";
 import EditCardIcon from "../Icons/EditCardIcon";
 import DeleteCardIcon from "../Icons/DeleteCardIcon";
 import EditSubcollectionDialog from "../Dialogs/EditSubcollectionDialog";
+import { statusPriorityVal } from "../helpers";
 
 const SubcollectionsList = ({
   groupingName,
@@ -28,12 +29,15 @@ const SubcollectionsList = ({
   EditItemDialog,
   CardList,
   scoreType,
+  addListItemToSubcollection,
+  collectionName,
 }) => {
   const [subcollections, setSubcollections] = useState([]);
   const [items, setItems] = useState({});
   const uid = user.uid;
   const collectionsRef = collection(db, "data", uid, groupingName);
   const subcollectionsRef = collection(collectionsRef, collectionId, "subcollections");
+  const subcollectionsOrder = groupingName === "Lists" ? "priority" : "name";
   const addItemToSubcollection = async (items, subcollectionId) => {
     const itemRef = await addDoc(collection(subcollectionsRef, subcollectionId, groupingType), items);
     await setDoc(doc(collectionsRef, collectionId, groupingType, itemRef.id), items);
@@ -41,6 +45,19 @@ const SubcollectionsList = ({
   const editItem = async (editedItem, scId, id) => {
     await updateDoc(doc(subcollectionsRef, scId, groupingType, id), editedItem);
     await updateDoc(doc(collectionsRef, collectionId, groupingType, id), editedItem);
+  };
+  const editListItem = async (editedItem, statusChanged, subcollectionId, itemId) => {
+    if (statusChanged) {
+      deleteItem(itemId, subcollectionId);
+      const newSubcollection = {
+        name: editedItem.status,
+        priority: statusPriorityVal(editedItem.status),
+        items: editedItem,
+      };
+      addListItemToSubcollection(newSubcollection);
+    } else {
+      editItem(editedItem, subcollectionId, itemId);
+    }
   };
   const editSubcollection = async (newSubcollectionName, id) => {
     await updateDoc(doc(subcollectionsRef, id), { name: newSubcollectionName });
@@ -55,8 +72,6 @@ const SubcollectionsList = ({
     }
   };
   const deleteItem = async (itemId, subcollectionId) => {
-    console.log("itemid = ", itemId);
-    console.log("scid = ", subcollectionId);
     await deleteDoc(doc(subcollectionsRef, subcollectionId, groupingType, itemId));
     await deleteDoc(doc(collectionsRef, collectionId, groupingType, itemId));
     // delete subcollection if there are no items within it
@@ -67,7 +82,7 @@ const SubcollectionsList = ({
   };
   // Event listeners for subcollections
   useEffect(() => {
-    const q = query(subcollectionsRef, orderBy("name", sortBy));
+    const q = query(subcollectionsRef, orderBy(subcollectionsOrder, sortBy));
     const unsub = onSnapshot(q, (snapshot) => {
       const subcollectionsArr = [];
       snapshot.forEach((doc) => {
@@ -101,20 +116,24 @@ const SubcollectionsList = ({
             <Typography variant="h4" sx={{ mr: 1 }}>
               {subcollection.name}
             </Typography>
-            <AddCardIcon
-              groupingType={groupingType}
-              submitCard={addItemToSubcollection}
-              subcollectionId={subcollection.id}
-              AddItemDialog={AddItemDialog}
-            />
-            <EditCardIcon
-              type="subcollection"
-              card={subcollection}
-              editCard={editSubcollection}
-              EditCardDialog={EditSubcollectionDialog}
-              tooltipName="Edit Subcollection"
-            />
-            <DeleteCardIcon handleDelete={deleteSubcollection} type="subcollection" card={subcollection} />
+            {groupingName !== "Lists" && (
+              <Box sx={{ display: "flex" }}>
+                <AddCardIcon
+                  groupingType={groupingType}
+                  submitCard={addItemToSubcollection}
+                  subcollectionId={subcollection.id}
+                  AddItemDialog={AddItemDialog}
+                />
+                <EditCardIcon
+                  type="subcollection"
+                  card={subcollection}
+                  editCard={editSubcollection}
+                  EditCardDialog={EditSubcollectionDialog}
+                  tooltipName="Edit Subcollection"
+                />
+                <DeleteCardIcon handleDelete={deleteSubcollection} type="subcollection" card={subcollection} />
+              </Box>
+            )}
           </Box>
           {items[subcollection.id] && (
             <CardList
@@ -125,6 +144,9 @@ const SubcollectionsList = ({
               handleDelete={deleteItem}
               scoreType={scoreType}
               displayStatus={true}
+              collectionName={collectionName}
+              editListItem={editListItem}
+              groupingName={groupingName}
             />
           )}
         </Box>

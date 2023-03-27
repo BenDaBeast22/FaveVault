@@ -21,7 +21,6 @@ const DisplayCollections = ({ groupingName, groupingType, AddCollectionDialog, E
     await addDoc(collection(db, "data", uid, groupingName), newCollection);
   };
   const editCollection = async (editedCollection, id) => {
-    console.log("edit col = ", editCollection);
     await updateDoc(doc(collectionsRef, id), editedCollection);
   };
   const handleDelete = async (collectionId) => {

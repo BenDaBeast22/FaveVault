@@ -1,22 +1,19 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogContent,
-  DialogContentText,
-  TextField,
-  Alert,
-  Rating,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Dialog, DialogContent, DialogContentText, TextField, Alert, Typography } from "@mui/material";
 import PublishRoundedIcon from "@mui/icons-material/PublishRounded";
 import { v4 as uuid } from "uuid";
 import { storage } from "../../Config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import ImageUpload from "../../Components/ImageUpload";
+import {
+  StarRating,
+  HeartsRating,
+  PercentRating,
+  OutOfTenRating,
+  OutOfHunderedRating,
+} from "../../Components/ScoreTypes";
 
-const AddListItemDialog = ({ title, user, open, submit, close, scoreType, subcollectionId }) => {
+const AddListItemDialog = ({ title, user, open, submit, close, scoreType, subcollectionId, collectionName }) => {
   const [itemName, setItemName] = useState("");
   const [score, setScore] = useState(0);
   const [imageUrl, setImageUrl] = useState("");
@@ -32,9 +29,18 @@ const AddListItemDialog = ({ title, user, open, submit, close, scoreType, subcol
       setError("List item name not set");
       return;
     }
-    if (!subcollectionId) subcollectionId = "planning";
-    const item = { name: itemName, img: imageUrl, score: score, scId: subcollectionId };
-    await submit(item, subcollectionId);
+    if (!subcollectionId) subcollectionId = "Planning";
+    const newSubcollection = {
+      name: "Planning",
+      priority: 1,
+      items: {
+        name: itemName,
+        img: imageUrl,
+        score: score,
+        status: "Planning",
+      },
+    };
+    await submit(newSubcollection);
     setItemName("");
     setScore(0);
     setImageUrl("");
@@ -87,7 +93,7 @@ const AddListItemDialog = ({ title, user, open, submit, close, scoreType, subcol
         <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
           <DialogContentText align="center">{title}</DialogContentText>
           <TextField
-            label="List Item Name"
+            label={`${collectionName} Name`}
             value={itemName}
             sx={{ mt: 2 }}
             onChange={(e) => setItemName(e.target.value)}
@@ -133,7 +139,17 @@ const AddListItemDialog = ({ title, user, open, submit, close, scoreType, subcol
                 }}
               >
                 <Typography component="legend">Score Preview</Typography>
-                <Rating name="score-preview" precision={0.5} value={Number(score) / 2} size="medium" readOnly />
+                {scoreType === "stars"
+                  ? StarRating(score, true)
+                  : scoreType === "hearts"
+                  ? HeartsRating(score, true)
+                  : scoreType === "percent"
+                  ? PercentRating(score)
+                  : scoreType === "10"
+                  ? OutOfTenRating(score)
+                  : scoreType === "100"
+                  ? OutOfHunderedRating(score)
+                  : ""}
               </Box>
             </Box>
           )}

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../Config/firebase";
 import { useParams } from "react-router-dom";
-import { addDoc, doc, setDoc, collection } from "firebase/firestore";
+import { addDoc, doc, setDoc, collection, getDocs, query, where, limit } from "firebase/firestore";
 import { Container, Typography, Box, Select, MenuItem, FormControl, InputLabel, Button, Switch } from "@mui/material";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import SubcollectionsList from "./SubcollectionsList";
@@ -26,16 +26,37 @@ const DisplayCollection = ({
   const uid = user.uid;
   const collectionsRef = collection(db, "data", uid, groupingName);
   const subcollectionsRef = collection(collectionsRef, id, "subcollections");
-  const addItemToSubcollection = async (newSubcollection) => {
-    const docRef = await addDoc(subcollectionsRef, {
+  const addItemToNewSubcollection = async (newSubcollection) => {
+    const subcollection = {
       name: newSubcollection.name,
-    });
+    };
+    if (newSubcollection.priority) subcollection.priority = newSubcollection.priority;
+    const docRef = await addDoc(subcollectionsRef, subcollection);
     const items = { ...newSubcollection[groupingType], scId: docRef.id };
-    const ItemsRef = await addDoc(collection(docRef, groupingType), items);
-    await setDoc(doc(collectionsRef, id, groupingType, ItemsRef.id), items);
+    const itemsRef = await addDoc(collection(docRef, groupingType), items);
+    await setDoc(doc(collectionsRef, id, groupingType, itemsRef.id), items);
+  };
+  const addListItemToSubcollection = async (newSubcollection) => {
+    const q = query(subcollectionsRef, where("name", "==", newSubcollection.name), limit(1));
+    const querySnapshot = await getDocs(q);
+    // if list status doesn't exist than create new one
+    if (querySnapshot.empty) {
+      addItemToNewSubcollection(newSubcollection);
+      return;
+    }
+    const subcollectionId = querySnapshot.docs[0].id;
+    const item = {
+      ...newSubcollection.items,
+      scId: subcollectionId,
+    };
+    const itemRef = await addDoc(collection(subcollectionsRef, subcollectionId, groupingType), item);
+    await setDoc(doc(collectionsRef, id, groupingType, itemRef.id), item);
+  };
+  const addListItem = (subcollection) => {
+    addListItemToSubcollection(subcollection);
   };
   const addItem = async (items, subcollectionId) => {
-    await setDoc(doc(subcollectionsRef, subcollectionId), { name: "Default" });
+    await setDoc(doc(subcollectionsRef, subcollectionId), { name: "Default", priority: 0 });
     const itemsRef = await addDoc(collection(subcollectionsRef, subcollectionId, groupingType), items);
     await setDoc(doc(collectionsRef, id, groupingType, itemsRef.id), items);
   };
@@ -75,19 +96,20 @@ const DisplayCollection = ({
                 color="secondary"
                 onClick={handleOpenAddDialog}
               >
-                {displayStatus ? `New ${capitalize(singularize(groupingType))}` : "New Subcollection"}
+                {displayStatus ? `New ${capitalize(singularize(name))}` : "New Subcollection"}
               </Button>
               <AddItemToSubcollectionDialog
                 title={
                   displayStatus
-                    ? `Add New ${capitalize(singularize(groupingType))}`
-                    : `Add ${capitalize(singularize(groupingType))} To New Subcollection`
+                    ? `Add New ${capitalize(singularize(name))}`
+                    : `Add ${capitalize(singularize(name))} To New Subcollection`
                 }
                 user={user}
                 open={addDialog}
                 close={handleCloseAddDialog}
-                submit={addItemToSubcollection}
+                submit={displayStatus ? addListItemToSubcollection : addItemToNewSubcollection}
                 scoreType={scoreType}
+                collectionName={name}
               />
             </>
           ) : (
@@ -98,16 +120,17 @@ const DisplayCollection = ({
                 color="secondary"
                 onClick={handleOpenAddDialog}
               >
-                New {capitalize(singularize(groupingType))}
+                New {capitalize(singularize(name))}
               </Button>
               <AddItemDialog
-                title={`Add New ${capitalize(singularize(groupingType))}`}
+                title={`Add New ${capitalize(singularize(name))}`}
                 user={user}
                 scoreType={scoreType}
                 open={addDialog}
                 close={handleCloseAddDialog}
-                submit={addItem}
+                submit={groupingName === "Lists" ? addListItem : addItem}
                 displayStatus={displayStatus}
+                collectionName={name}
               />
             </>
           )}
@@ -156,6 +179,8 @@ const DisplayCollection = ({
             AddItemDialog={AddItemDialog}
             EditItemDialog={EditItemDialog}
             CardList={CardList}
+            addListItemToSubcollection={addListItemToSubcollection}
+            collectionName={name}
           />
         ) : (
           <ItemsList
@@ -167,6 +192,8 @@ const DisplayCollection = ({
             collectionId={id}
             EditItemDialog={EditItemDialog}
             CardList={CardList}
+            addListItemToSubcollection={addListItemToSubcollection}
+            collectionName={name}
           />
         )}
       </Container>

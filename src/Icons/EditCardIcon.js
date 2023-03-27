@@ -2,13 +2,19 @@ import React, { useState } from "react";
 import { auth } from "../Config/firebase";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { useAuthState } from "react-firebase-hooks/auth";
-import FormDialog from "../Dialogs/AddCollectionDialog";
 import EditIcon from "@mui/icons-material/Edit";
-import EditSubcollectionDialog from "../Dialogs/EditSubcollectionDialog";
-import EditBookmarkDialog from "../Bookmarks/Dialogs/EditBookmarkDialog";
 import { capitalize } from "../helpers";
 
-const EditCardIcon = ({ card, editCard, type, EditCardDialog, tooltipName }) => {
+const EditCardIcon = ({
+  card,
+  editCard,
+  type,
+  EditCardDialog,
+  tooltipName,
+  displayStatus,
+  scoreType,
+  collectionName,
+}) => {
   const [user] = useAuthState(auth);
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
@@ -32,37 +38,10 @@ const EditCardIcon = ({ card, editCard, type, EditCardDialog, tooltipName }) => 
           open={open}
           close={handleClose}
           submit={editCard}
+          displayStatus={displayStatus}
+          scoreType={scoreType}
+          collectionName={collectionName}
         />
-        {/* {type === "collection" ? (
-          <FormDialog
-            title="Edit Collection"
-            collection={card}
-            user={user}
-            open={open}
-            close={handleClose}
-            submit={editCard}
-          />
-        ) : type === "subcollection" ? (
-          <EditSubcollectionDialog
-            title="Edit Subcollection"
-            subcollection={card}
-            user={user}
-            open={open}
-            close={handleClose}
-            submit={editCard}
-          />
-        ) : type === "bookmark" ? (
-          <EditBookmarkDialog
-            title="Edit Bookmark"
-            bookmark={card}
-            user={user}
-            open={open}
-            close={handleClose}
-            submit={editCard}
-          />
-        ) : (
-          <></>
-        )} */}
       </Box>
     </div>
   );

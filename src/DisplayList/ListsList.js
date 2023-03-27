@@ -1,22 +1,25 @@
-import { Grid, Card, CardMedia, CardContent, Box, Typography, Link, Rating } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { Grid, Card, CardMedia, CardContent, Box, Typography, Link, Select, MenuItem } from "@mui/material";
 import EditCardIcon from "../Icons/EditCardIcon";
 import DeleteCardIcon from "../Icons/DeleteCardIcon";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { StarRating, HeartsRating, PercentRating, OutOfTenRating, OutOfHunderedRating } from "../Components/ScoreTypes";
 
-const StyledRating = styled(Rating)({
-  "& .MuiRating-iconFilled": {
-    color: "#ff3d47",
-  },
-  "& .MuiRating-iconHover": {
-    color: "#ff6d75",
-  },
-});
-
-function ListsList({ list, scoreType, editCard, EditCardDialog, handleDelete, type, displayStatus }) {
-  const handleRatingChange = (e, newScore, card) => {
+function ListsList({
+  list,
+  scoreType,
+  editCard,
+  editListItem,
+  EditCardDialog,
+  handleDelete,
+  type,
+  displayStatus,
+  collectionName,
+  groupingName,
+}) {
+  const handleRatingChange = (newScore, card) => {
     editCard({ score: newScore * 2 }, card.scId, card.id);
+  };
+  const handleStatusChange = (newStatus, card) => {
+    editListItem({ ...card, status: newStatus }, true, card.scId, card.id);
   };
   return (
     <Grid container spacing={2} sx={{ pb: 2, pr: 2 }}>
@@ -45,16 +48,33 @@ function ListsList({ list, scoreType, editCard, EditCardDialog, handleDelete, ty
           >
             <Typography align="center">{card.name}</Typography>
             <Box sx={{ display: "flex", justifyContent: "center", mt: 0.5 }}>
-              {scoreType === "hearts"
-                ? HeartsRating(card)
+              {scoreType === "stars"
+                ? StarRating(card.score, false, handleRatingChange, card)
+                : scoreType === "hearts"
+                ? HeartsRating(card.score, false, handleRatingChange, card)
                 : scoreType === "percent"
-                ? `${(card.score * 100) / 10}%`
+                ? PercentRating(card.score)
                 : scoreType === "10"
-                ? `${card.score}/10`
+                ? OutOfTenRating(card.score)
                 : scoreType === "100"
-                ? `${card.score * 10}/100`
-                : StarRating(card)}
+                ? OutOfHunderedRating(card.score)
+                : ""}
             </Box>
+            {displayStatus && (
+              <Box sx={{ mt: 1 }}>
+                <Select
+                  value={card.status}
+                  onChange={(e) => handleStatusChange(e.target.value, card)}
+                  sx={{ height: "30px", width: "100%" }}
+                >
+                  <MenuItem value="Planning">Planning</MenuItem>
+                  <MenuItem value="In Progress">In Progress</MenuItem>
+                  <MenuItem value="Finished">Finished</MenuItem>
+                  <MenuItem value="Dropped">Dropped</MenuItem>
+                </Select>
+              </Box>
+            )}
+
             <Box
               sx={{
                 my: 1,
@@ -65,11 +85,12 @@ function ListsList({ list, scoreType, editCard, EditCardDialog, handleDelete, ty
             >
               <EditCardIcon
                 card={card}
-                editCard={editCard}
+                editCard={groupingName === "Lists" ? editListItem : editCard}
                 EditCardDialog={EditCardDialog}
                 type={type}
                 scoreType={scoreType}
                 displayStatus={displayStatus}
+                collectionName={collectionName}
               />
               <DeleteCardIcon handleDelete={handleDelete} type={type} card={card} />
             </Box>
@@ -78,31 +99,6 @@ function ListsList({ list, scoreType, editCard, EditCardDialog, handleDelete, ty
       ))}
     </Grid>
   );
-
-  function StarRating(card) {
-    return (
-      <Rating
-        name="score-preview"
-        precision={0.5}
-        value={card.score / 2}
-        size="medium"
-        onChange={(e, newScore) => handleRatingChange(e, newScore, card)}
-      />
-    );
-  }
-  function HeartsRating(card) {
-    return (
-      <StyledRating
-        name="score-preview"
-        precision={0.5}
-        value={card.score / 2}
-        size="medium"
-        icon={<FavoriteIcon fontSize="inherit" />}
-        emptyIcon={<FavoriteBorderIcon fontSize="inherit" />}
-        onChange={(e, newScore) => handleRatingChange(e, newScore, card)}
-      />
-    );
-  }
 }
 
 export default ListsList;

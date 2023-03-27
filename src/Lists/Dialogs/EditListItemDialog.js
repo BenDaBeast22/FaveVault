@@ -20,8 +20,15 @@ import { v4 as uuid } from "uuid";
 import { storage } from "../../Config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import CircularProgressLabel from "../../Components/CircularProgressLabel";
+import {
+  StarRating,
+  HeartsRating,
+  PercentRating,
+  OutOfTenRating,
+  OutOfHunderedRating,
+} from "../../Components/ScoreTypes";
 
-const EditListItemDialog = ({ title, card, user, open, submit, close, scoreType, displayStatus }) => {
+const EditListItemDialog = ({ title, card, user, open, submit, close, scoreType, displayStatus, collectionName }) => {
   const [itemName, setItemName] = useState(card.name);
   const [score, setScore] = useState(card.score);
   const [status, setStatus] = useState(card.status);
@@ -44,8 +51,10 @@ const EditListItemDialog = ({ title, card, user, open, submit, close, scoreType,
       name: itemName,
       img: imageUrl,
       score: score,
+      status: status,
     };
-    await submit(newItem, card.scId, card.id);
+    console.log("new item = ", newItem);
+    await submit(newItem, status !== card.status, card.scId, card.id);
     handleClose();
   };
   const handleClose = () => {
@@ -94,7 +103,7 @@ const EditListItemDialog = ({ title, card, user, open, submit, close, scoreType,
         <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
           <DialogContentText align="center">{title}</DialogContentText>
           <TextField
-            label="List Item Name"
+            label={`${collectionName} Name`}
             value={itemName}
             sx={{ mt: 2 }}
             onChange={(e) => setItemName(e.target.value)}
@@ -150,7 +159,17 @@ const EditListItemDialog = ({ title, card, user, open, submit, close, scoreType,
                 }}
               >
                 <Typography component="legend">Score Preview</Typography>
-                <Rating name="score-preview" precision={0.5} value={Number(score) / 2} size="medium" readOnly />
+                {scoreType === "stars"
+                  ? StarRating(score, true)
+                  : scoreType === "hearts"
+                  ? HeartsRating(score, true)
+                  : scoreType === "percent"
+                  ? PercentRating(score)
+                  : scoreType === "10"
+                  ? OutOfTenRating(score)
+                  : scoreType === "100"
+                  ? OutOfHunderedRating(score)
+                  : ""}
               </Box>
             </Box>
           )}
@@ -159,10 +178,10 @@ const EditListItemDialog = ({ title, card, user, open, submit, close, scoreType,
               <FormControl fullWidth>
                 <InputLabel>List Item Status</InputLabel>
                 <Select label="Progress Status" value={status} onChange={(e) => setStatus(e.target.value)}>
-                  <MenuItem value="planning">Planning</MenuItem>
-                  <MenuItem value="progress">In Progress</MenuItem>
-                  <MenuItem value="finished">Finished</MenuItem>
-                  <MenuItem value="dropped">Dropped</MenuItem>
+                  <MenuItem value="Planning">Planning</MenuItem>
+                  <MenuItem value="In Progress">In Progress</MenuItem>
+                  <MenuItem value="Finished">Finished</MenuItem>
+                  <MenuItem value="Dropped">Dropped</MenuItem>
                 </Select>
               </FormControl>
             </Box>

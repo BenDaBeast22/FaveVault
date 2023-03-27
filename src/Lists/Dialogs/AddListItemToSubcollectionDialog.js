@@ -20,11 +20,18 @@ import { v4 as uuid } from "uuid";
 import { storage } from "../../Config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import CircularProgressLabel from "../../Components/CircularProgressLabel";
+import {
+  StarRating,
+  HeartsRating,
+  PercentRating,
+  OutOfTenRating,
+  OutOfHunderedRating,
+} from "../../Components/ScoreTypes";
 
-const AddListItemToSubcollectionDialog = ({ title, user, open, submit, close, scoreType }) => {
+const AddListItemToSubcollectionDialog = ({ title, user, open, submit, close, scoreType, collectionName }) => {
   const [itemName, setItemName] = useState("");
   const [score, setScore] = useState(0);
-  const [status, setStatus] = useState("planning");
+  const [status, setStatus] = useState("Planning");
   const [imageUrl, setImageUrl] = useState("");
   const [imageUpload, setImageUpload] = useState(null);
   const [imageUploadSuccess, setImageUploadSuccess] = useState(false);
@@ -32,19 +39,42 @@ const AddListItemToSubcollectionDialog = ({ title, user, open, submit, close, sc
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(false);
   const uid = user.uid;
+  const statusPriorityVal = (status) => {
+    let ret;
+    switch (status) {
+      case "Planning":
+        ret = 1;
+        break;
+      case "In Progress":
+        ret = 2;
+        break;
+      case "Finished":
+        ret = 3;
+        break;
+      case "Dropped":
+        ret = 4;
+        break;
+      default:
+        ret = 1;
+    }
+    return ret;
+  };
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!itemName) {
       setError("List item name not set");
     } else if (!imageUrl) {
-      setError("Image name not set");
+      setError("Image not set");
       return;
     }
     const newSubcollection = {
       name: status,
+      priority: statusPriorityVal(status),
       items: {
         name: itemName,
         img: imageUrl,
+        score: score,
+        status: status,
       },
     };
     await submit(newSubcollection);
@@ -75,7 +105,6 @@ const AddListItemToSubcollectionDialog = ({ title, user, open, submit, close, sc
         (snapshot) => {
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           setProgress(progress);
-          console.log("Upload is" + progress + " % done");
         },
         (error) => {
           setImageUploadFail(true);
@@ -86,7 +115,6 @@ const AddListItemToSubcollectionDialog = ({ title, user, open, submit, close, sc
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             setImageUploadSuccess(true);
             setImageUrl(downloadURL);
-            console.log("File available at", downloadURL);
           });
         }
       );
@@ -98,7 +126,7 @@ const AddListItemToSubcollectionDialog = ({ title, user, open, submit, close, sc
         <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
           <DialogContentText align="center">{title}</DialogContentText>
           <TextField
-            label="List Item Name"
+            label={`${collectionName} Name`}
             value={itemName}
             sx={{ mt: 2 }}
             onChange={(e) => setItemName(e.target.value)}
@@ -154,7 +182,17 @@ const AddListItemToSubcollectionDialog = ({ title, user, open, submit, close, sc
                 }}
               >
                 <Typography component="legend">Score Preview</Typography>
-                <Rating name="score-preview" precision={0.5} value={Number(score) / 2} size="medium" readOnly />
+                {scoreType === "stars"
+                  ? StarRating(score, true)
+                  : scoreType === "hearts"
+                  ? HeartsRating(score, true)
+                  : scoreType === "percent"
+                  ? PercentRating(score)
+                  : scoreType === "10"
+                  ? OutOfTenRating(score)
+                  : scoreType === "100"
+                  ? OutOfHunderedRating(score)
+                  : ""}
               </Box>
             </Box>
           )}
@@ -162,10 +200,10 @@ const AddListItemToSubcollectionDialog = ({ title, user, open, submit, close, sc
             <FormControl fullWidth>
               <InputLabel>List Item Status</InputLabel>
               <Select label="Progress Status" value={status} onChange={(e) => setStatus(e.target.value)}>
-                <MenuItem value="planning">Planning</MenuItem>
-                <MenuItem value="progress">In Progress</MenuItem>
-                <MenuItem value="finished">Finished</MenuItem>
-                <MenuItem value="dropped">Dropped</MenuItem>
+                <MenuItem value="Planning">Planning</MenuItem>
+                <MenuItem value="In Progress">In Progress</MenuItem>
+                <MenuItem value="Finished">Finished</MenuItem>
+                <MenuItem value="Dropped">Dropped</MenuItem>
               </Select>
             </FormControl>
           </Box>

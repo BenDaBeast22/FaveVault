@@ -7,4 +7,25 @@ const singularize = (string) => {
   else return string;
 };
 
-export { capitalize, singularize };
+const statusPriorityVal = (status) => {
+  let ret;
+  switch (status) {
+    case "Planning":
+      ret = 1;
+      break;
+    case "In Progress":
+      ret = 2;
+      break;
+    case "Finished":
+      ret = 3;
+      break;
+    case "Dropped":
+      ret = 4;
+      break;
+    default:
+      ret = 1;
+  }
+  return ret;
+};
+
+export { capitalize, singularize, statusPriorityVal };
