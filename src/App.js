@@ -6,13 +6,12 @@ import CreateAccount from "./Account/CreateAccount";
 import Bookmarks from "./Bookmarks/Bookmarks";
 import Gallery from "./Gallery/Gallery";
 import Lists from "./Lists/Lists";
-import Backlog from "./Backlog/Backlog";
 import Profile from "./Profile/Profile";
 import Friends from "./Friends/Friends";
 import BookmarksCollection from "./Bookmarks/BookmarksCollection";
 import GalleryCollection from "./Gallery/GalleryCollection";
 import RankingsCollection from "./Lists/ListsCollection";
-import BacklogCollection from "./Backlog/BacklogCollection";
+import Friend from "./Friends/Friend";
 import "./App.css";
 
 function App() {
@@ -21,7 +20,7 @@ function App() {
       <Route element={<PrivateRoutes />}>
         <Route path="/" element={<Home />}>
           <Route index element={<Navigate to={`/bookmarks`} />} />
-          <Route path="bookmarks">
+          <Route path={`/bookmarks`}>
             <Route index element={<Bookmarks />} />
             <Route path=":id/:name/:subcollectionsEnabled" element={<BookmarksCollection />} />
           </Route>
@@ -36,7 +35,7 @@ function App() {
           <Route path="profile" element={<Profile />} />
           <Route path="friends">
             <Route index element={<Friends />} />
-            <Route path="/friends/:friendUid">
+            <Route path="/friends/:friendUid" element={<Friend />}>
               <Route index element={<Navigate to={`bookmarks`} />} />
               <Route path="bookmarks">
                 <Route index element={<Bookmarks />} />

@@ -7,16 +7,16 @@ const ItemsList = ({
   groupingName,
   groupingType,
   scoreType,
-  user,
+  uid,
   sortBy,
   collectionId,
   EditItemDialog,
   CardList,
   collectionName,
   addListItemToSubcollection,
+  friendView,
 }) => {
   const [items, setItems] = useState([]);
-  const uid = user.uid;
   const collectionsRef = collection(db, "data", uid, groupingName);
   const subcollectionsRef = collection(collectionsRef, collectionId, "subcollections");
   const editItem = async (editedItem, scId, id) => {
@@ -59,7 +59,7 @@ const ItemsList = ({
   }, [sortBy]);
   return (
     <CardList
-      user={user}
+      uid={uid}
       list={items}
       type="bookmark"
       editCard={editItem}
@@ -69,6 +69,7 @@ const ItemsList = ({
       scoreType={scoreType}
       collectionName={collectionName}
       groupingName={groupingName}
+      friendView
     />
   );
 };

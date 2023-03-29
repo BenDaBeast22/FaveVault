@@ -1,4 +1,4 @@
-import { Container, Select, MenuItem, FormControl, InputLabel, Button } from "@mui/material";
+import { Container, Select, MenuItem, FormControl, InputLabel, Button, Typography, Avatar } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { collection, query, doc, orderBy, addDoc, onSnapshot, updateDoc, deleteDoc, getDocs } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -8,14 +8,17 @@ import AddCollectionDialog from "../Dialogs/AddCollectionDialog";
 import EditCollectionDialog from "../Dialogs/EditCollectionDialog";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import { singularize } from "../helpers";
+import { useParams } from "react-router-dom";
 
 const DisplayCollections = ({ groupingName, groupingType, AddCollectionDialog, EditCollectionDialog }) => {
+  const { friendUid } = useParams();
   const [user] = useAuthState(auth);
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("asc");
   const [addDialog, setAddDialog] = useState(false);
-  const uid = user.uid;
+  const friendView = friendUid && true;
+  const uid = friendUid ? friendUid : user.uid;
   const collectionsRef = collection(db, "data", uid, groupingName);
   const addCollection = async (newCollection) => {
     await addDoc(collection(db, "data", uid, groupingName), newCollection);
@@ -73,6 +76,7 @@ const DisplayCollections = ({ groupingName, groupingType, AddCollectionDialog, E
       setCollections(collectionsArr);
       setLoading(false);
     });
+
     return () => unsubscribe();
   }, [sortBy]);
   return (
@@ -88,22 +92,29 @@ const DisplayCollections = ({ groupingName, groupingType, AddCollectionDialog, E
             alignItems: "center",
           }}
         >
-          <Button
-            startIcon={<CreateNewFolderIcon />}
-            variant="contained"
-            color="secondary"
-            onClick={handleOpenAddDialog}
-          >
-            {`New ${singularize(groupingName)}`}
-          </Button>
-          <AddCollectionDialog
-            groupingName={`${singularize(groupingName)}`}
-            collection={{ name: "", img: "" }}
-            user={user}
-            open={addDialog}
-            close={handleCloseAddDialog}
-            submit={addCollection}
-          />
+          {!friendView ? (
+            <>
+              <Button
+                startIcon={<CreateNewFolderIcon />}
+                variant="contained"
+                color="secondary"
+                onClick={handleOpenAddDialog}
+              >
+                {`New ${singularize(groupingName)}`}
+              </Button>
+              <AddCollectionDialog
+                groupingName={`${singularize(groupingName)}`}
+                collection={{ name: "", img: "" }}
+                user={user}
+                open={addDialog}
+                close={handleCloseAddDialog}
+                submit={addCollection}
+              />
+            </>
+          ) : (
+            <></>
+          )}
+
           <FormControl>
             <InputLabel>Sort By</InputLabel>
             <Select
@@ -127,6 +138,7 @@ const DisplayCollections = ({ groupingName, groupingType, AddCollectionDialog, E
             EditCardDialog={EditCollectionDialog}
             handleDelete={handleDelete}
             type="collection"
+            friendView={friendView}
           ></CollectionList>
         )}
       </Container>

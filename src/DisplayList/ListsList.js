@@ -14,6 +14,8 @@ function ListsList({
   displayStatus,
   collectionName,
   groupingName,
+  friendView,
+  displayRating,
 }) {
   const handleRatingChange = (newScore, card) => {
     editCard({ score: newScore * 2 }, card.scId, card.id);
@@ -47,20 +49,8 @@ function ListsList({
             }}
           >
             <Typography align="center">{card.name}</Typography>
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 0.5 }}>
-              {scoreType === "stars"
-                ? StarRating(card.score, false, handleRatingChange, card)
-                : scoreType === "hearts"
-                ? HeartsRating(card.score, false, handleRatingChange, card)
-                : scoreType === "percent"
-                ? PercentRating(card.score)
-                : scoreType === "10"
-                ? OutOfTenRating(card.score)
-                : scoreType === "100"
-                ? OutOfHunderedRating(card.score)
-                : ""}
-            </Box>
-            {displayStatus && (
+            {displayRating && Rating(card)}
+            {!friendView && displayStatus && (
               <Box sx={{ mt: 1 }}>
                 <Select
                   value={card.status}
@@ -74,32 +64,55 @@ function ListsList({
                 </Select>
               </Box>
             )}
-
-            <Box
-              sx={{
-                my: 1,
-                display: "flex",
-                justifyContent: "space-evenly",
-                p: 0,
-              }}
-            >
-              <EditCardIcon
-                key={card.score}
-                card={card}
-                editCard={groupingName === "Lists" ? editListItem : editCard}
-                EditCardDialog={EditCardDialog}
-                type={type}
-                scoreType={scoreType}
-                displayStatus={displayStatus}
-                collectionName={collectionName}
-              />
-              <DeleteCardIcon handleDelete={handleDelete} type={type} card={card} />
-            </Box>
+            {!friendView && Icons(card)}
           </CardContent>
         </Grid>
       ))}
     </Grid>
   );
+
+  function Rating(card) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 0.5 }}>
+        {scoreType === "stars"
+          ? StarRating(card.score, friendView, handleRatingChange, card)
+          : scoreType === "hearts"
+          ? HeartsRating(card.score, friendView, handleRatingChange, card)
+          : scoreType === "percent"
+          ? PercentRating(card.score)
+          : scoreType === "10"
+          ? OutOfTenRating(card.score)
+          : scoreType === "100"
+          ? OutOfHunderedRating(card.score)
+          : ""}
+      </Box>
+    );
+  }
+
+  function Icons(card) {
+    return (
+      <Box
+        sx={{
+          my: 1,
+          display: "flex",
+          justifyContent: "space-evenly",
+          p: 0,
+        }}
+      >
+        <EditCardIcon
+          key={card.score}
+          card={card}
+          editCard={groupingName === "Lists" ? editListItem : editCard}
+          EditCardDialog={EditCardDialog}
+          type={type}
+          scoreType={scoreType}
+          displayStatus={displayStatus}
+          collectionName={collectionName}
+        />
+        <DeleteCardIcon handleDelete={handleDelete} type={type} card={card} />
+      </Box>
+    );
+  }
 }
 
 export default ListsList;

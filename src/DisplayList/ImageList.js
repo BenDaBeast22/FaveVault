@@ -16,7 +16,7 @@ import DeleteCardIcon from "../Icons/DeleteCardIcon";
 import Carousel from "react-material-ui-carousel";
 import { useTheme } from "@emotion/react";
 
-function ImageList({ list, editCard, EditCardDialog, handleDelete, type }) {
+function ImageList({ list, editCard, EditCardDialog, handleDelete, type, friendView }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogIndex, setDialogIndex] = useState(0);
   const handleOpenDialog = (index) => {
@@ -49,7 +49,6 @@ function ImageList({ list, editCard, EditCardDialog, handleDelete, type }) {
     return () => window.removeEventListener("keydown", handleKeydown);
   });
   const theme = useTheme();
-  const xs = useMediaQuery(theme.breakpoints.up("xs"));
   const sm = useMediaQuery(theme.breakpoints.up("sm"));
   const md = useMediaQuery(theme.breakpoints.up("md"));
   const lg = useMediaQuery(theme.breakpoints.up("lg"));
@@ -76,21 +75,7 @@ function ImageList({ list, editCard, EditCardDialog, handleDelete, type }) {
                 onClick={() => handleOpenDialog(index)}
               />
             </Card>
-            <ImageListItemBar
-              title={card.name}
-              actionIcon={
-                <Box
-                  sx={{
-                    my: 1,
-                    display: "flex",
-                    justifyContent: "space-evenly",
-                  }}
-                >
-                  <EditCardIcon card={card} editCard={editCard} EditCardDialog={EditCardDialog} type={type} />
-                  <DeleteCardIcon handleDelete={handleDelete} type={type} card={card} />
-                </Box>
-              }
-            />
+            <ImageListItemBar title={card.name} actionIcon={!friendView ? Icons(card) : null} />
           </ImageListItem>
         ))}
       </ImgList>
@@ -137,9 +122,6 @@ function ImageList({ list, editCard, EditCardDialog, handleDelete, type }) {
                     }}
                     loading="lazy"
                   />
-                  {/* <Box sx={{ width: "100%", p: 2, background: "rgba(0, 0, 0, 0.5)", position: "absolute", bottom: 0 }}>
-                    <Typography align="center">{card.name}</Typography>
-                  </Box> */}
                   <Typography variant="h5" align="center">
                     {card.name}
                   </Typography>
@@ -151,6 +133,21 @@ function ImageList({ list, editCard, EditCardDialog, handleDelete, type }) {
       </Modal>
     </Box>
   );
+
+  function Icons(card) {
+    return (
+      <Box
+        sx={{
+          my: 1,
+          display: "flex",
+          justifyContent: "space-evenly",
+        }}
+      >
+        <EditCardIcon card={card} editCard={editCard} EditCardDialog={EditCardDialog} type={type} />
+        <DeleteCardIcon handleDelete={handleDelete} type={type} card={card} />
+      </Box>
+    );
+  }
 }
 
 export default ImageList;

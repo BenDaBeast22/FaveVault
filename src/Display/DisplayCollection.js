@@ -8,6 +8,8 @@ import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import SubcollectionsList from "./SubcollectionsList";
 import ItemsList from "./ItemsList";
 import { capitalize, singularize } from "../helpers";
+import { Link as ReactRouterLink } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const DisplayCollection = ({
   groupingName,
@@ -17,13 +19,14 @@ const DisplayCollection = ({
   EditItemDialog,
   CardList,
 }) => {
-  const { id, name, scoreType, subcollectionsEnabled, statusEnabled } = useParams();
+  const { id, name, scoreType, subcollectionsEnabled, statusEnabled, friendUid } = useParams();
   const [user] = useAuthState(auth);
   const [displaySubcollections, setDisplaySubcollections] = useState(subcollectionsEnabled === "true");
   const [displayStatus] = useState(statusEnabled === "true");
   const [addDialog, setAddDialog] = useState(false);
   const [sortBy, setSortBy] = useState("asc");
-  const uid = user.uid;
+  const friendView = friendUid && true;
+  const uid = friendUid ? friendUid : user.uid;
   const collectionsRef = collection(db, "data", uid, groupingName);
   const subcollectionsRef = collection(collectionsRef, id, "subcollections");
   const addItemToNewSubcollection = async (newSubcollection) => {
@@ -72,6 +75,44 @@ const DisplayCollection = ({
   const toggleDisplaySubcollections = () => {
     setDisplaySubcollections((prevState) => !prevState);
   };
+  const addToNewSubcollectionButton = (
+    <>
+      <Button startIcon={<CreateNewFolderIcon />} variant="contained" color="secondary" onClick={handleOpenAddDialog}>
+        {displayStatus ? `New ${capitalize(singularize(name))}` : "New Subcollection"}
+      </Button>
+      <AddItemToSubcollectionDialog
+        title={
+          displayStatus
+            ? `Add New ${capitalize(singularize(name))}`
+            : `Add ${capitalize(singularize(name))} To New Subcollection`
+        }
+        user={user}
+        open={addDialog}
+        close={handleCloseAddDialog}
+        submit={displayStatus ? addListItemToSubcollection : addItemToNewSubcollection}
+        scoreType={scoreType}
+        collectionName={name}
+      />
+    </>
+  );
+  const addItemButton = (
+    <>
+      <Button startIcon={<CreateNewFolderIcon />} variant="contained" color="secondary" onClick={handleOpenAddDialog}>
+        New {capitalize(singularize(name))}
+      </Button>
+      <AddItemDialog
+        title={`Add New ${capitalize(singularize(name))}`}
+        user={user}
+        scoreType={scoreType}
+        open={addDialog}
+        close={handleCloseAddDialog}
+        submit={groupingName === "Lists" ? addListItem : addItem}
+        displayStatus={displayStatus}
+        collectionName={name}
+      />
+    </>
+  );
+  const DisplayAddItemButton = displaySubcollections || displayStatus ? addToNewSubcollectionButton : addItemButton;
   return (
     <div className="Collection">
       <Container maxWidth="xl" sx={{ py: 3 }}>
@@ -88,52 +129,7 @@ const DisplayCollection = ({
             alignItems: "center",
           }}
         >
-          {displaySubcollections || displayStatus ? (
-            <>
-              <Button
-                startIcon={<CreateNewFolderIcon />}
-                variant="contained"
-                color="secondary"
-                onClick={handleOpenAddDialog}
-              >
-                {displayStatus ? `New ${capitalize(singularize(name))}` : "New Subcollection"}
-              </Button>
-              <AddItemToSubcollectionDialog
-                title={
-                  displayStatus
-                    ? `Add New ${capitalize(singularize(name))}`
-                    : `Add ${capitalize(singularize(name))} To New Subcollection`
-                }
-                user={user}
-                open={addDialog}
-                close={handleCloseAddDialog}
-                submit={displayStatus ? addListItemToSubcollection : addItemToNewSubcollection}
-                scoreType={scoreType}
-                collectionName={name}
-              />
-            </>
-          ) : (
-            <>
-              <Button
-                startIcon={<CreateNewFolderIcon />}
-                variant="contained"
-                color="secondary"
-                onClick={handleOpenAddDialog}
-              >
-                New {capitalize(singularize(name))}
-              </Button>
-              <AddItemDialog
-                title={`Add New ${capitalize(singularize(name))}`}
-                user={user}
-                scoreType={scoreType}
-                open={addDialog}
-                close={handleCloseAddDialog}
-                submit={groupingName === "Lists" ? addListItem : addItem}
-                displayStatus={displayStatus}
-                collectionName={name}
-              />
-            </>
-          )}
+          {!friendView && DisplayAddItemButton}
           <FormControl>
             <InputLabel>Sort By</InputLabel>
             <Select
@@ -167,13 +163,22 @@ const DisplayCollection = ({
               <Switch color="secondary" checked={displaySubcollections} onChange={toggleDisplaySubcollections} />
             </Box>
           )}
+          <Button
+            variant="contained"
+            color="secondary"
+            component={ReactRouterLink}
+            to={".."}
+            startIcon={<ArrowBackIcon />}
+          >
+            Back
+          </Button>
         </Container>
         {displaySubcollections || displayStatus ? (
           <SubcollectionsList
             groupingName={groupingName}
             groupingType={groupingType}
             scoreType={scoreType}
-            user={user}
+            uid={uid}
             sortBy={sortBy}
             collectionId={id}
             AddItemDialog={AddItemDialog}
@@ -181,19 +186,21 @@ const DisplayCollection = ({
             CardList={CardList}
             addListItemToSubcollection={addListItemToSubcollection}
             collectionName={name}
+            friendView={friendView}
           />
         ) : (
           <ItemsList
             groupingName={groupingName}
             groupingType={groupingType}
             scoreType={scoreType}
-            user={user}
+            uid={uid}
             sortBy={sortBy}
             collectionId={id}
             EditItemDialog={EditItemDialog}
             CardList={CardList}
             addListItemToSubcollection={addListItemToSubcollection}
             collectionName={name}
+            friendView={friendView}
           />
         )}
       </Container>

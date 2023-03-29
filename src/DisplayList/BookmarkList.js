@@ -2,7 +2,7 @@ import { Grid, Card, CardMedia, CardContent, Box, Typography, Link } from "@mui/
 import EditCardIcon from "../Icons/EditCardIcon";
 import DeleteCardIcon from "../Icons/DeleteCardIcon";
 
-function BookmarkList({ list, editCard, EditCardDialog, handleDelete, type }) {
+function BookmarkList({ list, editCard, EditCardDialog, handleDelete, type, friendView }) {
   return (
     <Grid container spacing={2} sx={{ pb: 2, pr: 2 }}>
       {list.map((card) => (
@@ -29,21 +29,27 @@ function BookmarkList({ list, editCard, EditCardDialog, handleDelete, type }) {
             }}
           >
             <Typography align="center">{card.name}</Typography>
-            <Box
-              sx={{
-                my: 1,
-                display: "flex",
-                justifyContent: "space-evenly",
-              }}
-            >
-              <EditCardIcon card={card} editCard={editCard} EditCardDialog={EditCardDialog} type={type} />
-              <DeleteCardIcon handleDelete={handleDelete} type={type} card={card} />
-            </Box>
+            {!friendView && Icons(card)}
           </CardContent>
         </Grid>
       ))}
     </Grid>
   );
+
+  function Icons(card) {
+    return (
+      <Box
+        sx={{
+          my: 1,
+          display: "flex",
+          justifyContent: "space-evenly",
+        }}
+      >
+        <EditCardIcon card={card} editCard={editCard} EditCardDialog={EditCardDialog} type={type} />
+        <DeleteCardIcon handleDelete={handleDelete} type={type} card={card} />
+      </Box>
+    );
+  }
 }
 
 export default BookmarkList;

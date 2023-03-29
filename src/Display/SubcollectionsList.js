@@ -22,7 +22,7 @@ import { statusPriorityVal } from "../helpers";
 const SubcollectionsList = ({
   groupingName,
   groupingType,
-  user,
+  uid,
   sortBy,
   collectionId,
   AddItemDialog,
@@ -31,10 +31,10 @@ const SubcollectionsList = ({
   scoreType,
   addListItemToSubcollection,
   collectionName,
+  friendView,
 }) => {
   const [subcollections, setSubcollections] = useState([]);
   const [items, setItems] = useState({});
-  const uid = user.uid;
   const collectionsRef = collection(db, "data", uid, groupingName);
   const subcollectionsRef = collection(collectionsRef, collectionId, "subcollections");
   const subcollectionsOrder = groupingName === "Lists" ? "priority" : "name";
@@ -116,7 +116,7 @@ const SubcollectionsList = ({
             <Typography variant="h4" sx={{ mr: 1 }}>
               {subcollection.name}
             </Typography>
-            {groupingName !== "Lists" && (
+            {groupingName !== "Lists" && !friendView && (
               <Box sx={{ display: "flex" }}>
                 <AddCardIcon
                   groupingType={groupingType}
@@ -147,6 +147,8 @@ const SubcollectionsList = ({
               collectionName={collectionName}
               editListItem={editListItem}
               groupingName={groupingName}
+              displayRating={subcollection.name === "Planning" ? false : true}
+              friendView
             />
           )}
         </Box>

@@ -3,7 +3,7 @@ import { Link as ReactRouterLink } from "react-router-dom";
 import EditCardIcon from "../Icons/EditCardIcon";
 import DeleteCardIcon from "../Icons/DeleteCardIcon";
 
-function CollectionList({ list, editCard, EditCardDialog, handleDelete, type }) {
+function CollectionList({ list, editCard, EditCardDialog, handleDelete, type, friendView }) {
   return (
     <Grid container spacing={2} sx={{ pb: 2, pr: 2 }}>
       {list.map((card) => (
@@ -35,16 +35,18 @@ function CollectionList({ list, editCard, EditCardDialog, handleDelete, type }) 
             }}
           >
             <Typography align="center">{card.name}</Typography>
-            <Box
-              sx={{
-                my: 1,
-                display: "flex",
-                justifyContent: "space-evenly",
-              }}
-            >
-              <EditCardIcon card={card} editCard={editCard} EditCardDialog={EditCardDialog} type={type} />
-              <DeleteCardIcon handleDelete={handleDelete} type={type} card={card} />
-            </Box>
+            {!friendView && (
+              <Box
+                sx={{
+                  my: 1,
+                  display: "flex",
+                  justifyContent: "space-evenly",
+                }}
+              >
+                <EditCardIcon card={card} editCard={editCard} EditCardDialog={EditCardDialog} type={type} />
+                <DeleteCardIcon handleDelete={handleDelete} type={type} card={card} />
+              </Box>
+            )}
           </CardContent>
         </Grid>
       ))}
