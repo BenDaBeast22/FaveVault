@@ -8,6 +8,7 @@ import Gallery from "./Gallery/Gallery";
 import Lists from "./Lists/Lists";
 import Backlog from "./Backlog/Backlog";
 import Profile from "./Profile/Profile";
+import Friends from "./Friends/Friends";
 import BookmarksCollection from "./Bookmarks/BookmarksCollection";
 import GalleryCollection from "./Gallery/GalleryCollection";
 import RankingsCollection from "./Lists/ListsCollection";
@@ -19,7 +20,7 @@ function App() {
     <Routes>
       <Route element={<PrivateRoutes />}>
         <Route path="/" element={<Home />}>
-          <Route index element={<Navigate to="bookmarks" />} />
+          <Route index element={<Navigate to={`/bookmarks`} />} />
           <Route path="bookmarks">
             <Route index element={<Bookmarks />} />
             <Route path=":id/:name/:subcollectionsEnabled" element={<BookmarksCollection />} />
@@ -32,11 +33,25 @@ function App() {
             <Route index element={<Lists />} />
             <Route path=":id/:name/:scoreType/:statusEnabled" element={<RankingsCollection />} />
           </Route>
-          <Route path="backlog">
-            <Route index element={<Backlog />} />
-            <Route path=":id/:name/:subcollectionsEnabled" element={<BacklogCollection />} />
-          </Route>
           <Route path="profile" element={<Profile />} />
+          <Route path="friends">
+            <Route index element={<Friends />} />
+            <Route path="/friends/:friendUid">
+              <Route index element={<Navigate to={`bookmarks`} />} />
+              <Route path="bookmarks">
+                <Route index element={<Bookmarks />} />
+                <Route path=":id/:name/:subcollectionsEnabled" element={<BookmarksCollection />} />
+              </Route>
+              <Route path="gallery">
+                <Route index element={<Gallery />} />
+                <Route path=":id/:name/:subcollectionsEnabled" element={<GalleryCollection />} />
+              </Route>
+              <Route path="lists">
+                <Route index element={<Lists />} />
+                <Route path=":id/:name/:scoreType/:statusEnabled" element={<RankingsCollection />} />
+              </Route>
+            </Route>
+          </Route>
         </Route>
       </Route>
       <Route path="/login" element={<Login />} />

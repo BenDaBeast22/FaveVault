@@ -10,6 +10,7 @@ import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   signOut,
+  updateProfile,
 } from "firebase/auth";
 
 const firebaseConfig = {
@@ -39,7 +40,7 @@ const signInWithGoogle = async () => {
     if (docs.docs.length === 0) {
       await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
-        name: user.displayName,
+        username: user.displayName,
         authProvider: "google",
         email: user.email,
       });
@@ -58,13 +59,14 @@ const loginWithEmailAndPassword = async (email, password) => {
   }
 };
 
-const registerWithEmailAndPassword = async (name, email, password) => {
+const registerWithEmailAndPassword = async (username, email, password) => {
   try {
     const res = await createUserWithEmailAndPassword(auth, email, password);
     const user = res.user;
+    await updateProfile(user, { displayName: username });
     await setDoc(doc(db, "users", user.uid), {
       uid: user.uid,
-      name,
+      username,
       authProvider: "local",
       email,
     });

@@ -8,7 +8,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 
 function CreateAccount() {
   const navigate = useNavigate();
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -16,7 +16,7 @@ function CreateAccount() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      await registerWithEmailAndPassword(name, email, password);
+      await registerWithEmailAndPassword(username, email, password);
       navigate("/", { replace: true });
     } catch (err) {
       console.log(err);
@@ -49,13 +49,13 @@ function CreateAccount() {
           <Box component="form" onSubmit={handleSubmit}>
             <TextField
               variant="outlined"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              label="Name *"
-              id="name"
-              name="name"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              label="Username *"
+              id="username"
+              name="username"
               margin="normal"
-              autoComplete="name"
+              autoComplete="username"
               fullWidth
               autoFocus
             />
@@ -82,14 +82,10 @@ function CreateAccount() {
               autoComplete="current-password"
               fullWidth
             />
+            {error && <Alert severity="error">{error}</Alert>}
             <Button type="submit" disabled={loading} variant="contained" fullWidth sx={{ mt: 3, mb: 2 }}>
               Register
             </Button>
-            {error && (
-              <Alert severity="error" fullWidth>
-                {error}
-              </Alert>
-            )}
             <Typography align="center">
               Already have an account?{" "}
               <Link component={ReactRouterLink} to="/login">

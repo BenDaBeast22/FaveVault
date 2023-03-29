@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Avatar, Container, Box, Typography, TextField, InputLabel } from "@mui/material";
+import { Avatar, Container, Box, Typography, InputLabel } from "@mui/material";
 import ImageUpload from "../Components/ImageUpload";
 import { auth, db, storage } from "../Config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { uuidv4 as uuid } from "@firebase/util";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { updateProfile } from "firebase/auth";
 
 const Profile = () => {
   const [user] = useAuthState(auth);
-  const [profileName, setProfileName] = useState("");
+  const [username, setUsername] = useState("");
   const [profilePic, setProfilePic] = useState(null);
   const [imageUpload, setImageUpload] = useState(null);
   const [imageUploadSuccess, setImageUploadSuccess] = useState(false);
@@ -51,18 +52,13 @@ const Profile = () => {
       );
     }
   };
-  const updateProfilePicture = (downloadURL) => {
+  const updateProfilePicture = async (downloadURL) => {
     updateDoc(userRef, { profilePic: downloadURL });
+    await updateProfile(user, { photoURL: downloadURL });
   };
   useEffect(() => {
-    const unsub = onSnapshot(userRef, (snapshot) => {
-      const user = { ...snapshot.data(), id: snapshot.id };
-      setProfileName(user.name);
-      if (user.profilePic) {
-        setProfilePic(user.profilePic);
-      }
-    });
-    return () => unsub();
+    setUsername(user.displayName);
+    setProfilePic(user.photoURL);
   }, []);
   return (
     <Container sx={{ height: "90vh", display: "flex", alignItems: "center" }}>
@@ -79,7 +75,7 @@ const Profile = () => {
         }}
       >
         <Typography variant="h4" component="h1" sx={{ display: { md: "none", xs: "block" } }}>
-          Welcome {profileName}!
+          Welcome {username}!
         </Typography>
         <Box>
           <Avatar
@@ -90,7 +86,7 @@ const Profile = () => {
         </Box>
         <Box>
           <Typography variant="h4" component="h1" sx={{ display: { md: "block", xs: "none" }, pb: 5 }}>
-            Welcome {profileName}!
+            Welcome {username}!
           </Typography>
           <InputLabel sx={{ pb: 1 }}>Set Profile Picture:</InputLabel>
           <ImageUpload

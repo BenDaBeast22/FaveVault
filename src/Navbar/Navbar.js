@@ -17,7 +17,7 @@ import { NavLink } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import SettingsIcon from "@mui/icons-material/Settings";
+import PeopleIcon from "@mui/icons-material/People";
 import { logout } from "../Config/firebase";
 import { Link as RouterLink } from "react-router-dom";
 import { db, auth } from "../Config/firebase";
@@ -26,16 +26,17 @@ import { doc, onSnapshot } from "firebase/firestore";
 
 const pages = ["Bookmarks", "Gallery", "Lists"];
 const settings = [
-  { name: "Profile", icon: <AccountCircleIcon /> },
-  { name: "User Settings", icon: <SettingsIcon /> },
-  { name: "Logout", icon: <LogoutIcon />, onClick: logout },
+  { name: "profile", icon: <AccountCircleIcon /> },
+  { name: "friends", icon: <PeopleIcon /> },
+  { name: "logout", icon: <LogoutIcon />, onClick: logout },
 ];
 
 const Navbar = () => {
-  const [user] = useAuthState(auth);
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
+  const [username, setUsername] = useState("");
   const [profilePic, setProfilePic] = useState(null);
+  const [user] = useAuthState(auth);
   const uid = user.uid;
   const handleOpenNav = (event) => {
     setAnchorEl(event.currentTarget);
@@ -50,14 +51,8 @@ const Navbar = () => {
     setAnchorElUser(null);
   };
   useEffect(() => {
-    const userRef = doc(db, "users", uid);
-    const unsub = onSnapshot(userRef, (snapshot) => {
-      const user = snapshot.data();
-      if (user.profilePic) {
-        setProfilePic(user.profilePic);
-      }
-    });
-    return () => unsub();
+    setProfilePic(user.photoURL);
+    setUsername(user.displayName);
   }, []);
   return (
     <AppBar position="static">
@@ -147,7 +142,8 @@ const Navbar = () => {
             </Link>
           ))}
         </Box>
-        <Box>
+        <Typography sx={{ display: { sm: "block", xs: "none" } }}>{username}</Typography>
+        <Box sx={{ ml: 2 }}>
           <Tooltip title="Open settings">
             <IconButton aria-label="settings" onClick={handleOpenUserMenu} sx={{ p: 0 }}>
               <Avatar alt="profile-pic" src={profilePic} sx={{ width: 45, height: 45 }} />
@@ -167,13 +163,13 @@ const Navbar = () => {
               <MenuItem key={setting.name} onClick={handleCloseUserMenu}>
                 <Link
                   component={RouterLink}
-                  to={setting.name !== "Logout" ? `${setting.name}` : undefined}
+                  to={setting.name !== "logout" ? `${setting.name}` : undefined}
                   color="inherit"
                   underline="none"
                 >
                   <Stack direction="row" spacing={1} onClick={setting.onClick}>
                     {setting.icon}
-                    <Typography>{setting.name}</Typography>
+                    <Typography sx={{ textTransform: "capitalize" }}>{setting.name}</Typography>
                   </Stack>
                 </Link>
               </MenuItem>

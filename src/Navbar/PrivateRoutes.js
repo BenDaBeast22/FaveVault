@@ -6,6 +6,7 @@ import Loading from "../Components/Loading";
 
 const PrivateRoutes = () => {
   const [user, loading] = useAuthState(auth);
+  console.log("user = ", user);
   return loading ? <Loading /> : user ? <Outlet /> : <Navigate to="/login" />;
 };
 
