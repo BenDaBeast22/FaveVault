@@ -148,7 +148,7 @@ const SubcollectionsList = ({
               editListItem={editListItem}
               groupingName={groupingName}
               displayRating={subcollection.name === "Planning" ? false : true}
-              friendView
+              friendView={friendView}
             />
           )}
         </Box>

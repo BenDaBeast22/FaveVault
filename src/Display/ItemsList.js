@@ -69,7 +69,7 @@ const ItemsList = ({
       scoreType={scoreType}
       collectionName={collectionName}
       groupingName={groupingName}
-      friendView
+      friendView={friendView}
     />
   );
 };

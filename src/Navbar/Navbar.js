@@ -163,7 +163,7 @@ const Navbar = () => {
               <MenuItem key={setting.name} onClick={handleCloseUserMenu}>
                 <Link
                   component={RouterLink}
-                  to={setting.name !== "logout" ? `${setting.name}` : undefined}
+                  to={setting.name !== "logout" ? `${setting.name}` : null}
                   color="inherit"
                   underline="none"
                 >
