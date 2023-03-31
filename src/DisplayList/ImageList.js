@@ -10,11 +10,13 @@ import {
   Container,
   Typography,
   useMediaQuery,
+  IconButton,
 } from "@mui/material";
 import EditCardIcon from "../Icons/EditCardIcon";
 import DeleteCardIcon from "../Icons/DeleteCardIcon";
 import Carousel from "react-material-ui-carousel";
 import { useTheme } from "@emotion/react";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 function ImageList({ list, editCard, EditCardDialog, handleDelete, type, friendView }) {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -89,6 +91,15 @@ function ImageList({ list, editCard, EditCardDialog, handleDelete, type, friendV
             bgcolor: "background.paper",
           }}
         >
+          <IconButton
+            onClick={handleCloseDialog}
+            area-label="close modal"
+            size="large"
+            color="error"
+            sx={{ position: "absolute", zIndex: 1000, top: 0, right: 0, p: 0.5 }}
+          >
+            <CancelIcon fontSize="inherit" />
+          </IconButton>
           <Carousel
             index={dialogIndex}
             next={() => setDialogIndex((index) => incrementIndex(index))}
@@ -96,7 +107,7 @@ function ImageList({ list, editCard, EditCardDialog, handleDelete, type, friendV
             autoPlay={false}
             duration={250}
             navButtonsAlwaysVisible
-            sx={{ height: "750px", width: "1200px" }}
+            sx={{ height: "750px", width: { xl: "1500px", lg: "1100px", md: "800px", sm: "500px", xs: "400px" } }}
           >
             {list.map((card, i) => (
               <Container
@@ -105,7 +116,7 @@ function ImageList({ list, editCard, EditCardDialog, handleDelete, type, friendV
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  width: "1200px",
+                  width: { xl: "1500px", lg: "1100px", md: "800px", sm: "500px", xs: "400px" },
                   height: "700px",
                 }}
               >
@@ -116,7 +127,7 @@ function ImageList({ list, editCard, EditCardDialog, handleDelete, type, friendV
                     style={{
                       objectFit: "contain",
                       maxHeight: "650px",
-                      maxWidth: "1200px",
+                      maxWidth: { xl: "1500px", lg: "1100px", md: "800px", sm: "500px", xs: "400px" },
                       m: 0,
                       p: 0,
                     }}

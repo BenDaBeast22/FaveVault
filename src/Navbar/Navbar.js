@@ -12,6 +12,7 @@ import {
   Tooltip,
   Stack,
   Link,
+  Badge,
 } from "@mui/material";
 import { NavLink } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -22,7 +23,7 @@ import { logout } from "../Config/firebase";
 import { Link as RouterLink } from "react-router-dom";
 import { db, auth } from "../Config/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { doc, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 
 const pages = ["Bookmarks", "Gallery", "Lists"];
 const settings = [
@@ -36,6 +37,7 @@ const Navbar = () => {
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [username, setUsername] = useState("");
   const [profilePic, setProfilePic] = useState(null);
+  const [numFriendRequests, setNumFriendRequests] = useState(0);
   const [user] = useAuthState(auth);
   const uid = user.uid;
   const handleOpenNav = (event) => {
@@ -53,6 +55,16 @@ const Navbar = () => {
   useEffect(() => {
     setProfilePic(user.photoURL);
     setUsername(user.displayName);
+    // Get friend requests
+    const requestsRef = collection(db, "requests", uid, "Incoming");
+    const unsubRequests = onSnapshot(requestsRef, (snapshot) => {
+      let numFriendRequests = 0;
+      snapshot.forEach((doc) => {
+        numFriendRequests++;
+      });
+      setNumFriendRequests(numFriendRequests);
+    });
+    return () => unsubRequests();
   }, []);
   return (
     <AppBar position="static">
@@ -146,7 +158,9 @@ const Navbar = () => {
         <Box sx={{ ml: 2 }}>
           <Tooltip title="Open settings">
             <IconButton aria-label="settings" onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-              <Avatar alt="profile-pic" src={profilePic} sx={{ width: 45, height: 45 }} />
+              <Badge badgeContent={numFriendRequests} overlap="circular" color="notification">
+                <Avatar alt="profile-pic" src={profilePic} sx={{ width: 45, height: 45 }} />
+              </Badge>
             </IconButton>
           </Tooltip>
           <Menu

@@ -10,37 +10,39 @@ import {
   Snackbar,
   Alert,
   InputAdornment,
-  Badge,
-  Stack,
 } from "@mui/material";
 import { query, where, collection, getDocs, limit, deleteDoc, setDoc, doc, onSnapshot } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { db, auth } from "../Config/firebase";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Link as ReactRouterLink } from "react-router-dom";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import SearchIcon from "@mui/icons-material/Search";
 import PendingIcon from "@mui/icons-material/Pending";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import MailIcon from "@mui/icons-material/Mail";
+import DeleteFriendDialog from "./Dialogs/DeleteFriendDialog";
 
 const Friends = () => {
-  const [email, setEmail] = useState("");
   const [user, setUser] = useState(null);
   const [incomingRequests, setIncomingRequests] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
-  const [friends, setFriends] = useState([]);
-  const [friendsLoaded, setFriendsLoaded] = useState(false);
+  const [friends, setFriends] = useState(null);
   const [filterFriends, setFilterFriends] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
-  const [snackbar, setSnackbar] = useState("");
+  const [snackbar, setSnackbar] = useState(null);
+  const [deleteFriend, setDeleteFriend] = useState(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const [timer, setTimer] = useState(null);
+  const friendsAndUserLoaded = useRef(false);
   const [authUser] = useAuthState(auth);
   const uid = authUser.uid;
 
   const handleCloseSnackbar = () => {
-    setSnackbar("");
+    setSnackbar(null);
   };
   const querySuggestions = async (email) => {
     const q = query(
@@ -54,7 +56,9 @@ const Friends = () => {
     querySnapshot.forEach((snapshot) => {
       const suggestion = snapshot.data();
       // Don't push friends and yourself to suggestions
-      if (!friends.some((friend) => friend.email === suggestion.email) && suggestion.email !== user.email) {
+      if (friends.length === 0 && suggestion.email !== user.email) {
+        suggestions.push(suggestion);
+      } else if (!friends.some((friend) => friend.email === suggestion.email) && suggestion.email !== user.email) {
         suggestions.push(suggestion);
       }
     });
@@ -62,7 +66,6 @@ const Friends = () => {
   };
   const handleUpdateEmail = async (event) => {
     const email = event.target.value;
-    setEmail(email);
     clearTimeout(timer);
     const newTimer = setTimeout(() => {
       if (email === "") setFilterFriends(friends);
@@ -74,7 +77,7 @@ const Friends = () => {
   const sendFriendRequest = async (suggestion) => {
     await setDoc(doc(db, "requests", uid, "Outgoing", suggestion.email), suggestion);
     await setDoc(doc(db, "requests", suggestion.uid, "Incoming", user.email), user);
-    setSnackbar(`Sent friend request to ${suggestion.email}`);
+    setSnackbar({ message: `Sent friend request to ${suggestion.email}`, color: "success" });
   };
   const deleteFriendRequest = async (person) => {
     await deleteDoc(doc(db, "requests", uid, "Incoming", person.email));
@@ -82,12 +85,23 @@ const Friends = () => {
   };
   const rejectFriendRequest = async (stranger) => {
     await deleteFriendRequest(stranger);
-    setSnackbar(`Rejected friend request from ${stranger.email}`);
+    setSnackbar({ message: `Rejected friend request from ${stranger.email}`, color: "error" });
   };
   const acceptFriendRequest = async (friend) => {
     await deleteFriendRequest(friend);
     await setDoc(doc(db, "friends", uid, "friends", friend.email), friend);
     await setDoc(doc(db, "friends", friend.uid, "friends", user.email), user);
+    setSnackbar({ message: `Added ${friend.email} as friend`, color: "success" });
+  };
+  const handleUnfriend = (friend) => {
+    setDeleteFriend(friend);
+    setDeleteOpen(true);
+  };
+  const unfriend = async (friend) => {
+    await deleteDoc(doc(db, "friends", uid, "friends", friend.email));
+    await deleteDoc(doc(db, "friends", friend.uid, "friends", user.email));
+    setSnackbar({ message: `Unfriended ${friend.email}`, color: "success" });
+    setDeleteOpen(false);
   };
   useEffect(() => {
     //Get user
@@ -105,6 +119,7 @@ const Friends = () => {
       snapshot.forEach((doc) => {
         incomingRequests.push(doc.data());
       });
+      if (incomingRequests.length > 0) setSnackbar({ message: "You have friend requests", color: "success" });
       setIncomingRequests(incomingRequests);
     });
     unsubArr.push(unsubRequests);
@@ -133,10 +148,15 @@ const Friends = () => {
   }, []);
 
   useEffect(() => {
-    if (friends.length !== 0) {
+    if (!user || !friends) return;
+    // Onload query default suggestions that are not in your friends
+    if (!friendsAndUserLoaded.current) {
       querySuggestions("");
+      friendsAndUserLoaded.current = true;
     }
-  }, [friends]);
+    // When new friend is added you can no longer send them friend requests
+    setSuggestions((prevSuggestions) => prevSuggestions.filter((suggestion) => !suggestionInFriends(suggestion.email)));
+  }, [friends, user]);
 
   return (
     <Container maxWidth="xl">
@@ -175,13 +195,22 @@ const Friends = () => {
             sx={{
               display: "flex",
               alignItems: "center",
-              "& > *": { mx: "8px !important", mb: 2 },
+              "& > *": { mx: "8px !important" },
+              mb: 2,
             }}
           >
             <Avatar alt="profile-pic" src={friend.profilePic} sx={{ width: 45, height: 45 }} />
             <Typography>{friend.email}</Typography>
             <Button variant="outlined" startIcon={<VisibilityIcon />} component={ReactRouterLink} to={`${friend.uid}`}>
               View
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<PersonRemoveIcon />}
+              onClick={() => handleUnfriend(friend)}
+            >
+              Remove
             </Button>
           </Box>
         ))}
@@ -204,9 +233,13 @@ const Friends = () => {
           >
             <Avatar alt="profile-pic" src={suggestion.profilePic} sx={{ width: 45, height: 45 }} />
             <Typography>{suggestion.email}</Typography>
-            {pendingRequests.some((pending) => pending.email === suggestion.email) ? (
+            {alreadySentRequest(suggestion.email) ? (
               <Button variant="outlined" color="warning" startIcon={<PendingIcon />}>
                 Pending
+              </Button>
+            ) : alreadyRecievedRequest(suggestion.email) ? (
+              <Button variant="outlined" startIcon={<MailIcon />}>
+                Recieved
               </Button>
             ) : (
               <Button
@@ -220,36 +253,6 @@ const Friends = () => {
             )}
           </Box>
         ))}
-        {/* <Box component="form" onSubmit={handleAddFriend} sx={{ display: "flex", flexDirection: "column" }}>
-          <Box sx={{ display: "flex", justifyContent: "center", "& > *": { mx: "5px !important" } }}>
-            <TextField label="Email" value={email} size="small" />
-            <Button type="submit" variant="contained" sx={{ minWidth: "80px" }}>
-              Submit
-            </Button>
-          </Box>
-        </Box> */}
-
-        {/* <Box sx={{ display: "flex", flexDirection: "column", mt: 3 }}>
-          <Typography margin="normal" variant="h6" component="h4" align="center" sx={{ mb: 2 }}>
-            Send Friend Request
-          </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              "& > *": { mx: "8px !important" },
-            }}
-            component="form"
-            onSubmit={sendFriendRequest}
-          >
-            <Avatar alt="profile-pic" src={addFriend.profilePic} sx={{ width: 45, height: 45 }} />
-            <Typography>{addFriend.email}</Typography>
-            <Button type="submit" variant="outlined">
-              Send
-            </Button>
-          </Box>
-        </Box> */}
       </Container>
       {incomingRequests.length !== 0 && (
         <Container
@@ -288,18 +291,36 @@ const Friends = () => {
           ))}
         </Container>
       )}
-      <Snackbar
-        anchorOrigin={{ vertical: "bottom", horizontal: "center", width: "100%" }}
-        open={Boolean(snackbar)}
-        autoHideDuration={5000}
-        onClose={handleCloseSnackbar}
-      >
-        <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }}>
-          {snackbar}
-        </Alert>
-      </Snackbar>
+      {snackbar && (
+        <Snackbar
+          anchorOrigin={{ vertical: "top", horizontal: "center", width: "100%" }}
+          open={Boolean(snackbar)}
+          autoHideDuration={3000}
+          onClose={handleCloseSnackbar}
+        >
+          <Alert variant="filled" severity={snackbar.color} onClose={handleCloseSnackbar} sx={{ width: "100%" }}>
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
+      )}
+      <DeleteFriendDialog
+        open={deleteOpen}
+        close={() => setDeleteOpen(false)}
+        friend={deleteFriend}
+        handleDelete={unfriend}
+      />
     </Container>
   );
+
+  function suggestionInFriends(suggestionEmail) {
+    return friends.some((friend) => friend.email === suggestionEmail);
+  }
+  function alreadySentRequest(suggestionEmail) {
+    return pendingRequests.some((pending) => pending.email === suggestionEmail);
+  }
+  function alreadyRecievedRequest(suggestionEmail) {
+    return incomingRequests.some((incoming) => incoming.email === suggestionEmail);
+  }
 
   function Count(count) {
     return (

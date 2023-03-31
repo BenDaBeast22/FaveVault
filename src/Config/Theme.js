@@ -24,6 +24,9 @@ const theme = createTheme({
         light: "#242222",
       },
     },
+    notification: {
+      main: "#c93e3e",
+    },
   },
 });
 
