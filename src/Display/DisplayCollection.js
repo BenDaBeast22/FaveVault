@@ -130,38 +130,40 @@ const DisplayCollection = ({
           }}
         >
           {!friendView && DisplayAddItemButton}
-          <FormControl>
-            <InputLabel>Sort By</InputLabel>
-            <Select
-              sx={{
-                height: "38px",
-                backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.09))",
-              }}
-              label="sort by"
-              defaultValue="asc"
-              onChange={handleSortBy}
-            >
-              <MenuItem value="asc">Ascending</MenuItem>
-              <MenuItem value="desc">Descending</MenuItem>
-            </Select>
-          </FormControl>
           {groupingName !== "Lists" && (
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                border: "1px solid",
-                borderColor: "rgba(255, 255, 255, 0.23)",
-                backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.09))",
-                borderRadius: "5px",
-                "&:hover": {
-                  borderColor: "inherit",
-                },
-              }}
-            >
-              <InputLabel sx={{ pl: 1, color: "inherit" }}>Subcollections</InputLabel>
-              <Switch color="secondary" checked={displaySubcollections} onChange={toggleDisplaySubcollections} />
-            </Box>
+            <>
+              <FormControl>
+                <InputLabel>Sort By</InputLabel>
+                <Select
+                  sx={{
+                    height: "38px",
+                    backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.09))",
+                  }}
+                  label="sort by"
+                  defaultValue="asc"
+                  onChange={handleSortBy}
+                >
+                  <MenuItem value="asc">Ascending</MenuItem>
+                  <MenuItem value="desc">Descending</MenuItem>
+                </Select>
+              </FormControl>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  border: "1px solid",
+                  borderColor: "rgba(255, 255, 255, 0.23)",
+                  backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.09))",
+                  borderRadius: "5px",
+                  "&:hover": {
+                    borderColor: "inherit",
+                  },
+                }}
+              >
+                <InputLabel sx={{ pl: 1, color: "inherit" }}>Subcollections</InputLabel>
+                <Switch color="secondary" checked={displaySubcollections} onChange={toggleDisplaySubcollections} />
+              </Box>
+            </>
           )}
           <Button
             variant="contained"

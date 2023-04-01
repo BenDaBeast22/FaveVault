@@ -18,6 +18,17 @@ import EditCardIcon from "../Icons/EditCardIcon";
 import DeleteCardIcon from "../Icons/DeleteCardIcon";
 import EditSubcollectionDialog from "../Dialogs/EditSubcollectionDialog";
 import { statusPriorityVal } from "../helpers";
+import SortType from "../Components/SortType";
+import SortOrder from "../Components/SortOrder";
+
+const sortList = [
+  { name: "Ascending", value: "asc" },
+  { name: "Descending", value: "desc" },
+];
+const ratingSortList = [
+  { name: "Name", value: "name" },
+  { name: "Rating", value: "score" },
+];
 
 const SubcollectionsList = ({
   groupingName,
@@ -35,9 +46,11 @@ const SubcollectionsList = ({
 }) => {
   const [subcollections, setSubcollections] = useState([]);
   const [items, setItems] = useState({});
+  const [itemsSortBy, setItemsSortBy] = useState(null);
   const collectionsRef = collection(db, "data", uid, groupingName);
   const subcollectionsRef = collection(collectionsRef, collectionId, "subcollections");
-  const subcollectionsOrder = groupingName === "Lists" ? "priority" : "name";
+  const isLists = groupingName === "Lists";
+  const subcollectionsOrder = isLists ? "priority" : "name";
   const addItemToSubcollection = async (items, subcollectionId) => {
     const itemRef = await addDoc(collection(subcollectionsRef, subcollectionId, groupingType), items);
     await setDoc(doc(collectionsRef, collectionId, groupingType, itemRef.id), items);
@@ -80,23 +93,49 @@ const SubcollectionsList = ({
       await deleteDoc(doc(subcollectionsRef, subcollectionId));
     }
   };
+  const updateSetItemsSortBy = (updateField, updateVal, subcollectionId) => {
+    setItemsSortBy((prevState) => {
+      const newItemsSortBy = {};
+      for (const [key, value] of Object.entries(prevState)) {
+        if (key === subcollectionId) newItemsSortBy[key] = { ...value, [updateField]: updateVal };
+        else newItemsSortBy[key] = { ...value };
+      }
+      console.log("new sort by = ", newItemsSortBy);
+      return newItemsSortBy;
+    });
+  };
+  const handleSortBy = (event, subcollectionId) => {
+    const sortType = event.target.value;
+    updateSetItemsSortBy("type", sortType, subcollectionId);
+  };
+  const handleOrderBy = (event, subcollectionId) => {
+    const sortOrder = event.target.value;
+    updateSetItemsSortBy("order", sortOrder, subcollectionId);
+  };
   // Event listeners for subcollections
   useEffect(() => {
     const q = query(subcollectionsRef, orderBy(subcollectionsOrder, sortBy));
     const unsub = onSnapshot(q, (snapshot) => {
       const subcollectionsArr = [];
+      const itemsSortBy = {};
       snapshot.forEach((doc) => {
         subcollectionsArr.push({ ...doc.data(), id: doc.id });
+        itemsSortBy[doc.id] = { type: "name", order: "asc" };
       });
       setSubcollections(subcollectionsArr);
+      setItemsSortBy(itemsSortBy);
     });
     return () => unsub();
   }, [sortBy]);
   // Event listeners for items
   useEffect(() => {
+    if (subcollections.length === 0 || !itemsSortBy) return;
     const unsubItemsArr = [];
     subcollections.forEach((subcollection) => {
-      const q = query(collection(subcollectionsRef, subcollection.id, groupingType), orderBy("name"));
+      const q = query(
+        collection(subcollectionsRef, subcollection.id, groupingType),
+        orderBy(itemsSortBy[subcollection.id].type, itemsSortBy[subcollection.id].order)
+      );
       const unsub = onSnapshot(q, (snapshot) => {
         const itemsArr = [];
         snapshot.forEach((doc) => {
@@ -107,7 +146,7 @@ const SubcollectionsList = ({
       unsubItemsArr.push(unsub);
     });
     return () => unsubItemsArr.forEach((unsub) => unsub());
-  }, [subcollections]);
+  }, [subcollections, itemsSortBy]);
   return (
     <div>
       {subcollections.map((subcollection) => (
@@ -116,7 +155,7 @@ const SubcollectionsList = ({
             <Typography variant="h4" sx={{ mr: 1 }}>
               {subcollection.name}
             </Typography>
-            {groupingName !== "Lists" && !friendView && (
+            {isLists && !friendView && (
               <Box sx={{ display: "flex" }}>
                 <AddCardIcon
                   groupingType={groupingType}
@@ -132,6 +171,18 @@ const SubcollectionsList = ({
                   tooltipName="Edit Subcollection"
                 />
                 <DeleteCardIcon handleDelete={deleteSubcollection} type="subcollection" card={subcollection} />
+              </Box>
+            )}
+            <Box sx={{ ml: 2 }}>
+              <SortType
+                list={isLists ? ratingSortList : sortList}
+                handleSortBy={handleSortBy}
+                subcollectionId={subcollection.id}
+              />
+            </Box>
+            {isLists && (
+              <Box sx={{ ml: 2 }}>
+                <SortOrder handleOrderBy={handleOrderBy} subcollectionId={subcollection.id} />
               </Box>
             )}
           </Box>

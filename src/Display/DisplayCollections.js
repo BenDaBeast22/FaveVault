@@ -1,4 +1,4 @@
-import { Container, Select, MenuItem, FormControl, InputLabel, Button, Typography, Avatar } from "@mui/material";
+import { Container, Button, Typography, Avatar } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { collection, query, doc, orderBy, addDoc, onSnapshot, updateDoc, deleteDoc, getDocs } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -9,6 +9,12 @@ import EditCollectionDialog from "../Dialogs/EditCollectionDialog";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import { singularize } from "../helpers";
 import { useParams } from "react-router-dom";
+import SortType from "../Components/SortType";
+
+const sortList = [
+  { name: "Ascending", value: "asc" },
+  { name: "Descending", value: "desc" },
+];
 
 const DisplayCollections = ({ groupingName, groupingType, AddCollectionDialog, EditCollectionDialog }) => {
   const { friendUid } = useParams();
@@ -114,22 +120,7 @@ const DisplayCollections = ({ groupingName, groupingType, AddCollectionDialog, E
           ) : (
             <></>
           )}
-
-          <FormControl>
-            <InputLabel>Sort By</InputLabel>
-            <Select
-              sx={{
-                height: "38px",
-                backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.09))",
-              }}
-              label="sort by"
-              defaultValue="asc"
-              onChange={handleSortBy}
-            >
-              <MenuItem value="asc">Ascending</MenuItem>
-              <MenuItem value="desc">Descending</MenuItem>
-            </Select>
-          </FormControl>
+          <SortType list={sortList} handleSortBy={handleSortBy} />
         </Container>
         {!loading && (
           <CollectionList
