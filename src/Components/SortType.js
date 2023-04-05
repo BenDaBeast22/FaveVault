@@ -1,12 +1,6 @@
 import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
-import { styled } from "@mui/material/styles";
 
-function SortType({ list, handleSortBy, subcollectionId }) {
-  // const CustomizedSelect = styled(Select)({
-  //   ".MuiSelect-select": {
-  //     paddingRight: "14px !important",
-  //   },
-  // });
+const SortType = ({ list, handleSortBy, subcollectionId }) => {
   return (
     <FormControl>
       <InputLabel>Sort by</InputLabel>
@@ -27,6 +21,6 @@ function SortType({ list, handleSortBy, subcollectionId }) {
       </Select>
     </FormControl>
   );
-}
+};
 
 export default SortType;

@@ -22,7 +22,7 @@ import CircularProgressLabel from "../../Components/CircularProgressLabel";
 
 const AddListCollectionDialog = ({ groupingName, card, user, open, submit, close }) => {
   const [name, setName] = useState("");
-  const [scoreType, setScoreType] = useState("none");
+  const [scoreType, setScoreType] = useState("stars");
   const [statusEnabled, setStatusEnabled] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const [imageUpload, setImageUpload] = useState(null);

@@ -20,21 +20,13 @@ import EditSubcollectionDialog from "../Dialogs/EditSubcollectionDialog";
 import { statusPriorityVal } from "../helpers";
 import SortType from "../Components/SortType";
 import SortOrder from "../Components/SortOrder";
-
-const sortList = [
-  { name: "Ascending", value: "asc" },
-  { name: "Descending", value: "desc" },
-];
-const ratingSortList = [
-  { name: "Name", value: "name" },
-  { name: "Rating", value: "score" },
-];
+import { sortList, ratingSortList } from "../Config/sortLists";
 
 const SubcollectionsList = ({
   groupingName,
   groupingType,
   uid,
-  sortBy,
+  sortOrder,
   collectionId,
   AddItemDialog,
   EditItemDialog,
@@ -119,7 +111,7 @@ const SubcollectionsList = ({
   };
   // Event listeners for subcollections
   useEffect(() => {
-    const q = query(subcollectionsRef, orderBy(subcollectionsOrder, sortBy));
+    const q = query(subcollectionsRef, orderBy(subcollectionsOrder, sortOrder));
     const unsub = onSnapshot(q, (snapshot) => {
       const subcollectionsArr = [];
       const itemsSortBy = {};
@@ -131,7 +123,7 @@ const SubcollectionsList = ({
       setItemsSortBy(itemsSortBy);
     });
     return () => unsub();
-  }, [sortBy]);
+  }, [sortOrder]);
   // Event listeners for items
   useEffect(() => {
     if (subcollections.length === 0 || !itemsSortBy) return;
@@ -161,7 +153,7 @@ const SubcollectionsList = ({
               <Typography variant="h4" sx={{ mr: 1 }}>
                 {subcollection.name}
               </Typography>
-              {isLists && !friendView && (
+              {!isLists && !friendView && (
                 <Box sx={{ display: "flex" }}>
                   <AddCardIcon
                     groupingType={groupingType}

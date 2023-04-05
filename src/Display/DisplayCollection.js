@@ -10,6 +10,9 @@ import ItemsList from "./ItemsList";
 import { capitalize, singularize } from "../helpers";
 import { Link as ReactRouterLink } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import SortType from "../Components/SortType";
+import SortOrder from "../Components/SortOrder";
+import { sortList, ratingSortList } from "../Config/sortLists";
 
 const DisplayCollection = ({
   groupingName,
@@ -24,11 +27,13 @@ const DisplayCollection = ({
   const [displaySubcollections, setDisplaySubcollections] = useState(subcollectionsEnabled === "true");
   const [displayStatus] = useState(statusEnabled === "true");
   const [addDialog, setAddDialog] = useState(false);
-  const [sortBy, setSortBy] = useState("asc");
+  const [sortType, setSortType] = useState("name");
+  const [sortOrder, setSortOrder] = useState("asc");
   const friendView = friendUid && true;
   const uid = friendUid ? friendUid : user.uid;
   const collectionsRef = collection(db, "data", uid, groupingName);
   const subcollectionsRef = collection(collectionsRef, id, "subcollections");
+  const isLists = groupingName === "Lists";
   const addItemToNewSubcollection = async (newSubcollection) => {
     const subcollection = {
       name: newSubcollection.name,
@@ -64,7 +69,16 @@ const DisplayCollection = ({
     await setDoc(doc(collectionsRef, id, groupingType, itemsRef.id), items);
   };
   const handleSortBy = (event) => {
-    setSortBy(event.target.value);
+    const newSortType = event.target.value;
+    console.log("sort type = ", newSortType);
+    if (newSortType !== sortType) {
+      setSortType(newSortType);
+      if (newSortType === "score") setSortOrder("desc");
+      else setSortOrder("asc");
+    }
+  };
+  const handleOrderBy = (event) => {
+    setSortOrder(event.target.value);
   };
   const handleOpenAddDialog = () => {
     setAddDialog(true);
@@ -106,7 +120,7 @@ const DisplayCollection = ({
         scoreType={scoreType}
         open={addDialog}
         close={handleCloseAddDialog}
-        submit={groupingName === "Lists" ? addListItem : addItem}
+        submit={isLists ? addListItem : addItem}
         displayStatus={displayStatus}
         collectionName={name}
       />
@@ -130,40 +144,25 @@ const DisplayCollection = ({
           }}
         >
           {!friendView && DisplayAddItemButton}
-          {groupingName !== "Lists" && (
-            <>
-              <FormControl>
-                <InputLabel>Sort By</InputLabel>
-                <Select
-                  sx={{
-                    height: "38px",
-                    backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.09))",
-                  }}
-                  label="sort by"
-                  defaultValue="asc"
-                  onChange={handleSortBy}
-                >
-                  <MenuItem value="asc">Ascending</MenuItem>
-                  <MenuItem value="desc">Descending</MenuItem>
-                </Select>
-              </FormControl>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  border: "1px solid",
-                  borderColor: "rgba(255, 255, 255, 0.23)",
-                  backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.09))",
-                  borderRadius: "5px",
-                  "&:hover": {
-                    borderColor: "inherit",
-                  },
-                }}
-              >
-                <InputLabel sx={{ pl: 1, color: "inherit" }}>Subcollections</InputLabel>
-                <Switch color="secondary" checked={displaySubcollections} onChange={toggleDisplaySubcollections} />
-              </Box>
-            </>
+          <SortType list={isLists ? ratingSortList : sortList} handleSortBy={isLists ? handleSortBy : handleOrderBy} />
+          {isLists && !displayStatus && <SortOrder handleOrderBy={handleOrderBy} value={sortOrder} />}
+          {!isLists && (
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                border: "1px solid",
+                borderColor: "rgba(255, 255, 255, 0.23)",
+                backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.09))",
+                borderRadius: "5px",
+                "&:hover": {
+                  borderColor: "inherit",
+                },
+              }}
+            >
+              <InputLabel sx={{ pl: 1, color: "inherit" }}>Subcollections</InputLabel>
+              <Switch color="secondary" checked={displaySubcollections} onChange={toggleDisplaySubcollections} />
+            </Box>
           )}
           <Button
             variant="contained"
@@ -181,7 +180,7 @@ const DisplayCollection = ({
             groupingType={groupingType}
             scoreType={scoreType}
             uid={uid}
-            sortBy={sortBy}
+            sortOrder={sortOrder}
             collectionId={id}
             AddItemDialog={AddItemDialog}
             EditItemDialog={EditItemDialog}
@@ -196,7 +195,8 @@ const DisplayCollection = ({
             groupingType={groupingType}
             scoreType={scoreType}
             uid={uid}
-            sortBy={sortBy}
+            sortType={sortType}
+            sortOrder={sortOrder}
             collectionId={id}
             EditItemDialog={EditItemDialog}
             CardList={CardList}

@@ -174,18 +174,16 @@ const Navbar = () => {
             keepMounted
           >
             {settings.map((setting) => (
-              <MenuItem key={setting.name} onClick={handleCloseUserMenu}>
-                <Link
-                  component={RouterLink}
-                  to={setting.name !== "logout" ? `${setting.name}` : null}
-                  color="inherit"
-                  underline="none"
-                >
-                  <Stack direction="row" spacing={1} onClick={setting.onClick}>
-                    {setting.icon}
-                    <Typography sx={{ textTransform: "capitalize" }}>{setting.name}</Typography>
-                  </Stack>
-                </Link>
+              <MenuItem
+                component={RouterLink}
+                to={setting.name !== "logout" ? `${setting.name}` : null}
+                key={setting.name}
+                onClick={handleCloseUserMenu}
+              >
+                <Stack direction="row" spacing={1} onClick={setting.onClick}>
+                  {setting.icon}
+                  <Typography sx={{ textTransform: "capitalize" }}>{setting.name}</Typography>
+                </Stack>
               </MenuItem>
             ))}
           </Menu>

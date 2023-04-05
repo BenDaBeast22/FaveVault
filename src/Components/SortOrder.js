@@ -1,5 +1,4 @@
-import { FormControl, InputLabel, Select, Menu, MenuItem } from "@mui/material";
-import React from "react";
+import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 
 const SortOrder = ({ handleOrderBy, subcollectionId, value }) => {
   return (

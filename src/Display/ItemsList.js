@@ -8,7 +8,8 @@ const ItemsList = ({
   groupingType,
   scoreType,
   uid,
-  sortBy,
+  sortType,
+  sortOrder,
   collectionId,
   EditItemDialog,
   CardList,
@@ -47,7 +48,7 @@ const ItemsList = ({
   };
   // Listener for items
   useEffect(() => {
-    const q = query(collection(collectionsRef, collectionId, groupingType), orderBy("name", sortBy));
+    const q = query(collection(collectionsRef, collectionId, groupingType), orderBy(sortType, sortOrder));
     const unsub = onSnapshot(q, (snapshot) => {
       const itemsArr = [];
       snapshot.forEach((doc) => {
@@ -56,7 +57,7 @@ const ItemsList = ({
       setItems(itemsArr);
     });
     return () => unsub();
-  }, [sortBy]);
+  }, [sortType, sortOrder]);
   return (
     <CardList
       uid={uid}
@@ -67,6 +68,7 @@ const ItemsList = ({
       EditCardDialog={EditItemDialog}
       handleDelete={handleDelete}
       scoreType={scoreType}
+      displayRating={scoreType !== "none"}
       collectionName={collectionName}
       groupingName={groupingName}
       friendView={friendView}

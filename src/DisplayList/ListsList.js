@@ -11,11 +11,11 @@ function ListsList({
   EditCardDialog,
   handleDelete,
   type,
+  displayRating,
   displayStatus,
   collectionName,
   groupingName,
   friendView,
-  displayRating,
 }) {
   const handleRatingChange = (newScore, card) => {
     editCard({ score: newScore * 2 }, card.scId, card.id);
@@ -26,7 +26,7 @@ function ListsList({
   return (
     <Grid container spacing={2} sx={{ pb: 2, pr: 2 }}>
       {list.map((card) => (
-        <Grid item xs={4} sm={3} md={2.4} lg={2} xl={1.5} key={card.id}>
+        <Grid item xs={4} sm={3} md={2.4} lg={2} key={card.id}>
           <Card
             sx={{
               height: "150px",
@@ -48,10 +48,15 @@ function ListsList({
               backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.09))",
             }}
           >
-            <Typography align="center">{card.name}</Typography>
+            <Box sx={{ display: "flex", alignItems: "center", lineHeight: "1.5em", minHeight: "3em" }}>
+              <Typography paragraph align="center" sx={{ width: "100%", m: 0 }}>
+                {card.name}
+              </Typography>
+            </Box>
+            {console.log("displayRating = ", displayRating, "scoreType = ", scoreType)}
             {displayRating && Rating(card)}
             {!friendView && displayStatus && (
-              <Box sx={{ mt: 1 }}>
+              <Box sx={{ mt: 2, mb: 1 }}>
                 <Select
                   value={card.status}
                   onChange={(e) => handleStatusChange(e.target.value, card)}
@@ -73,7 +78,7 @@ function ListsList({
 
   function Rating(card) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 0.5 }}>
+      <Box sx={{ display: "flex", justifyContent: "center", my: 0.5 }}>
         {scoreType === "stars"
           ? StarRating(card.score, friendView, handleRatingChange, card)
           : scoreType === "hearts"
