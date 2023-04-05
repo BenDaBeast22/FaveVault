@@ -21,7 +21,6 @@ import { Link as ReactRouterLink } from "react-router-dom";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import SearchIcon from "@mui/icons-material/Search";
-import PendingIcon from "@mui/icons-material/Pending";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import MailIcon from "@mui/icons-material/Mail";
 import DeleteFriendDialog from "./Dialogs/DeleteFriendDialog";
@@ -29,7 +28,7 @@ import DeleteFriendDialog from "./Dialogs/DeleteFriendDialog";
 const Friends = () => {
   const [user, setUser] = useState(null);
   const [incomingRequests, setIncomingRequests] = useState([]);
-  const [pendingRequests, setPendingRequests] = useState([]);
+  const [pendingRequests, setPendingRequests] = useState(null);
   const [friends, setFriends] = useState(null);
   const [filterFriends, setFilterFriends] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
@@ -75,34 +74,47 @@ const Friends = () => {
     setTimer(newTimer);
   };
   const sendFriendRequest = async (suggestion) => {
-    await setDoc(doc(db, "requests", uid, "Outgoing", suggestion.email), suggestion);
     await setDoc(doc(db, "requests", suggestion.uid, "Incoming", user.email), user);
+    await setDoc(doc(db, "requests", uid, "Outgoing", suggestion.email), suggestion);
     setSnackbar({ message: `Sent friend request to ${suggestion.email}`, color: "success" });
   };
-  const deleteFriendRequest = async (person) => {
-    await deleteDoc(doc(db, "requests", uid, "Incoming", person.email));
-    await deleteDoc(doc(db, "requests", person.uid, "Outgoing", user.email));
-  };
-  const rejectFriendRequest = async (stranger) => {
-    await deleteFriendRequest(stranger);
-    setSnackbar({ message: `Rejected friend request from ${stranger.email}`, color: "error" });
+  const cancelFriendRequest = async (suggestion) => {
+    await deleteDoc(doc(db, "requests", uid, "Outgoing", suggestion.email));
+    await deleteDoc(doc(db, "requests", suggestion.uid, "Incoming", user.email));
+    setSnackbar({ message: `Cancelled friend request to ${suggestion.email}`, color: "success" });
   };
   const acceptFriendRequest = async (friend) => {
-    await deleteFriendRequest(friend);
     await setDoc(doc(db, "friends", uid, "friends", friend.email), friend);
-    await setDoc(doc(db, "friends", friend.uid, "friends", user.email), user);
+    await deleteDoc(doc(db, "requests", uid, "Incoming", friend.email));
     setSnackbar({ message: `Added ${friend.email} as friend`, color: "success" });
+  };
+  const friendRequestAccepted = async (friend) => {
+    await deleteDoc(doc(db, "requests", uid, "Outgoing", friend.email));
+    await setDoc(doc(db, "friends", uid, "friends", friend.email), friend);
+    setSnackbar({ message: `${friend.email} accepted your friend request`, color: "info" });
+  };
+  const rejectFriendRequest = async (stranger) => {
+    await deleteDoc(doc(db, "requests", uid, "Incoming", stranger.email));
+    setSnackbar({ message: `Rejected friend request from ${stranger.email}`, color: "success" });
+  };
+  const friendRequestRejected = async (stranger) => {
+    await deleteDoc(doc(db, "requests", uid, "Outgoing", stranger.email));
+    setSnackbar({ message: `${stranger.email} rejected your friend request`, color: "info" });
   };
   const handleUnfriend = (friend) => {
     setDeleteFriend(friend);
     setDeleteOpen(true);
   };
+  const wereUnfriended = async (friend) => {
+    await deleteDoc(doc(db, "friends", uid, "friends", friend.email));
+    setSnackbar({ message: `Unfriended by ${friend.email}`, color: "info" });
+  };
   const unfriend = async (friend) => {
     await deleteDoc(doc(db, "friends", uid, "friends", friend.email));
-    await deleteDoc(doc(db, "friends", friend.uid, "friends", user.email));
     setSnackbar({ message: `Unfriended ${friend.email}`, color: "success" });
     setDeleteOpen(false);
   };
+  // Getting state
   useEffect(() => {
     //Get user
     const unsubArr = [];
@@ -119,7 +131,7 @@ const Friends = () => {
       snapshot.forEach((doc) => {
         incomingRequests.push(doc.data());
       });
-      if (incomingRequests.length > 0) setSnackbar({ message: "You have friend requests", color: "success" });
+      if (incomingRequests.length > 0) setSnackbar({ message: "Received friend requests", color: "success" });
       setIncomingRequests(incomingRequests);
     });
     unsubArr.push(unsubRequests);
@@ -138,7 +150,8 @@ const Friends = () => {
     const unsubFriends = onSnapshot(friendsRef, (snapshot) => {
       const friends = [];
       snapshot.forEach((doc) => {
-        friends.push(doc.data());
+        const friend = doc.data();
+        friends.push(friend);
       });
       setFriends(friends);
       setFilterFriends(friends);
@@ -146,10 +159,64 @@ const Friends = () => {
     unsubArr.push(unsubFriends);
     return () => unsubArr.forEach((unsub) => unsub());
   }, []);
-
+  // For dealing with when friend accepts/rejects your request
+  useEffect(() => {
+    if (!pendingRequests) return;
+    const unsubArr = [];
+    pendingRequests.forEach((request) => {
+      // Event listener for when incoming request is dealt with by friend
+      const incomingRef = collection(db, "requests", request.uid, "Incoming");
+      const iq = query(incomingRef, where("uid", "==", uid), limit(1));
+      const unsubIncoming = onSnapshot(iq, (querySnapshot) => {
+        if (!querySnapshot.empty) return;
+        // if outgoing request is accepted add friend otherwise if rejected delete the request
+        const friendsRef = collection(db, "friends", request.uid, "friends");
+        const fq = query(friendsRef, where("uid", "==", uid), limit(1));
+        getDocs(fq).then((querySnapshot) => {
+          if (!querySnapshot.empty) {
+            friendRequestAccepted(request);
+          } else {
+            friendRequestRejected(request);
+          }
+        });
+      });
+      unsubArr.push(unsubIncoming);
+    });
+    return () => unsubArr.forEach((unsub) => unsub());
+  }, [pendingRequests]);
+  // For removing friend when they remove you
+  useEffect(() => {
+    if (!friends) return;
+    function unsubAll(unsubArr) {
+      unsubArr.forEach((unsub) => unsub());
+    }
+    let unsubArr = [];
+    friends.forEach((friend) => {
+      unsubAll(unsubArr);
+      unsubArr = [];
+      // Add event listener to friends outgoing requests to ensure they accepted your request
+      const outgoingRef = collection(db, "requests", friend.uid, "Outgoing");
+      const oq = query(outgoingRef, where("uid", "==", uid), limit(1));
+      const unsub = onSnapshot(oq, (querySnapshot) => {
+        if (!querySnapshot.empty) return;
+        // Add event listener to check if friend removed you if so remove them
+        const unfriendRef = collection(db, "friends", friend.uid, "friends");
+        const uq = query(unfriendRef, where("uid", "==", uid), limit(1));
+        const unsub = onSnapshot(uq, (querySnapshot) => {
+          if (querySnapshot.empty) {
+            wereUnfriended(friend);
+          }
+        });
+        unsubArr.push(unsub);
+      });
+      unsubArr.push(unsub);
+    });
+    return () => unsubArr.forEach((unsub) => unsub());
+  }, [friends]);
+  // Populating suggestions onload to add to friends
   useEffect(() => {
     if (!user || !friends) return;
-    // Onload query default suggestions that are not in your friends
+    // query default suggestions that are not in your friends
     if (!friendsAndUserLoaded.current) {
       querySuggestions("");
       friendsAndUserLoaded.current = true;
@@ -234,8 +301,13 @@ const Friends = () => {
             <Avatar alt="profile-pic" src={suggestion.profilePic} sx={{ width: 45, height: 45 }} />
             <Typography>{suggestion.email}</Typography>
             {alreadySentRequest(suggestion.email) ? (
-              <Button variant="outlined" color="warning" startIcon={<PendingIcon />}>
-                Pending
+              <Button
+                onClick={() => cancelFriendRequest(suggestion)}
+                variant="outlined"
+                color="error"
+                startIcon={<CancelIcon />}
+              >
+                Cancel
               </Button>
             ) : alreadyRecievedRequest(suggestion.email) ? (
               <Button variant="outlined" startIcon={<MailIcon />}>

@@ -8,7 +8,6 @@ import {
   TextField,
   Alert,
   Typography,
-  Rating,
   FormControl,
   InputLabel,
   MenuItem,
@@ -86,6 +85,7 @@ const AddListItemToSubcollectionDialog = ({ title, user, open, submit, close, sc
     setImageUploadSuccess(false);
     setImageUploadFail(false);
     setError(false);
+    setScore(0);
     setProgress(0);
     close();
   };

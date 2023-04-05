@@ -93,24 +93,29 @@ const SubcollectionsList = ({
       await deleteDoc(doc(subcollectionsRef, subcollectionId));
     }
   };
-  const updateSetItemsSortBy = (updateField, updateVal, subcollectionId) => {
+  const handleSortBy = (event, subcollectionId) => {
+    const sortType = event.target.value;
     setItemsSortBy((prevState) => {
       const newItemsSortBy = {};
       for (const [key, value] of Object.entries(prevState)) {
-        if (key === subcollectionId) newItemsSortBy[key] = { ...value, [updateField]: updateVal };
+        if (key === subcollectionId)
+          newItemsSortBy[key] = { ...value, type: sortType, order: sortType === "name" ? "asc" : "desc" };
         else newItemsSortBy[key] = { ...value };
       }
-      console.log("new sort by = ", newItemsSortBy);
       return newItemsSortBy;
     });
-  };
-  const handleSortBy = (event, subcollectionId) => {
-    const sortType = event.target.value;
-    updateSetItemsSortBy("type", sortType, subcollectionId);
+    // updateSetItemsSortBy("type", sortType, subcollectionId);
   };
   const handleOrderBy = (event, subcollectionId) => {
     const sortOrder = event.target.value;
-    updateSetItemsSortBy("order", sortOrder, subcollectionId);
+    setItemsSortBy((prevState) => {
+      const newItemsSortBy = {};
+      for (const [key, value] of Object.entries(prevState)) {
+        if (key === subcollectionId) newItemsSortBy[key] = { ...value, order: sortOrder };
+        else newItemsSortBy[key] = { ...value };
+      }
+      return newItemsSortBy;
+    });
   };
   // Event listeners for subcollections
   useEffect(() => {
@@ -149,61 +154,66 @@ const SubcollectionsList = ({
   }, [subcollections, itemsSortBy]);
   return (
     <div>
-      {subcollections.map((subcollection) => (
-        <Box key={subcollection.id}>
-          <Box sx={{ mt: 2, display: "flex", mb: 3 }}>
-            <Typography variant="h4" sx={{ mr: 1 }}>
-              {subcollection.name}
-            </Typography>
-            {isLists && !friendView && (
-              <Box sx={{ display: "flex" }}>
-                <AddCardIcon
-                  groupingType={groupingType}
-                  submitCard={addItemToSubcollection}
-                  subcollectionId={subcollection.id}
-                  AddItemDialog={AddItemDialog}
-                />
-                <EditCardIcon
-                  type="subcollection"
-                  card={subcollection}
-                  editCard={editSubcollection}
-                  EditCardDialog={EditSubcollectionDialog}
-                  tooltipName="Edit Subcollection"
-                />
-                <DeleteCardIcon handleDelete={deleteSubcollection} type="subcollection" card={subcollection} />
-              </Box>
-            )}
-            <Box sx={{ ml: 2 }}>
-              <SortType
-                list={isLists ? ratingSortList : sortList}
-                handleSortBy={handleSortBy}
-                subcollectionId={subcollection.id}
-              />
-            </Box>
-            {isLists && (
+      {itemsSortBy &&
+        subcollections.map((subcollection) => (
+          <Box key={subcollection.id}>
+            <Box sx={{ mt: 2, display: "flex", mb: 3 }}>
+              <Typography variant="h4" sx={{ mr: 1 }}>
+                {subcollection.name}
+              </Typography>
+              {isLists && !friendView && (
+                <Box sx={{ display: "flex" }}>
+                  <AddCardIcon
+                    groupingType={groupingType}
+                    submitCard={addItemToSubcollection}
+                    subcollectionId={subcollection.id}
+                    AddItemDialog={AddItemDialog}
+                  />
+                  <EditCardIcon
+                    type="subcollection"
+                    card={subcollection}
+                    editCard={editSubcollection}
+                    EditCardDialog={EditSubcollectionDialog}
+                    tooltipName="Edit Subcollection"
+                  />
+                  <DeleteCardIcon handleDelete={deleteSubcollection} type="subcollection" card={subcollection} />
+                </Box>
+              )}
               <Box sx={{ ml: 2 }}>
-                <SortOrder handleOrderBy={handleOrderBy} subcollectionId={subcollection.id} />
+                <SortType
+                  list={isLists ? ratingSortList : sortList}
+                  handleSortBy={isLists ? handleSortBy : handleOrderBy}
+                  subcollectionId={subcollection.id}
+                />
               </Box>
+              {isLists && (
+                <Box sx={{ ml: 2 }}>
+                  <SortOrder
+                    handleOrderBy={handleOrderBy}
+                    subcollectionId={subcollection.id}
+                    value={itemsSortBy[subcollection.id].order}
+                  />
+                </Box>
+              )}
+            </Box>
+            {items[subcollection.id] && (
+              <CardList
+                list={items[subcollection.id]}
+                type="bookmark"
+                editCard={editItem}
+                EditCardDialog={EditItemDialog}
+                handleDelete={deleteItem}
+                scoreType={scoreType}
+                displayStatus={true}
+                collectionName={collectionName}
+                editListItem={editListItem}
+                groupingName={groupingName}
+                displayRating={subcollection.name === "Planning" ? false : true}
+                friendView={friendView}
+              />
             )}
           </Box>
-          {items[subcollection.id] && (
-            <CardList
-              list={items[subcollection.id]}
-              type="bookmark"
-              editCard={editItem}
-              EditCardDialog={EditItemDialog}
-              handleDelete={deleteItem}
-              scoreType={scoreType}
-              displayStatus={true}
-              collectionName={collectionName}
-              editListItem={editListItem}
-              groupingName={groupingName}
-              displayRating={subcollection.name === "Planning" ? false : true}
-              friendView={friendView}
-            />
-          )}
-        </Box>
-      ))}
+        ))}
     </div>
   );
 };

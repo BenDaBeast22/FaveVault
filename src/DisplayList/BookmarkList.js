@@ -45,7 +45,6 @@ function BookmarkList({ list, editCard, EditCardDialog, handleDelete, type, frie
           justifyContent: "space-evenly",
         }}
       >
-        {console.log("displaying icons")}
         <EditCardIcon card={card} editCard={editCard} EditCardDialog={EditCardDialog} type={type} />
         <DeleteCardIcon handleDelete={handleDelete} type={type} card={card} />
       </Box>

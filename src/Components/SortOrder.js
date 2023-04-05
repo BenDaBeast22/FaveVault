@@ -1,7 +1,7 @@
 import { FormControl, InputLabel, Select, Menu, MenuItem } from "@mui/material";
 import React from "react";
 
-const SortOrder = ({ handleOrderBy, subcollectionId }) => {
+const SortOrder = ({ handleOrderBy, subcollectionId, value }) => {
   return (
     <FormControl>
       <InputLabel>Order by</InputLabel>
@@ -12,6 +12,7 @@ const SortOrder = ({ handleOrderBy, subcollectionId }) => {
         }}
         label="order by"
         defaultValue="asc"
+        value={value}
         onChange={(event) => handleOrderBy(event, subcollectionId)}
       >
         <MenuItem value="asc">Asc</MenuItem>

@@ -65,7 +65,7 @@ const Navbar = () => {
       setNumFriendRequests(numFriendRequests);
     });
     return () => unsubRequests();
-  }, []);
+  }, [uid]);
   return (
     <AppBar position="static">
       <CssBaseline />
