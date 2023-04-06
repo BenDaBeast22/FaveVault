@@ -17,7 +17,7 @@ import { storage } from "../Config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import CircularProgressLabel from "../Components/CircularProgressLabel";
 
-const EditCollectionDialog = ({ title, card, user, open, submit, close }) => {
+const EditCollectionDialog = ({ title, editName, card, user, open, submit, close, maxLength }) => {
   const [name, setName] = useState(card.name);
   const [imageUrl, setImageUrl] = useState(card.img);
   const [imageUpload, setImageUpload] = useState(null);
@@ -33,7 +33,7 @@ const EditCollectionDialog = ({ title, card, user, open, submit, close }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!name) {
-      setError("Collection name not set");
+      setError(`${editName} name not set`);
       return;
     } else if (!imageUrl) {
       setError("Image name not set");
@@ -93,10 +93,11 @@ const EditCollectionDialog = ({ title, card, user, open, submit, close }) => {
         <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
           <DialogContentText align="center">{title}</DialogContentText>
           <TextField
-            label="Collection Name"
+            label={`${editName} Name`}
             value={name}
             sx={{ mt: 2 }}
             onChange={(e) => setName(e.target.value)}
+            inputProps={{ maxLength: maxLength }}
             autoFocus
           />
           <TextField
@@ -105,7 +106,6 @@ const EditCollectionDialog = ({ title, card, user, open, submit, close }) => {
             margin="normal"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
-            autoFocus
           />
           <Box
             sx={{

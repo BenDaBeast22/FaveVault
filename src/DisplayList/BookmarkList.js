@@ -2,22 +2,24 @@ import { Grid, Card, CardMedia, CardContent, Box, Typography, Link } from "@mui/
 import EditCardIcon from "../Icons/EditCardIcon";
 import DeleteCardIcon from "../Icons/DeleteCardIcon";
 
-function BookmarkList({ list, editCard, EditCardDialog, handleDelete, type, friendView }) {
+function BookmarkList({ list, editCard, EditCardDialog, handleDelete, itemName, friendView }) {
   return (
     <Grid container spacing={2} sx={{ pb: 2, pr: 2 }}>
       {list.map((card) => (
         <Grid item xs={4} sm={3} md={2.4} lg={2} xl={1.5} key={card.id}>
-          <Card
-            sx={{
-              height: "150px",
-              display: "flex",
-              justifyContent: "center",
-            }}
-          >
-            <Link href={card.link} target="_blank">
-              <CardMedia height="100%" component="img" image={card.img} alt={card.img} />
-            </Link>
-          </Card>
+          <Link href={card.link} target="_blank">
+            <Card
+              sx={{
+                height: "150px",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <Box>
+                <CardMedia height="100%" component="img" image={card.img} alt={card.img} />
+              </Box>
+            </Card>
+          </Link>
           <CardContent
             sx={{
               py: 1,
@@ -45,8 +47,8 @@ function BookmarkList({ list, editCard, EditCardDialog, handleDelete, type, frie
           justifyContent: "space-evenly",
         }}
       >
-        <EditCardIcon card={card} editCard={editCard} EditCardDialog={EditCardDialog} type={type} />
-        <DeleteCardIcon handleDelete={handleDelete} type={type} card={card} />
+        <EditCardIcon card={card} editCard={editCard} EditCardDialog={EditCardDialog} name={itemName} />
+        <DeleteCardIcon handleDelete={handleDelete} name={itemName} card={card} />
       </Box>
     );
   }

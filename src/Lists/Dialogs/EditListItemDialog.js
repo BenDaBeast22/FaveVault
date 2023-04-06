@@ -28,7 +28,18 @@ import {
   OutOfHunderedRating,
 } from "../../Components/ScoreTypes";
 
-const EditListItemDialog = ({ title, card, user, open, submit, close, scoreType, displayStatus, collectionName }) => {
+const EditListItemDialog = ({
+  title,
+  card,
+  user,
+  open,
+  submit,
+  close,
+  scoreType,
+  displayStatus,
+  editName,
+  maxLength,
+}) => {
   const [itemName, setItemName] = useState(card.name);
   const [score, setScore] = useState(card.score);
   const [status, setStatus] = useState(card.status);
@@ -42,7 +53,7 @@ const EditListItemDialog = ({ title, card, user, open, submit, close, scoreType,
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!itemName) {
-      setError("List Item name not set");
+      setError(`${editName} name not set`);
     } else if (!imageUrl) {
       setError("Subcollection image name not set");
       return;
@@ -102,10 +113,11 @@ const EditListItemDialog = ({ title, card, user, open, submit, close, scoreType,
         <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
           <DialogContentText align="center">{title}</DialogContentText>
           <TextField
-            label={`${collectionName} Name`}
+            label={`${editName} Name`}
             value={itemName}
             sx={{ mt: 2 }}
             onChange={(e) => setItemName(e.target.value)}
+            inputProps={{ maxLength: maxLength }}
             autoFocus
           />
           <TextField
@@ -114,7 +126,6 @@ const EditListItemDialog = ({ title, card, user, open, submit, close, scoreType,
             margin="normal"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
-            autoFocus
           />
           <DialogContentText align="center" sx={{ mb: 1 }}>
             Or

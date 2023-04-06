@@ -3,7 +3,7 @@ import { Link as ReactRouterLink } from "react-router-dom";
 import EditCardIcon from "../Icons/EditCardIcon";
 import DeleteCardIcon from "../Icons/DeleteCardIcon";
 
-function CollectionList({ list, editCard, EditCardDialog, handleDelete, type, friendView }) {
+function CollectionList({ list, editCard, EditCardDialog, handleDelete, collectionName, friendView }) {
   return (
     <Grid container spacing={2} sx={{ pb: 2, pr: 2 }}>
       {list.map((card) => (
@@ -16,7 +16,6 @@ function CollectionList({ list, editCard, EditCardDialog, handleDelete, type, fr
             <Card
               sx={{
                 height: "150px",
-                display: "flex",
                 display: "flex",
                 justifyContent: "center",
               }}
@@ -36,7 +35,11 @@ function CollectionList({ list, editCard, EditCardDialog, handleDelete, type, fr
               backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.09))",
             }}
           >
-            <Typography align="center">{card.name}</Typography>
+            <Box sx={{ display: "flex", alignItems: "center", lineHeight: "1.5em", minHeight: "3em" }}>
+              <Typography paragraph align="center" sx={{ width: "100%", m: 0 }}>
+                {card.name}
+              </Typography>
+            </Box>
             {!friendView && (
               <Box
                 sx={{
@@ -45,8 +48,8 @@ function CollectionList({ list, editCard, EditCardDialog, handleDelete, type, fr
                   justifyContent: "space-evenly",
                 }}
               >
-                <EditCardIcon card={card} editCard={editCard} EditCardDialog={EditCardDialog} type={type} />
-                <DeleteCardIcon handleDelete={handleDelete} type={type} card={card} />
+                <EditCardIcon card={card} editCard={editCard} EditCardDialog={EditCardDialog} name={collectionName} />
+                <DeleteCardIcon handleDelete={handleDelete} name={collectionName} card={card} />
               </Box>
             )}
           </CardContent>

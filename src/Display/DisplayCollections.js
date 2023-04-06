@@ -10,6 +10,7 @@ import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import { singularize } from "../helpers";
 import { useParams } from "react-router-dom";
 import SortType from "../Components/SortType";
+import { maxLength } from "../Config/config";
 
 const sortList = [
   { name: "Ascending", value: "asc" },
@@ -26,6 +27,7 @@ const DisplayCollections = ({ groupingName, groupingType, AddCollectionDialog, E
   const friendView = friendUid && true;
   const uid = friendUid ? friendUid : user.uid;
   const collectionsRef = collection(db, "data", uid, groupingName);
+  const collectionName = groupingName === "Bookmarks" ? `${groupingName} List` : singularize(groupingName);
   const addCollection = async (newCollection) => {
     await addDoc(collection(db, "data", uid, groupingName), newCollection);
   };
@@ -106,15 +108,16 @@ const DisplayCollections = ({ groupingName, groupingType, AddCollectionDialog, E
                 color="secondary"
                 onClick={handleOpenAddDialog}
               >
-                {`New ${singularize(groupingName)}`}
+                {`New ${collectionName}`}
               </Button>
               <AddCollectionDialog
-                groupingName={`${singularize(groupingName)}`}
+                collectionName={collectionName}
                 collection={{ name: "", img: "" }}
                 user={user}
                 open={addDialog}
                 close={handleCloseAddDialog}
                 submit={addCollection}
+                maxLength={maxLength}
               />
             </>
           ) : (
@@ -128,7 +131,7 @@ const DisplayCollections = ({ groupingName, groupingType, AddCollectionDialog, E
             editCard={editCollection}
             EditCardDialog={EditCollectionDialog}
             handleDelete={handleDelete}
-            type="collection"
+            collectionName={collectionName}
             friendView={friendView}
           ></CollectionList>
         )}

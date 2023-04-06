@@ -3,7 +3,7 @@ import { Tooltip, IconButton } from "@mui/material";
 import DeleteDialog from "../Dialogs/DeleteDialog";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-function DeleteCardIcon({ type, card, handleDelete }) {
+function DeleteCardIcon({ type, name, card, handleDelete }) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
     setOpen(true);
@@ -18,14 +18,7 @@ function DeleteCardIcon({ type, card, handleDelete }) {
           <DeleteIcon />
         </IconButton>
       </Tooltip>
-      <DeleteDialog
-        scId={card.scId}
-        id={card.id}
-        handleDelete={() => handleDelete(card.id, card.scId)}
-        open={open}
-        close={handleClose}
-        type={type}
-      />
+      <DeleteDialog name={name} handleDelete={() => handleDelete(card.id, card.scId)} open={open} close={handleClose} />
     </>
   );
 }

@@ -10,7 +10,7 @@ function ListsList({
   editListItem,
   EditCardDialog,
   handleDelete,
-  type,
+  itemName,
   displayRating,
   displayStatus,
   collectionName,
@@ -53,7 +53,6 @@ function ListsList({
                 {card.name}
               </Typography>
             </Box>
-            {console.log("displayRating = ", displayRating, "scoreType = ", scoreType)}
             {displayRating && Rating(card)}
             {!friendView && displayStatus && (
               <Box sx={{ mt: 2, mb: 1 }}>
@@ -109,12 +108,12 @@ function ListsList({
           card={card}
           editCard={groupingName === "Lists" ? editListItem : editCard}
           EditCardDialog={EditCardDialog}
-          type={type}
+          name={itemName}
           scoreType={scoreType}
           displayStatus={displayStatus}
           collectionName={collectionName}
         />
-        <DeleteCardIcon handleDelete={handleDelete} type={type} card={card} />
+        <DeleteCardIcon handleDelete={handleDelete} name={itemName} card={card} />
       </Box>
     );
   }

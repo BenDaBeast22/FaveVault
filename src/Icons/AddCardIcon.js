@@ -4,6 +4,7 @@ import { Box, IconButton, Tooltip } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { capitalize, singularize } from "../helpers";
+import { maxLength } from "../Config/config";
 
 const AddCardIcon = ({ groupingType, submitCard, subcollectionId, AddItemDialog }) => {
   const [user] = useAuthState(auth);
@@ -29,6 +30,7 @@ const AddCardIcon = ({ groupingType, submitCard, subcollectionId, AddItemDialog 
           open={open}
           close={handleClose}
           submit={submitCard}
+          maxLength={maxLength}
         />
       </Box>
     </div>

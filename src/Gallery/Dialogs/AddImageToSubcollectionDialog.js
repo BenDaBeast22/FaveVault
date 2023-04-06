@@ -7,7 +7,7 @@ import { storage } from "../../Config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import CircularProgressLabel from "../../Components/CircularProgressLabel";
 
-const AddImageToSubcollectionDialog = ({ title, user, open, submit, close }) => {
+const AddImageToSubcollectionDialog = ({ title, user, open, submit, close, maxLength }) => {
   const [subcollectionName, setSubcollectionName] = useState("");
   const [imageName, setImageName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -91,14 +91,15 @@ const AddImageToSubcollectionDialog = ({ title, user, open, submit, close }) => 
             value={subcollectionName}
             sx={{ mt: 2 }}
             onChange={(e) => setSubcollectionName(e.target.value)}
+            inputProps={{ maxLength: maxLength }}
             autoFocus
           />
           <TextField
             label="Image Name"
             value={imageName}
             sx={{ mt: 2 }}
+            inputProps={{ maxLength: maxLength }}
             onChange={(e) => setImageName(e.target.value)}
-            autoFocus
           />
           <TextField
             disabled={imageUpload !== null}
@@ -106,7 +107,6 @@ const AddImageToSubcollectionDialog = ({ title, user, open, submit, close }) => 
             margin="normal"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
-            autoFocus
           />
           <DialogContentText align="center" sx={{ mb: 1 }}>
             Or

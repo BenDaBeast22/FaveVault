@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box, Button, Dialog, DialogContent, DialogContentText, TextField, Alert } from "@mui/material";
 import PublishRoundedIcon from "@mui/icons-material/PublishRounded";
 
-const EditSubcollectionDialog = ({ title, card, open, submit, close }) => {
+const EditSubcollectionDialog = ({ title, card, open, submit, close, maxLength }) => {
   const [subcollectionName, setSubcollectionName] = useState(card.name);
   const [error, setError] = useState(false);
   const handleSubmit = async (event) => {
@@ -27,6 +27,7 @@ const EditSubcollectionDialog = ({ title, card, open, submit, close }) => {
             value={subcollectionName}
             sx={{ mt: 2 }}
             onChange={(e) => setSubcollectionName(e.target.value)}
+            inputProps={{ maxLength: maxLength }}
             autoFocus
           />
           {error && (

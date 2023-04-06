@@ -1,13 +1,12 @@
 import React from "react";
 import { Button, Dialog, DialogContent, DialogContentText, DialogActions, DialogTitle } from "@mui/material";
-import { capitalize } from "../helpers";
 
-const DeleteDialog = ({ type, scId, id, handleDelete, close, open }) => {
+const DeleteDialog = ({ name, handleDelete, close, open }) => {
   return (
     <Dialog open={open} onClose={close}>
-      <DialogTitle align="center">Delete {capitalize(type)}</DialogTitle>
+      <DialogTitle align="center">Delete {name}</DialogTitle>
       <DialogContent>
-        <DialogContentText>Are you sure you want to delete this {type}?</DialogContentText>
+        <DialogContentText>Are you sure you want to delete this {name}?</DialogContentText>
       </DialogContent>
       <DialogActions sx={{ display: "flex", justifyContent: "center" }}>
         <Button color="error" variant="contained" onClick={handleDelete} sx={{ mr: 1 }}>

@@ -7,7 +7,7 @@ import { storage } from "../../Config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import CircularProgressLabel from "../../Components/CircularProgressLabel";
 
-const EditBookmarkDialog = ({ title, card, user, open, submit, close }) => {
+const EditBookmarkDialog = ({ title, card, user, open, submit, close, maxLength }) => {
   const [bookmarkName, setBookmarkName] = useState(card.name);
   const [bookmarkLink, setBookmarkLink] = useState(card.link);
   const [imageUrl, setImageUrl] = useState(card.img);
@@ -83,6 +83,7 @@ const EditBookmarkDialog = ({ title, card, user, open, submit, close }) => {
             value={bookmarkName}
             sx={{ mt: 2 }}
             onChange={(e) => setBookmarkName(e.target.value)}
+            inputProps={{ maxLength: maxLength }}
             autoFocus
           />
           <TextField
@@ -90,7 +91,6 @@ const EditBookmarkDialog = ({ title, card, user, open, submit, close }) => {
             value={bookmarkLink}
             sx={{ mt: 2 }}
             onChange={(e) => setBookmarkLink(e.target.value)}
-            autoFocus
           />
           <TextField
             disabled={imageUpload !== null}
@@ -98,7 +98,6 @@ const EditBookmarkDialog = ({ title, card, user, open, submit, close }) => {
             margin="normal"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
-            autoFocus
           />
           <DialogContentText align="center" sx={{ mb: 1 }}>
             Or

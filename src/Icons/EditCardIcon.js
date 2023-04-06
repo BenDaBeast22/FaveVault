@@ -3,18 +3,9 @@ import { auth } from "../Config/firebase";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { useAuthState } from "react-firebase-hooks/auth";
 import EditIcon from "@mui/icons-material/Edit";
-import { capitalize } from "../helpers";
+import { maxLength } from "../Config/config";
 
-const EditCardIcon = ({
-  card,
-  editCard,
-  type,
-  EditCardDialog,
-  tooltipName,
-  displayStatus,
-  scoreType,
-  collectionName,
-}) => {
+const EditCardIcon = ({ card, editCard, EditCardDialog, tooltipName, displayStatus, scoreType, name }) => {
   const [user] = useAuthState(auth);
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
@@ -32,7 +23,8 @@ const EditCardIcon = ({
           </IconButton>
         </Tooltip>
         <EditCardDialog
-          title={`Edit ${capitalize(type)}`}
+          title={`Edit ${name}`}
+          editName={name}
           user={user}
           card={card}
           open={open}
@@ -40,7 +32,7 @@ const EditCardIcon = ({
           submit={editCard}
           displayStatus={displayStatus}
           scoreType={scoreType}
-          collectionName={collectionName}
+          maxLength={maxLength}
         />
       </Box>
     </div>

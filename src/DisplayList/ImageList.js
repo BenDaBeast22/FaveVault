@@ -18,7 +18,7 @@ import Carousel from "react-material-ui-carousel";
 import { useTheme } from "@emotion/react";
 import CancelIcon from "@mui/icons-material/Cancel";
 
-function ImageList({ list, editCard, EditCardDialog, handleDelete, type, friendView }) {
+function ImageList({ list, editCard, EditCardDialog, handleDelete, itemName, friendView }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogIndex, setDialogIndex] = useState(0);
   const handleOpenDialog = (index) => {
@@ -154,8 +154,8 @@ function ImageList({ list, editCard, EditCardDialog, handleDelete, type, friendV
           justifyContent: "space-evenly",
         }}
       >
-        <EditCardIcon card={card} editCard={editCard} EditCardDialog={EditCardDialog} type={type} />
-        <DeleteCardIcon handleDelete={handleDelete} type={type} card={card} />
+        <EditCardIcon card={card} editCard={editCard} EditCardDialog={EditCardDialog} name={itemName} />
+        <DeleteCardIcon handleDelete={handleDelete} name={itemName} card={card} />
       </Box>
     );
   }

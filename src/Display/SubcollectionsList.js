@@ -34,6 +34,7 @@ const SubcollectionsList = ({
   scoreType,
   addListItemToSubcollection,
   collectionName,
+  itemName,
   friendView,
 }) => {
   const [subcollections, setSubcollections] = useState([]);
@@ -162,13 +163,13 @@ const SubcollectionsList = ({
                     AddItemDialog={AddItemDialog}
                   />
                   <EditCardIcon
-                    type="subcollection"
+                    name="Subcollection"
                     card={subcollection}
                     editCard={editSubcollection}
                     EditCardDialog={EditSubcollectionDialog}
                     tooltipName="Edit Subcollection"
                   />
-                  <DeleteCardIcon handleDelete={deleteSubcollection} type="subcollection" card={subcollection} />
+                  <DeleteCardIcon handleDelete={deleteSubcollection} name="Subcollection" card={subcollection} />
                 </Box>
               )}
               <Box sx={{ ml: 2 }}>
@@ -191,7 +192,7 @@ const SubcollectionsList = ({
             {items[subcollection.id] && (
               <CardList
                 list={items[subcollection.id]}
-                type="bookmark"
+                itemName={itemName}
                 editCard={editItem}
                 EditCardDialog={EditItemDialog}
                 handleDelete={deleteItem}

@@ -6,7 +6,7 @@ import { storage } from "../../Config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import ImageUpload from "../../Components/ImageUpload";
 
-const AddImageDialog = ({ title, user, open, submit, close, subcollectionId }) => {
+const AddImageDialog = ({ title, user, open, submit, close, subcollectionId, maxLength }) => {
   const [imageName, setImageName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [imageUpload, setImageUpload] = useState(null);
@@ -79,6 +79,7 @@ const AddImageDialog = ({ title, user, open, submit, close, subcollectionId }) =
             value={imageName}
             sx={{ mt: 2 }}
             onChange={(e) => setImageName(e.target.value)}
+            inputProps={{ maxLength: maxLength }}
             autoFocus
           />
           <TextField
@@ -87,7 +88,6 @@ const AddImageDialog = ({ title, user, open, submit, close, subcollectionId }) =
             margin="normal"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
-            autoFocus
           />
           <DialogContentText align="center" sx={{ mb: 1 }}>
             Or

@@ -14,6 +14,7 @@ const ItemsList = ({
   EditItemDialog,
   CardList,
   collectionName,
+  itemName,
   addListItemToSubcollection,
   friendView,
 }) => {
@@ -70,6 +71,7 @@ const ItemsList = ({
       scoreType={scoreType}
       displayRating={scoreType !== "none"}
       collectionName={collectionName}
+      itemName={itemName}
       groupingName={groupingName}
       friendView={friendView}
     />

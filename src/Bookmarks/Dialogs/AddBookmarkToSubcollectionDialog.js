@@ -7,7 +7,7 @@ import { storage } from "../../Config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import CircularProgressLabel from "../../Components/CircularProgressLabel";
 
-const AddBookmarkToSubcollectionDialog = ({ title, user, open, submit, close }) => {
+const AddBookmarkToSubcollectionDialog = ({ title, user, open, submit, close, maxLength }) => {
   const [subcollectionName, setSubcollectionName] = useState("");
   const [bookmarkName, setBookmarkName] = useState("");
   const [bookmarkLink, setBookmarkLink] = useState("");
@@ -94,6 +94,7 @@ const AddBookmarkToSubcollectionDialog = ({ title, user, open, submit, close }) 
             value={subcollectionName}
             sx={{ mt: 2 }}
             onChange={(e) => setSubcollectionName(e.target.value)}
+            inputProps={{ maxLength: maxLength }}
             autoFocus
           />
           <TextField
@@ -101,14 +102,13 @@ const AddBookmarkToSubcollectionDialog = ({ title, user, open, submit, close }) 
             value={bookmarkName}
             sx={{ mt: 2 }}
             onChange={(e) => setBookmarkName(e.target.value)}
-            autoFocus
+            inputProps={{ maxLength: maxLength }}
           />
           <TextField
             label="Bookmark Link"
             value={bookmarkLink}
             sx={{ mt: 2 }}
             onChange={(e) => setBookmarkLink(e.target.value)}
-            autoFocus
           />
           <TextField
             disabled={imageUpload !== null}
@@ -116,7 +116,6 @@ const AddBookmarkToSubcollectionDialog = ({ title, user, open, submit, close }) 
             margin="normal"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
-            autoFocus
           />
           <DialogContentText align="center" sx={{ mb: 1 }}>
             Or

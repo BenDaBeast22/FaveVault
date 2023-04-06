@@ -17,7 +17,7 @@ import { storage } from "../Config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import CircularProgressLabel from "../Components/CircularProgressLabel";
 
-const AddCollectionDialog = ({ groupingName, user, open, submit, close }) => {
+const AddCollectionDialog = ({ collectionName, user, open, submit, close, maxLength }) => {
   const [name, setName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [imageUpload, setImageUpload] = useState(null);
@@ -33,7 +33,7 @@ const AddCollectionDialog = ({ groupingName, user, open, submit, close }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!name) {
-      setError(`${groupingName} name not set`);
+      setError(`${collectionName} name not set`);
       return;
     } else if (!imageUrl) {
       setError("Image name not set");
@@ -94,12 +94,13 @@ const AddCollectionDialog = ({ groupingName, user, open, submit, close }) => {
     <Dialog open={open} onClose={handleClose}>
       <Box component="form" onSubmit={handleSubmit}>
         <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
-          <DialogContentText align="center">{`Add New ${groupingName}`}</DialogContentText>
+          <DialogContentText align="center">{`Add New ${collectionName}`}</DialogContentText>
           <TextField
-            label={`${groupingName} Name`}
+            label={`${collectionName} Name`}
             value={name}
             sx={{ mt: 2 }}
             onChange={(e) => setName(e.target.value)}
+            inputProps={{ maxLength: maxLength }}
             autoFocus
           />
           <TextField
@@ -108,7 +109,6 @@ const AddCollectionDialog = ({ groupingName, user, open, submit, close }) => {
             margin="normal"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
-            autoFocus
           />
           <DialogContentText align="center" sx={{ mb: 1 }}>
             Or

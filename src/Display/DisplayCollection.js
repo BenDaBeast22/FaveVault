@@ -3,7 +3,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../Config/firebase";
 import { useParams } from "react-router-dom";
 import { addDoc, doc, setDoc, collection, getDocs, query, where, limit } from "firebase/firestore";
-import { Container, Typography, Box, Select, MenuItem, FormControl, InputLabel, Button, Switch } from "@mui/material";
+import { Container, Typography, Box, InputLabel, Button, Switch } from "@mui/material";
 import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import SubcollectionsList from "./SubcollectionsList";
 import ItemsList from "./ItemsList";
@@ -13,6 +13,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SortType from "../Components/SortType";
 import SortOrder from "../Components/SortOrder";
 import { sortList, ratingSortList } from "../Config/sortLists";
+import { maxLength } from "../Config/config";
 
 const DisplayCollection = ({
   groupingName,
@@ -34,6 +35,8 @@ const DisplayCollection = ({
   const collectionsRef = collection(db, "data", uid, groupingName);
   const subcollectionsRef = collection(collectionsRef, id, "subcollections");
   const isLists = groupingName === "Lists";
+  const itemName = isLists ? capitalize(singularize(name)) : capitalize(singularize(groupingType));
+  const subcollectionName = isLists ? capitalize(singularize(name)) : "Subcollection";
   const addItemToNewSubcollection = async (newSubcollection) => {
     const subcollection = {
       name: newSubcollection.name,
@@ -92,30 +95,27 @@ const DisplayCollection = ({
   const addToNewSubcollectionButton = (
     <>
       <Button startIcon={<CreateNewFolderIcon />} variant="contained" color="secondary" onClick={handleOpenAddDialog}>
-        {displayStatus ? `New ${capitalize(singularize(name))}` : "New Subcollection"}
+        {isLists ? `New ${capitalize(singularize(name))}` : "New Subcollection"}
       </Button>
       <AddItemToSubcollectionDialog
-        title={
-          displayStatus
-            ? `Add New ${capitalize(singularize(name))}`
-            : `Add ${capitalize(singularize(name))} To New Subcollection`
-        }
+        title={isLists ? `Add new ${itemName} to ${subcollectionName}` : `Add ${itemName} To New Subcollection`}
         user={user}
         open={addDialog}
         close={handleCloseAddDialog}
         submit={displayStatus ? addListItemToSubcollection : addItemToNewSubcollection}
         scoreType={scoreType}
         collectionName={name}
+        maxLength={maxLength}
       />
     </>
   );
   const addItemButton = (
     <>
       <Button startIcon={<CreateNewFolderIcon />} variant="contained" color="secondary" onClick={handleOpenAddDialog}>
-        New {capitalize(singularize(name))}
+        {`New ${itemName}`}
       </Button>
       <AddItemDialog
-        title={`Add New ${capitalize(singularize(name))}`}
+        title={`Add New ${itemName}`}
         user={user}
         scoreType={scoreType}
         open={addDialog}
@@ -123,6 +123,7 @@ const DisplayCollection = ({
         submit={isLists ? addListItem : addItem}
         displayStatus={displayStatus}
         collectionName={name}
+        maxLength={maxLength}
       />
     </>
   );
@@ -178,6 +179,7 @@ const DisplayCollection = ({
           <SubcollectionsList
             groupingName={groupingName}
             groupingType={groupingType}
+            itemName={itemName}
             scoreType={scoreType}
             uid={uid}
             sortOrder={sortOrder}
@@ -193,6 +195,7 @@ const DisplayCollection = ({
           <ItemsList
             groupingName={groupingName}
             groupingType={groupingType}
+            itemName={itemName}
             scoreType={scoreType}
             uid={uid}
             sortType={sortType}

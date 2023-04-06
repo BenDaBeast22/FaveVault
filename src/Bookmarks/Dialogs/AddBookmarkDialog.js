@@ -6,7 +6,7 @@ import { storage } from "../../Config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import ImageUpload from "../../Components/ImageUpload";
 
-const AddBookmarkDialog = ({ title, user, open, submit, close, subcollectionId }) => {
+const AddBookmarkDialog = ({ title, user, open, submit, close, subcollectionId, maxLength }) => {
   const [bookmarkName, setBookmarkName] = useState("");
   const [bookmarkLink, setBookmarkLink] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -84,6 +84,7 @@ const AddBookmarkDialog = ({ title, user, open, submit, close, subcollectionId }
             value={bookmarkName}
             sx={{ mt: 2 }}
             onChange={(e) => setBookmarkName(e.target.value)}
+            inputProps={{ maxLength: maxLength }}
             autoFocus
           />
           <TextField
@@ -91,7 +92,6 @@ const AddBookmarkDialog = ({ title, user, open, submit, close, subcollectionId }
             value={bookmarkLink}
             sx={{ mt: 2 }}
             onChange={(e) => setBookmarkLink(e.target.value)}
-            autoFocus
           />
           <TextField
             disabled={imageUpload !== null}
@@ -99,7 +99,6 @@ const AddBookmarkDialog = ({ title, user, open, submit, close, subcollectionId }
             margin="normal"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
-            autoFocus
           />
           <DialogContentText align="center" sx={{ mb: 1 }}>
             Or

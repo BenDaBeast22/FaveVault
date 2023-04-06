@@ -26,8 +26,18 @@ import {
   OutOfTenRating,
   OutOfHunderedRating,
 } from "../../Components/ScoreTypes";
+import { singularize } from "../../helpers";
 
-const AddListItemToSubcollectionDialog = ({ title, user, open, submit, close, scoreType, collectionName }) => {
+const AddListItemToSubcollectionDialog = ({
+  title,
+  user,
+  open,
+  submit,
+  close,
+  scoreType,
+  collectionName,
+  maxLength,
+}) => {
   const [itemName, setItemName] = useState("");
   const [score, setScore] = useState(0);
   const [status, setStatus] = useState("Planning");
@@ -126,10 +136,11 @@ const AddListItemToSubcollectionDialog = ({ title, user, open, submit, close, sc
         <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
           <DialogContentText align="center">{title}</DialogContentText>
           <TextField
-            label={`${collectionName} Name`}
+            label={`${singularize(collectionName)} Name`}
             value={itemName}
             sx={{ mt: 2 }}
             onChange={(e) => setItemName(e.target.value)}
+            inputProps={{ maxLength: maxLength }}
             autoFocus
           />
           <TextField
@@ -138,7 +149,6 @@ const AddListItemToSubcollectionDialog = ({ title, user, open, submit, close, sc
             margin="normal"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
-            autoFocus
           />
           <DialogContentText align="center" sx={{ mb: 1 }}>
             Or

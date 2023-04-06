@@ -7,7 +7,7 @@ import { storage } from "../../Config/firebase";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import CircularProgressLabel from "../../Components/CircularProgressLabel";
 
-const EditImageDialog = ({ title, card, user, open, submit, close }) => {
+const EditImageDialog = ({ title, card, user, open, submit, close, maxLength }) => {
   const [imageName, setImageName] = useState(card.name);
   const [imageUrl, setImageUrl] = useState(card.img);
   const [imageUpload, setImageUpload] = useState(null);
@@ -81,6 +81,7 @@ const EditImageDialog = ({ title, card, user, open, submit, close }) => {
             value={imageName}
             sx={{ mt: 2 }}
             onChange={(e) => setImageName(e.target.value)}
+            inputProps={{ maxLength: maxLength }}
             autoFocus
           />
           <TextField
@@ -89,7 +90,6 @@ const EditImageDialog = ({ title, card, user, open, submit, close }) => {
             margin="normal"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
-            autoFocus
           />
           <DialogContentText align="center" sx={{ mb: 1 }}>
             Or
