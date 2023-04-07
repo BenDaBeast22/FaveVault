@@ -150,8 +150,8 @@ const SubcollectionsList = ({
       {itemsSortBy &&
         subcollections.map((subcollection) => (
           <Box key={subcollection.id}>
-            <Box sx={{ mt: 2, display: "flex", mb: 3 }}>
-              <Typography variant="h4" sx={{ mr: 1 }}>
+            <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", rowGap: 2, mb: 3 }}>
+              <Typography variant="h4" sx={{ mr: 2 }}>
                 {subcollection.name}
               </Typography>
               {!isLists && !friendView && (
@@ -172,22 +172,22 @@ const SubcollectionsList = ({
                   <DeleteCardIcon handleDelete={deleteSubcollection} name="Subcollection" card={subcollection} />
                 </Box>
               )}
-              <Box sx={{ ml: 2 }}>
+              <Box sx={{ display: "flex" }}>
                 <SortType
                   list={isLists ? ratingSortList : sortList}
                   handleSortBy={isLists ? handleSortBy : handleOrderBy}
                   subcollectionId={subcollection.id}
                 />
+                {isLists && (
+                  <Box sx={{ ml: 2 }}>
+                    <SortOrder
+                      handleOrderBy={handleOrderBy}
+                      subcollectionId={subcollection.id}
+                      value={itemsSortBy[subcollection.id].order}
+                    />
+                  </Box>
+                )}
               </Box>
-              {isLists && (
-                <Box sx={{ ml: 2 }}>
-                  <SortOrder
-                    handleOrderBy={handleOrderBy}
-                    subcollectionId={subcollection.id}
-                    value={itemsSortBy[subcollection.id].order}
-                  />
-                </Box>
-              )}
             </Box>
             {items[subcollection.id] && (
               <CardList

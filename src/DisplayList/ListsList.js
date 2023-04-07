@@ -26,7 +26,7 @@ function ListsList({
   return (
     <Grid container spacing={2} sx={{ pb: 2, pr: 2 }}>
       {list.map((card) => (
-        <Grid item xs={4} sm={3} md={2.4} lg={2} key={card.id}>
+        <Grid item xs={6} sm={4} md={3} lg={2} key={card.id}>
           <Card
             sx={{
               height: "150px",
@@ -40,7 +40,7 @@ function ListsList({
           </Card>
           <CardContent
             sx={{
-              py: 1,
+              p: 1,
               backgroundColor: "#121212",
               "&:last-child": {
                 paddingBottom: 1,

@@ -93,11 +93,13 @@ const DisplayCollections = ({ groupingName, groupingType, AddCollectionDialog, E
         <Container
           maxWidth="xs"
           sx={{
-            "& > *": { mx: "10px !important" },
+            "& > *": { mr: { xs: "15px !important" } },
             mb: 4,
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+            flexWrap: "wrap",
+            rowGap: 2,
           }}
         >
           {!friendView ? (

@@ -11,7 +11,7 @@ const SortOrder = ({ handleOrderBy, subcollectionId, value }) => {
         }}
         label="order by"
         defaultValue="asc"
-        value={value}
+        value={value ? value : null}
         onChange={(event) => handleOrderBy(event, subcollectionId)}
       >
         <MenuItem value="asc">Asc</MenuItem>

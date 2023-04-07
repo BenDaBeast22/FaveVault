@@ -128,52 +128,58 @@ const DisplayCollection = ({
     </>
   );
   const DisplayAddItemButton = displaySubcollections || displayStatus ? addToNewSubcollectionButton : addItemButton;
+  const BackButton = (
+    <Box
+      component={ReactRouterLink}
+      to={".."}
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "secondary.main",
+        width: 45,
+        height: 40,
+        borderRadius: "50%",
+        color: "white",
+        "&:hover": { backgroundColor: "#7e14b3" },
+      }}
+    >
+      <ArrowBackIcon sx={{ fontSize: 20 }} />
+    </Box>
+  );
   return (
     <div className="Collection">
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Typography variant="h3" align="center" gutterBottom>
-          {name}
-        </Typography>
+        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mb: 2, flexWrap: "wrap" }}>
+          <Typography variant="h3" align="center" sx={{ mr: 2 }}>
+            {name}
+          </Typography>
+          {BackButton}
+        </Box>
         <Container
           maxWidth="md"
           sx={{
-            "& > *": { mx: "10px !important" },
+            "& > *": { mr: "15px !important" },
             mb: 4,
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+            flexWrap: "wrap",
+            rowGap: 2,
           }}
         >
           {!friendView && DisplayAddItemButton}
-          <SortType list={isLists ? ratingSortList : sortList} handleSortBy={isLists ? handleSortBy : handleOrderBy} />
-          {isLists && !displayStatus && <SortOrder handleOrderBy={handleOrderBy} value={sortOrder} />}
-          {!isLists && (
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                border: "1px solid",
-                borderColor: "rgba(255, 255, 255, 0.23)",
-                backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.09))",
-                borderRadius: "5px",
-                "&:hover": {
-                  borderColor: "inherit",
-                },
-              }}
-            >
-              <InputLabel sx={{ pl: 1, color: "inherit" }}>Subcollections</InputLabel>
-              <Switch color="secondary" checked={displaySubcollections} onChange={toggleDisplaySubcollections} />
-            </Box>
-          )}
-          <Button
-            variant="contained"
-            color="secondary"
-            component={ReactRouterLink}
-            to={".."}
-            startIcon={<ArrowBackIcon />}
-          >
-            Back
-          </Button>
+          {!isLists && ToggleSubcollectionsButton(displaySubcollections, toggleDisplaySubcollections)}
+          <Box sx={{ display: "flex", "& > *": { mr: "15px !important" } }}>
+            {isLists && !displayStatus && <SortType list={ratingSortList} handleSortBy={handleSortBy} />}
+            <SortOrder handleOrderBy={handleOrderBy} value={sortOrder} />
+          </Box>
+          {/* // {!isLists && (
+          //   <SortType
+          //     list={isLists ? ratingSortList : sortList}
+          //     handleSortBy={isLists ? handleSortBy : handleOrderBy}
+          //   />
+          // )} */}
         </Container>
         {displaySubcollections || displayStatus ? (
           <SubcollectionsList
@@ -219,3 +225,23 @@ DisplayCollection.defaultProps = {
 };
 
 export default DisplayCollection;
+function ToggleSubcollectionsButton(displaySubcollections, toggleDisplaySubcollections) {
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        border: "1px solid",
+        borderColor: "rgba(255, 255, 255, 0.23)",
+        backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.09))",
+        borderRadius: "5px",
+        "&:hover": {
+          borderColor: "inherit",
+        },
+      }}
+    >
+      <InputLabel sx={{ pl: 1, color: "inherit" }}>Subcollections</InputLabel>
+      <Switch color="secondary" checked={displaySubcollections} onChange={toggleDisplaySubcollections} />
+    </Box>
+  );
+}

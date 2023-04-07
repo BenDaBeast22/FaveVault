@@ -262,23 +262,33 @@ const Friends = () => {
             sx={{
               display: "flex",
               alignItems: "center",
+              justifyContent: "center",
+              flexWrap: "wrap",
               "& > *": { mx: "8px !important" },
               mb: 2,
+              rowGap: 2,
             }}
           >
             <Avatar alt="profile-pic" src={friend.profilePic} sx={{ width: 45, height: 45 }} />
             <Typography>{friend.email}</Typography>
-            <Button variant="outlined" startIcon={<VisibilityIcon />} component={ReactRouterLink} to={`${friend.uid}`}>
-              View
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              startIcon={<PersonRemoveIcon />}
-              onClick={() => handleUnfriend(friend)}
-            >
-              Remove
-            </Button>
+            <Box sx={{ "& > *": { mx: "8px !important" } }}>
+              <Button
+                variant="outlined"
+                startIcon={<VisibilityIcon />}
+                component={ReactRouterLink}
+                to={`${friend.uid}`}
+              >
+                View
+              </Button>
+              <Button
+                variant="outlined"
+                color="error"
+                startIcon={<PersonRemoveIcon />}
+                onClick={() => handleUnfriend(friend)}
+              >
+                Remove
+              </Button>
+            </Box>
           </Box>
         ))}
         <Box sx={{ display: "flex", justifyContent: "left", alignItems: "center" }}>

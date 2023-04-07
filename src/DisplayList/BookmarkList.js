@@ -6,7 +6,7 @@ function BookmarkList({ list, editCard, EditCardDialog, handleDelete, itemName, 
   return (
     <Grid container spacing={2} sx={{ pb: 2, pr: 2 }}>
       {list.map((card) => (
-        <Grid item xs={4} sm={3} md={2.4} lg={2} xl={1.5} key={card.id}>
+        <Grid item xs={6} sm={4} md={3} lg={2} key={card.id}>
           <Link href={card.link} target="_blank">
             <Card
               sx={{
@@ -22,7 +22,7 @@ function BookmarkList({ list, editCard, EditCardDialog, handleDelete, itemName, 
           </Link>
           <CardContent
             sx={{
-              py: 1,
+              p: 1,
               backgroundColor: "#121212",
               "&:last-child": {
                 paddingBottom: 1,
@@ -30,7 +30,11 @@ function BookmarkList({ list, editCard, EditCardDialog, handleDelete, itemName, 
               backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.09))",
             }}
           >
-            <Typography align="center">{card.name}</Typography>
+            <Box sx={{ display: "flex", alignItems: "center", lineHeight: "1.5em", minHeight: "3em" }}>
+              <Typography paragraph align="center" sx={{ width: "100%", m: 0 }}>
+                {card.name}
+              </Typography>
+            </Box>
             {!friendView && Icons(card)}
           </CardContent>
         </Grid>
