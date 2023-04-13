@@ -150,7 +150,7 @@ const DisplayCollection = ({
         >
           {!friendView && DisplayAddItemButton}
           {!isLists && ToggleSubcollectionsButton(displaySubcollections, toggleDisplaySubcollections)}
-          <Box sx={{ display: "flex", "& > *": { mr: "15px !important" } }}>
+          <Box sx={{ display: "flex", "& > *": { columnGap: "15px" } }}>
             {isLists && !displayStatus && <SortType list={ratingSortList} handleSortBy={handleSortBy} />}
             <SortOrder handleOrderBy={handleOrderBy} value={sortOrder} />
           </Box>
