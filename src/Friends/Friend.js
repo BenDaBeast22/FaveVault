@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { db } from "../Config/firebase";
 import { doc, onSnapshot } from "firebase/firestore";
 import { Outlet, useParams } from "react-router-dom";
-import { Avatar, Typography, Container, Link, Button, ButtonGroup } from "@mui/material";
+import { Avatar, Typography, Container, Button, ButtonGroup, Box } from "@mui/material";
 import { NavLink } from "react-router-dom";
+import BackButton from "../Components/BackButton";
 
 const pages = ["Bookmarks", "Gallery", "Lists"];
 
@@ -30,9 +31,15 @@ const Friend = () => {
           alignItems: "center",
         }}
       >
-        <Typography variant="h4" component="h2">
+        {/* <Typography variant="h4" component="h2">
           {friend.username}
-        </Typography>
+        </Typography> */}
+        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", flexWrap: "wrap" }}>
+          <BackButton />
+          <Typography variant="h4" component="h2" align="center" sx={{ ml: 2 }}>
+            {friend.username}
+          </Typography>
+        </Box>
         <Avatar src={friend.profilePic} alt={`${friend.username} profile pic`} />
       </Container>
       <Container

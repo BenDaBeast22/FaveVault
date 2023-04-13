@@ -8,12 +8,11 @@ import CreateNewFolderIcon from "@mui/icons-material/CreateNewFolder";
 import SubcollectionsList from "./SubcollectionsList";
 import ItemsList from "./ItemsList";
 import { capitalize, singularize } from "../helpers";
-import { Link as ReactRouterLink } from "react-router-dom";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SortType from "../Components/SortType";
 import SortOrder from "../Components/SortOrder";
 import { sortList, ratingSortList } from "../Config/sortLists";
 import { maxLength } from "../Config/config";
+import BackButton from "../Components/BackButton";
 
 const DisplayCollection = ({
   groupingName,
@@ -128,33 +127,14 @@ const DisplayCollection = ({
     </>
   );
   const DisplayAddItemButton = displaySubcollections || displayStatus ? addToNewSubcollectionButton : addItemButton;
-  const BackButton = (
-    <Box
-      component={ReactRouterLink}
-      to={".."}
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "secondary.main",
-        width: 45,
-        height: 40,
-        borderRadius: "50%",
-        color: "white",
-        "&:hover": { backgroundColor: "#7e14b3" },
-      }}
-    >
-      <ArrowBackIcon sx={{ fontSize: 20 }} />
-    </Box>
-  );
   return (
     <div className="Collection">
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mb: 2, flexWrap: "wrap" }}>
-          <Typography variant="h3" align="center" sx={{ mr: 2 }}>
+          <BackButton />
+          <Typography variant="h3" align="center" sx={{ ml: 2 }}>
             {name}
           </Typography>
-          {BackButton}
         </Box>
         <Container
           maxWidth="md"

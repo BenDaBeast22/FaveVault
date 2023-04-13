@@ -10,6 +10,7 @@ import {
   Snackbar,
   Alert,
   InputAdornment,
+  Stack,
 } from "@mui/material";
 import { query, where, collection, getDocs, limit, deleteDoc, setDoc, doc, onSnapshot } from "firebase/firestore";
 import React, { useEffect, useState, useRef } from "react";
@@ -262,7 +263,7 @@ const Friends = () => {
             sx={{
               display: "flex",
               alignItems: "center",
-              justifyContent: "center",
+              justifyContent: "left",
               flexWrap: "wrap",
               "& > *": { mx: "8px !important" },
               mb: 2,
@@ -271,7 +272,7 @@ const Friends = () => {
           >
             <Avatar alt="profile-pic" src={friend.profilePic} sx={{ width: 45, height: 45 }} />
             <Typography>{friend.email}</Typography>
-            <Box sx={{ "& > *": { mx: "8px !important" } }}>
+            <Box sx={{ "& > *": { mr: "8px !important" } }}>
               <Button
                 variant="outlined"
                 startIcon={<VisibilityIcon />}
@@ -304,8 +305,10 @@ const Friends = () => {
             sx={{
               display: "flex",
               alignItems: "center",
-              mb: 2,
+              flexWrap: "wrap",
               "& > *": { mx: "8px !important" },
+              mb: 2,
+              rowGap: 2,
             }}
           >
             <Avatar alt="profile-pic" src={suggestion.profilePic} sx={{ width: 45, height: 45 }} />
