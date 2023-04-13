@@ -34,13 +34,13 @@ const Friend = () => {
         {/* <Typography variant="h4" component="h2">
           {friend.username}
         </Typography> */}
+        <Avatar src={friend.profilePic} alt={`${friend.username} profile pic`} />
         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", flexWrap: "wrap" }}>
-          <BackButton />
-          <Typography variant="h4" component="h2" align="center" sx={{ ml: 2 }}>
+          <Typography variant="h4" component="h2" align="center" sx={{ mr: 2 }}>
             {friend.username}
           </Typography>
+          <BackButton />
         </Box>
-        <Avatar src={friend.profilePic} alt={`${friend.username} profile pic`} />
       </Container>
       <Container
         sx={{

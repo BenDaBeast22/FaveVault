@@ -131,10 +131,10 @@ const DisplayCollection = ({
     <div className="Collection">
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mb: 2, flexWrap: "wrap" }}>
-          <BackButton />
-          <Typography variant="h3" align="center" sx={{ ml: 2 }}>
+          <Typography variant="h3" align="center" sx={{ mr: 2 }}>
             {name}
           </Typography>
+          <BackButton />
         </Box>
         <Container
           maxWidth="md"
